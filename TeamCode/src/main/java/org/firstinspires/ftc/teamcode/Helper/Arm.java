@@ -42,7 +42,7 @@ public class Arm {
         motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         speed = speed * Math.signum(targetPosition - currentPosition);
-////        //Set the power of the motor.
+        //Set the power of the motor.
         motor.setPower(speed);
         runtime.reset();
 
@@ -54,6 +54,17 @@ public class Arm {
 
 
     }
+
+    public void runWithoutEncoder(int targetTime) {
+        ElapsedTime runtime = new ElapsedTime();
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor.setPower(-1);
+        runtime.reset();
+        while (runtime.milliseconds() < targetTime) {
+        }
+        motor.setPower(0);
+    }
+
 
     public void gotoPickupPosition(){
         this.gotoPosition(ARM_PICKUP_POSITION);
