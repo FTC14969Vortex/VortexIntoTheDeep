@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Helper.Robot;
 
 
-@Autonomous(name = "Auto Test", group = "Auto")
+@Autonomous(name = "Auto Example", group = "Auto")
 public class AutoExample extends LinearOpMode{
     //------------------------------------------------------------------
 
@@ -54,7 +54,7 @@ public class AutoExample extends LinearOpMode{
 //
 //        // Stop
 //        robot.chassis.stopDriveMotors();
-
+//hi
 
         //Move arm and wrist to delivery position
         robot.arm.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
