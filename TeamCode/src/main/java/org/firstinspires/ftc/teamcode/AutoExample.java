@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Helper.Robot;
 
 
-@Autonomous(name = "Auto Test", group = "Auto")
+@Autonomous(name = "Auto Example", group = "Auto")
 public class AutoExample extends LinearOpMode{
     //------------------------------------------------------------------
 
