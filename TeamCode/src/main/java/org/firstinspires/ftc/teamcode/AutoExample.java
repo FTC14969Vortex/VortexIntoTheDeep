@@ -54,7 +54,7 @@ public class AutoExample extends LinearOpMode{
 //
 //        // Stop
 //        robot.chassis.stopDriveMotors();
-
+//hi
 
         //Move arm and wrist to delivery position
         robot.arm.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
