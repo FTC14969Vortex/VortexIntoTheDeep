@@ -58,7 +58,7 @@ public class Arm {
     public void runWithoutEncoder(int targetTime) {
         ElapsedTime runtime = new ElapsedTime();
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motor.setPower(-1);
+        speed = speed * Math.signum(targetPosition - currentPosition);
         runtime.reset();
         while (runtime.milliseconds() < targetTime) {
         }
