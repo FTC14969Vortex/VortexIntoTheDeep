@@ -40,7 +40,8 @@ import org.firstinspires.ftc.robotcore.internal.system.PermissionValidatorActivi
 import java.util.ArrayList;
 import java.util.List;
 
-public class PermissionValidatorWrapper extends PermissionValidatorActivity {
+public class
+PermissionValidatorWrapper extends PermissionValidatorActivity {
 
     private final String TAG = "PermissionValidatorWrapper";
 
