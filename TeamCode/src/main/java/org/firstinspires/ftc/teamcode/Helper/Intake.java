@@ -31,4 +31,8 @@ public class Intake {
         }
         motor.setPower(speed);
     }
+
+    public void stopIntake() {
+        motor.setPower(0);
+    }
 }
