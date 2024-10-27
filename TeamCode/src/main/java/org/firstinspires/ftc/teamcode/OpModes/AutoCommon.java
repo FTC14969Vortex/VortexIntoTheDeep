@@ -88,6 +88,14 @@ public class AutoCommon extends LinearOpMode{
         switch (currentStage) {
             case MOVE_TO_SUBMERSIBLE:
                 //Lam will add code here
+                robot.chassis.Drive(DRIVE_SPEED,);
+                sleep(1000);
+                robot.chassis.autoTurn(90,TURN_OFFSET);
+                robot.chassis.Drive(DRIVE_SPEED,);
+                sleep(1000);
+                robot.chassis.stopDriveMotors();
+
+
                 currentStage = AutoStages.HANG_SPECIMEN;
                 break;
             case HANG_SPECIMEN:
