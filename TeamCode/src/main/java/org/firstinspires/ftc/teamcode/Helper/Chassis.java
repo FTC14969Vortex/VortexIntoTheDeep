@@ -1,11 +1,17 @@
 package org.firstinspires.ftc.teamcode.Helper;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -21,9 +27,9 @@ public class Chassis {
 
 
     //IMU
-    public  BNO055IMU imu;
+    public  IMU imu;
 
-    public Orientation angles;
+    public YawPitchRollAngles angles;
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -87,42 +93,24 @@ public class Chassis {
 
 
 
-        imu                             = hwMap.get(BNO055IMU.class, "imu");
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit            = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit            = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.loggingEnabled       = true;
-        parameters.useExternalCrystal   = true;
-        parameters.mode                 = BNO055IMU.SensorMode.IMU;
-        parameters.loggingTag           = "IMU";
+        imu = hwMap.get(IMU.class, "imu");
 
-        //Since our Rev Expansion is in Vertical Position, so we need to Z & X
+        // Set the mounting orientation of the IMU sensor.
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
 
-//        //Need to be in CONFIG mode to write to registers
-        imu.write8(BNO055IMU.Register.OPR_MODE,BNO055IMU.SensorMode.CONFIG.bVal & 0x0F);
-        byte AXIS_MAP_CONFIG_BYTE = 0x6; //This is what to write to the AXIS_MAP_CONFIG register to swap y and z axes
-        //byte AXIS_MAP_SIGN_BYTE = 0x1; //This is what to write to the AXIS_MAP_SIGN register to negate the z axis
-//        //Need to be in CONFIG mode to write to registers
-        imu.write8(BNO055IMU.Register.OPR_MODE,BNO055IMU.SensorMode.CONFIG.bVal & 0x0F);
-        TimeUnit.MILLISECONDS.sleep(100); //Changing modes requires a delay before doing anything else
+        // Define how the hub is mounted on the robot to get the correct Yaw, Pitch and Roll values.
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
 
-        //Write to the AXIS_MAP_CONFIG register
-        imu.write8(BNO055IMU.Register.AXIS_MAP_CONFIG,AXIS_MAP_CONFIG_BYTE & 0x0F);
-
-        //Write to the AXIS_MAP_SIGN register
-        //imu.write8(BNO055IMU.Register.AXIS_MAP_SIGN,AXIS_MAP_SIGN_BYTE & 0x0F);
-
-        //Need to change back into the IMU mode to use the gyro
-        //imu.write8(BNO055IMU.Register.OPR_MODE,BNO055IMU.SensorMode.IMU.bVal & 0x0F);
-
-        TimeUnit.MILLISECONDS.sleep(100); //Changing modes again requires a delay
-
-        imu.initialize(parameters);
+        // Now initialize the IMU with this mounting orientation
+        // Note: if you choose two conflicting directions, this initialization will cause a code exception.
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
     }
 
     public boolean isRobotStable(){
-        angles = imu.getAngularOrientation();
-        if(Math.abs(angles.secondAngle) >= 5 || Math.abs(angles.thirdAngle) >= 5) {
+        angles = imu.getRobotYawPitchRollAngles();
+
+        if(Math.abs(angles.getPitch(AngleUnit.DEGREES)) >= 5 || Math.abs(angles.getRoll(AngleUnit.DEGREES)) >= 5) {
             return false;
         } else {
             return true;
@@ -171,7 +159,6 @@ public class Chassis {
         BRMotor.setPower(speed);
 
         while ((runtime.milliseconds() < timeout_ms) && (FLMotor.isBusy() && FRMotor.isBusy())) {
-
         }
         this.stopDriveMotors();
     }
@@ -231,12 +218,6 @@ public class Chassis {
         FRMotor.setPower(0);
         BLMotor.setPower(0);
         BRMotor.setPower(0);
-
-        // Turn off RUN_TO_POSITION
-       // FLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-       // FRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-       // BLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-       // BRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void DriveToPosition(double Speed, int posX, int posY, boolean forwardFirst) {
@@ -258,10 +239,10 @@ public class Chassis {
         return angle;
     }
     public void turnRobotToAngle(float endAngle) {
-        Orientation angle;
-        angle = imu.getAngularOrientation();
+        YawPitchRollAngles angle;
+        angle = imu.getRobotYawPitchRollAngles();
 
-        float angleStart = modAngle(angle.firstAngle);
+        float angleStart = modAngle((float) angle.getYaw(AngleUnit.DEGREES));
         float angleEnd = modAngle(endAngle);
         float angleCurrent = angleStart;
         float direction = 0;
@@ -282,9 +263,8 @@ public class Chassis {
             FRMotor.setPower(pwr * direction);
             BLMotor.setPower(-pwr * direction);
             BRMotor.setPower(pwr * direction);
-            angle = imu.getAngularOrientation();
-            angleCurrent = modAngle(angle.firstAngle);
-
+            angle = imu.getRobotYawPitchRollAngles();
+            angleCurrent = modAngle((float) angle.getYaw(AngleUnit.DEGREES));
         }
         stopDriveMotors();
 
@@ -293,10 +273,10 @@ public class Chassis {
     public void autoTurn(float turnAngle, float turnOffset){
         float desc_start = 10;
         double acc = 1;
-        float turnDirection = Math.signum(turnAngle);
-        float startAngle;
-        float currentAngle;
-        float alreadyTurned = 0;
+        double turnDirection = Math.signum(turnAngle);
+        double startAngle;
+        double currentAngle;
+        double alreadyTurned = 0;
         double turnSpeed = 0.3;
 
         turnAngle = Math.abs(turnAngle) - turnOffset;
@@ -308,7 +288,7 @@ public class Chassis {
         this.BRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
-        startAngle = imu.getAngularOrientation().firstAngle;
+        startAngle = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
 
         while (alreadyTurned< turnAngle){
 
@@ -316,7 +296,7 @@ public class Chassis {
             FRMotor.setPower(turnSpeed * turnDirection* acc);
             BLMotor.setPower(-turnSpeed * turnDirection * acc);
             BRMotor.setPower(turnSpeed * turnDirection * acc);
-            currentAngle = imu.getAngularOrientation().firstAngle;
+            currentAngle = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
             alreadyTurned = Math.abs(currentAngle - startAngle);
 
             if (alreadyTurned>180){

@@ -39,11 +39,6 @@ public class Robot {
     public Intake intake = new Intake();
     public Arm arm = new Arm();
     public Wrist wrist = new Wrist();
-//    public Slider slider = new Slider();
-
-    public Gate gate = new Gate();
-
-    public Drone drone = new Drone();
 
 
     /* local OpMode members. */
@@ -61,8 +56,5 @@ public class Robot {
         intake.init(hwMap);
         arm.init(hwMap);
         wrist.init(hwMap);
-        //slider.init(hwMap);
-        gate.init(hwMap);
-        drone.init(hwMap);
     }
 }

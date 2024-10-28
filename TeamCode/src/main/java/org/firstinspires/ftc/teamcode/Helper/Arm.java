@@ -25,7 +25,7 @@ public class Arm {
     public void init(HardwareMap ahwMap) throws InterruptedException {
         HardwareMap hwMap = ahwMap;
         //Init motors and servos
-        motor = hwMap.get(DcMotor.class, "Arm");
+        motor = hwMap.get(DcMotor.class, "swingArm");
         motor.setDirection(DcMotor.Direction.FORWARD);
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

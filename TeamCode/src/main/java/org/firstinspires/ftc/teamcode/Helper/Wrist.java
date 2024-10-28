@@ -21,7 +21,7 @@ public class Wrist {
 
         hwMap = ahwMap;
         //Init motors and servos
-        servo = hwMap.get(Servo.class, "Wrist");
+        servo = hwMap.get(Servo.class, "wrist");
         servo.setDirection(Servo.Direction.FORWARD);
     }
 
