@@ -88,11 +88,11 @@ public class AutoCommon extends LinearOpMode{
         switch (currentStage) {
             case MOVE_TO_SUBMERSIBLE:
                 //Lam will add code here
-                x_distance = 91.44
+                float x_distance = 91.44F;
                 robot.chassis.Drive(DRIVE_SPEED, x_distance);
                 sleep(1000);
                 robot.chassis.autoTurn(90,TURN_OFFSET);
-                y_distance = 91.44
+                float y_distance = 91.44F;
                 robot.chassis.Drive(DRIVE_SPEED, y_distance);
                 sleep(1000);
                 robot.chassis.stopDriveMotors();
