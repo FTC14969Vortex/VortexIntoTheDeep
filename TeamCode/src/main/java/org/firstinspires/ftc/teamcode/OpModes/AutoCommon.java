@@ -100,6 +100,14 @@ public class AutoCommon extends LinearOpMode{
                 break;
             case HANG_SPECIMEN:
                 //Tanishk will add code here
+                robot.arm.goToPosition(Position);
+                robot.wrist.goToPosition(Position);
+                sleep(1000);
+                robot.arm.goToPosition(Position);
+                sleep(1000);
+                robot.outtake.MoveOuttake(speed);
+                robot.outtake.stopOuttake();
+
                 currentStage = AutoStages.LOWER_ARM;
                 break;
             case LOWER_ARM:
