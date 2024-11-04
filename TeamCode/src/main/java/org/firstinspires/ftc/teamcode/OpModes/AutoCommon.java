@@ -101,7 +101,7 @@ public class AutoCommon extends LinearOpMode{
                 currentStage = AutoStages.HANG_SPECIMEN;
                 break;
             case HANG_SPECIMEN:
-                //Tanishk will add code here
+                //Lam will add code here
                 robot.arm.goToPosition(Position);
                 robot.wrist.goToPosition(Position);
                 sleep(1000);
@@ -113,11 +113,11 @@ public class AutoCommon extends LinearOpMode{
                 currentStage = AutoStages.LOWER_ARM;
                 break;
             case LOWER_ARM:
-                //Alaqmar will add code here
+                //Tanishk will add code here
                 currentStage = AutoStages.GET_SAMPLE;
                 break;
             case GET_SAMPLE:
-                //Samuel will add code here
+                //Tanishk will add code here
                 currentStage = AutoStages.DROP_AT_BASKET;
                 break;
             case DROP_AT_BASKET:
@@ -125,7 +125,7 @@ public class AutoCommon extends LinearOpMode{
                 currentStage = AutoStages.PREPARE_FOR_TELEOP;
                 break;
             case PREPARE_FOR_TELEOP:
-                //We will do as a group later
+                //Chris will add code here
                 break;
         }
     }
