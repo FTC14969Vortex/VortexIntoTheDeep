@@ -16,6 +16,9 @@ public class AutoCommon extends LinearOpMode{
     // Robot control parameters
     double DRIVE_SPEED = 0.8;
     float TURN_OFFSET = 10;
+    //squareDistance is the length of one square in the 12 foot by 12 foot playing area
+    float squareDistance = 24;
+
 
     enum AutoStages {
         MOVE_TO_SUBMERSIBLE,
@@ -88,12 +91,10 @@ public class AutoCommon extends LinearOpMode{
         switch (currentStage) {
             case MOVE_TO_SUBMERSIBLE:
                 //Lam will add code here
-                float x_distance = 91.44F;
-                robot.chassis.Drive(DRIVE_SPEED, x_distance);
+                robot.chassis.Drive(DRIVE_SPEED, squareDistance);
                 sleep(1000);
                 robot.chassis.autoTurn(90,TURN_OFFSET);
-                float y_distance = 91.44F;
-                robot.chassis.Drive(DRIVE_SPEED, y_distance);
+                robot.chassis.Drive(DRIVE_SPEED, squareDistance);
                 sleep(1000);
                 robot.chassis.stopDriveMotors();
 
@@ -102,18 +103,19 @@ public class AutoCommon extends LinearOpMode{
                 break;
             case HANG_SPECIMEN:
                 //Lam will add code here
-                robot.arm.goToPosition(Position);
-                robot.wrist.goToPosition(Position);
+                robot.arm.gotoHighPosition();
                 sleep(1000);
-                robot.arm.goToPosition(Position);
+                int highPosition = -1450;
+                robot.arm.gotoPosition(highPosition-50);
                 sleep(1000);
-                robot.outtake.MoveOuttake(speed);
-                robot.outtake.stopOuttake();
-
+                double intakeSpeed = 1.0;
+                robot.intake.MoveIntake(intakeSpeed, false);
+                robot.intake.stopIntake();
                 currentStage = AutoStages.LOWER_ARM;
                 break;
             case LOWER_ARM:
-                //Tanishk will add code here
+                robot.chassis.Drive(DRIVE_SPEED, -squareDistance);
+                robot.arm.gotoPickupPosition();
                 currentStage = AutoStages.GET_SAMPLE;
                 break;
             case GET_SAMPLE:
