@@ -77,7 +77,7 @@ public class AutoCommon extends LinearOpMode{
 
         // Code to run after the driver hits PLAY
         // MOVE_TO_SUBMERSIBLE:
-        float x_distance = 91.44F;
+        float x_distance = 1F;
         robot.chassis.Drive(DRIVE_SPEED, x_distance);
         sleep(1000);
         robot.chassis.autoTurn(90,TURN_OFFSET);
