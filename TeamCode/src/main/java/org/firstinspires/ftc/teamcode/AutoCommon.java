@@ -95,10 +95,9 @@ public class AutoCommon extends LinearOpMode{
                 sleep(1000);
                 robot.chassis.autoTurn(-95,TURN_OFFSET);
                 sleep(1000);
-                robot.chassis.Drive(DRIVE_SPEED, squareDistance);
+                robot.chassis.Drive(DRIVE_SPEED, 0.85f*squareDistance);
                 sleep(1000);
                 currentStage = AutoStages.HANG_SPECIMEN;
-                break;
             case HANG_SPECIMEN:
                 robot.arm.gotoHighPosition();
                 sleep(1000);
@@ -107,32 +106,39 @@ public class AutoCommon extends LinearOpMode{
 //                sleep(1000);
                 double intakeSpeed = 1.0;
                 robot.intake.MoveIntake(intakeSpeed);
+                sleep(1000);
                 currentStage = AutoStages.LOWER_ARM;
-                break;
             case LOWER_ARM:
                 robot.chassis.Drive(DRIVE_SPEED, -squareDistance);
+                sleep(1000);
                 robot.arm.gotoPickupPosition();
+                sleep(1000);
                 currentStage = AutoStages.GET_SAMPLE;
-                break;
             case GET_SAMPLE:
                robot.chassis.Strafe(DRIVE_SPEED,2.5F*squareDistance);
+                sleep(1000);
                 robot.chassis.Drive(DRIVE_SPEED,0.5F*squareDistance);
+                sleep(1000);
                 currentStage = AutoStages.DROP_AT_BASKET;
-                break;
             case DROP_AT_BASKET:
                 robot.chassis.Drive(DRIVE_SPEED,squareDistance);
+                sleep(1000);
                 robot.chassis.autoTurn(-202.5F, TURN_OFFSET);
+                sleep(1000);
                 robot.arm.gotoHighPosition();
+                sleep(1000);
                 robot.chassis.autoTurn(-135F,TURN_OFFSET);
+                sleep(1000);
                 robot.arm.gotoPickupPosition();
+                sleep(1000);
                 robot.chassis.Strafe(DRIVE_SPEED,0.5F*squareDistance);
+                sleep(1000);
                 robot.chassis.Drive(DRIVE_SPEED,1.25F*squareDistance);
+                sleep(1000);
                 currentStage = AutoStages.PREPARE_FOR_TELEOP;
-                break;
             case PREPARE_FOR_TELEOP:
                 robot.chassis.stopDriveMotors();
 
-                break;
         }
     }
 }
