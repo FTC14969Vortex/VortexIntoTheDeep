@@ -115,13 +115,13 @@ public class Teleop extends LinearOpMode {
 
             }
 
-            if(gamepad2.a){
-                robot.claw.closeClaw();
+            //Gate
+            if(gamepad2.x){
+                robot.claw.close();
             }
-            if(gamepad2.b){
-                robot.claw.openClaw();
+            if(gamepad2.y){
+                robot.claw.open();
             }
-
 
             YawPitchRollAngles imu = robot.chassis.imu.getRobotYawPitchRollAngles();
             //Telemetry
