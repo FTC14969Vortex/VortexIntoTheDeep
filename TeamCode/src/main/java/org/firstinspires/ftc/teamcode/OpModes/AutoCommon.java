@@ -100,6 +100,8 @@ public class AutoCommon extends LinearOpMode{
                 break;
             case GET_SAMPLE:
                 //Samuel will add code here
+                robot.chassis.Strafe(100,10)
+                ;
                 currentStage = AutoStages.DROP_AT_BASKET;
                 break;
             case DROP_AT_BASKET:
