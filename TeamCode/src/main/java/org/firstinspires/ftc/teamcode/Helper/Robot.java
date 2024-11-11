@@ -39,6 +39,7 @@ public class Robot {
     public Intake intake = new Intake();
     public Arm arm = new Arm();
     public Wrist wrist = new Wrist();
+    public Claw claw = new Claw();
 
 
     /* local OpMode members. */
@@ -56,5 +57,6 @@ public class Robot {
         intake.init(hwMap);
         arm.init(hwMap);
         wrist.init(hwMap);
+        claw.init(hwMap);
     }
 }

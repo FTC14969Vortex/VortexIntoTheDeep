@@ -16,7 +16,7 @@ public class AutoExample extends LinearOpMode{
     public Robot robot = new Robot();
 
     // Robot control parameters
-    double DRIVE_SPEED = 0.8;
+    double DRIVE_SPEED = 0.1;
     float TURN_OFFSET = 10;
 
     @Override

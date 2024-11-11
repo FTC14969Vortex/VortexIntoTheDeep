@@ -58,14 +58,6 @@ public class Teleop extends LinearOpMode {
 
             //Drive train
 
-            /*//Speed Control
-            if (gamepad1.a){
-                DRIVETRAIN_SPEED = 0.3;
-
-            }
-            if (gamepad1.b){
-                DRIVETRAIN_SPEED = 1;
-            }*/
 
             // Controller to motor powers.
             double move_y_axis = gamepad1.left_stick_y;
@@ -107,6 +99,28 @@ public class Teleop extends LinearOpMode {
             robot.arm.motor.setPower(swing_arm_power);
             // Set arm, wrist, and gate to pickup or delivery position with bumper.
 
+            //Speed Control
+            if (gamepad1.a){
+                robot.chassis.Drive(0.2,10F);
+
+
+            }
+            if (gamepad1.b){
+                robot.chassis.autoTurn(90,0);
+            }
+            if(gamepad1.x){
+                //robot.chassis.Drive(0,0f);
+                sleep(1000);
+                robot.chassis.stopDriveMotors();
+
+            }
+
+            if(gamepad2.a){
+                robot.claw.closeClaw();
+            }
+            if(gamepad2.b){
+                robot.claw.openClaw();
+            }
 
 
             YawPitchRollAngles imu = robot.chassis.imu.getRobotYawPitchRollAngles();
