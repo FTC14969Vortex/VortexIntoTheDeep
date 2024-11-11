@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Helper;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -75,10 +76,10 @@ public class Chassis {
 
 
         //Setting the direction
-        FLMotor.setDirection(DcMotor.Direction.FORWARD);
-        BLMotor.setDirection(DcMotor.Direction.FORWARD);
-        FRMotor.setDirection(DcMotor.Direction.REVERSE);
-        BRMotor.setDirection(DcMotor.Direction.REVERSE);
+        FLMotor.setDirection(DcMotor.Direction.REVERSE);
+        BLMotor.setDirection(DcMotor.Direction.REVERSE);
+        FRMotor.setDirection(DcMotor.Direction.FORWARD);
+        BRMotor.setDirection(DcMotor.Direction.FORWARD);
 
         // Set behavior when zero power is applied.
         FLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
