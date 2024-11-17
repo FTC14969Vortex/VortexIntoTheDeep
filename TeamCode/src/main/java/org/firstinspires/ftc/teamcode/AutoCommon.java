@@ -93,11 +93,11 @@ public class AutoCommon extends LinearOpMode{
             case MOVE_TO_SUBMERSIBLE:
                 robot.arm.gotoMidPosition();
                 robot.wrist.gotoAutoPosition();
-                robot.chassis.Drive(DRIVE_SPEED, 1.5f*squareDistance);
+                robot.chassis.Drive(DRIVE_SPEED, -1.5f*squareDistance);
                 sleep(1000);
-                robot.chassis.autoTurn(-95.25f,TURN_OFFSET);
+                robot.chassis.autoTurn(95.25f,TURN_OFFSET);
                 sleep(1000);
-                robot.chassis.Drive(DRIVE_SPEED, 0.625f*squareDistance);
+                robot.chassis.Drive(DRIVE_SPEED, -0.625f*squareDistance);
                 sleep(1000);
                 currentStage = AutoStages.HANG_SPECIMEN;
             case HANG_SPECIMEN:
@@ -113,36 +113,36 @@ public class AutoCommon extends LinearOpMode{
                 sleep(1000);
                 currentStage = AutoStages.LOWER_ARM;
             case LOWER_ARM:
-                robot.chassis.Drive(DRIVE_SPEED, -0.25f*squareDistance);
+                robot.chassis.Drive(DRIVE_SPEED, 0.25f*squareDistance);
                 sleep(1000);
                 robot.arm.gotoPickupPosition();
                 sleep(1000);
-                robot.chassis.autoTurn(95.25f,TURN_OFFSET);
+                robot.chassis.autoTurn(-95.25f,TURN_OFFSET);
                 currentStage = AutoStages.GET_SAMPLE;
             case GET_SAMPLE:
                 robot.claw.open();
                 sleep(1000);
-                robot.chassis.Drive(DRIVE_SPEED,1.8f*squareDistance);
+                robot.chassis.Drive(DRIVE_SPEED,-1.8f*squareDistance);
                 sleep(1000);
                 robot.claw.close();
                 sleep(1000);
                 currentStage = AutoStages.DROP_AT_BASKET;
             case DROP_AT_BASKET:
-                robot.chassis.autoTurn(45, TURN_OFFSET);
+                robot.chassis.autoTurn(-45, TURN_OFFSET);
                 sleep(1000);
                 robot.arm.gotoHighPosition();
                 sleep(1000);
-                robot.chassis.Drive(DRIVE_SPEED,0.4f*squareDistance);
+                robot.chassis.Drive(DRIVE_SPEED,-0.4f*squareDistance);
                 sleep(1000);
                 robot.claw.open();
                 sleep(1000);
                 robot.claw.close();
                 sleep(1000);
-                robot.chassis.Drive(DRIVE_SPEED,-0.4f*squareDistance);
+                robot.chassis.Drive(DRIVE_SPEED,0.4f*squareDistance);
                 sleep(1000);
                 robot.arm.gotoPickupPosition();
                 sleep(1000);
-                robot.chassis.autoTurn(-45,TURN_OFFSET);
+                robot.chassis.autoTurn(45,TURN_OFFSET);
                 currentStage = AutoStages.PREPARE_FOR_TELEOP;
             case PREPARE_FOR_TELEOP:
                 robot.chassis.stopDriveMotors();

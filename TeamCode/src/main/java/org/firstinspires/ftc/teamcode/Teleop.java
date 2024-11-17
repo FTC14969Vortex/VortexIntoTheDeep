@@ -67,9 +67,9 @@ public class Teleop extends LinearOpMode {
                 robot.claw.close();
             }
             // Controller to motor powers.
-            double move_y_axis = -gamepad1.left_stick_y;
-            double move_x_axis = gamepad1.left_stick_x;
-            double pivot_turn = gamepad1.right_stick_x;
+            double move_y_axis = gamepad1.left_stick_y;
+            double move_x_axis = -gamepad1.left_stick_x;
+            double pivot_turn = -gamepad1.right_stick_x;
 
 
             //Sets the target power
