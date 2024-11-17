@@ -61,10 +61,10 @@ public class Teleop extends LinearOpMode {
 
             //open and close claw function
             if(gamepad1.a){
-                robot.claw.openClaw();
+                robot.claw.open();
             }
             if(gamepad1.b){
-                robot.claw.closeClaw();
+                robot.claw.close();
             }
             // Controller to motor powers.
             double move_y_axis = -gamepad1.left_stick_y;
@@ -124,10 +124,10 @@ public class Teleop extends LinearOpMode {
 
             //Gate
             if(gamepad2.x){
-                robot.claw.closeClaw();
+                robot.claw.close();
             }
             if(gamepad2.y){
-                robot.claw.openClaw();
+                robot.claw.open();
             }
 
             YawPitchRollAngles imu = robot.chassis.imu.getRobotYawPitchRollAngles();
