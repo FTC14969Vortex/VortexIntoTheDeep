@@ -23,4 +23,5 @@ public class Intake {
     public void MoveIntake(double position) {
         servo.setPower(position);
     }
+
 }

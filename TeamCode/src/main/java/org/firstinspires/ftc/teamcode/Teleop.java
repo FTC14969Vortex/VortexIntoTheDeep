@@ -29,7 +29,7 @@ public class Teleop extends LinearOpMode {
     public double fr_power = 0;
     public double br_power = 0;
 
-    public double DRIVETRAIN_SPEED = 1;
+    public double DRIVETRAIN_SPEED = 0.5;
     @Override
     public void runOpMode() throws InterruptedException{
         /**
@@ -90,15 +90,26 @@ public class Teleop extends LinearOpMode {
             robot.chassis.FRMotor.setPower(DRIVETRAIN_SPEED * fr_power);
             robot.chassis.BRMotor.setPower(DRIVETRAIN_SPEED * br_power);
 
+            //Outake
+            if(gamepad2.left_trigger != 0) {
+                robot.intake.MoveIntake(-gamepad2.left_trigger);
+            }
             //Intake
-            robot.intake.MoveIntake(gamepad2.right_stick_y);
-            //Wrist
+            if(gamepad2.right_trigger != 0) {
+                robot.intake.MoveIntake(gamepad2.right_trigger);
+            }
+            //stop the intake
+            if(gamepad2.x) {
+                robot.intake.servo.setPower(0);
+            }
+
+
             robot.wrist.gotoPosition(robot.wrist.servo.getPosition() + gamepad2.right_stick_x * 0.01);
             /**
              * Joystick controls for Slider, Arm, Wrist, Gate on GAMEPAD 2
              */
 
-            double swing_arm_power = -gamepad2.left_stick_y + 0.05;
+            double swing_arm_power = -gamepad2.left_stick_y * 0.7;
 
 
             // Running without encoder allows the arm to be swung from current position.
