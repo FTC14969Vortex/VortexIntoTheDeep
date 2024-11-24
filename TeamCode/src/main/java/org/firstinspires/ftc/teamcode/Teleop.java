@@ -153,6 +153,10 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("Arm Position", robot.arm.motor.getCurrentPosition());
             telemetry.addData("Motor Status", robot.arm.motor.isBusy());
             telemetry.addData("Arm Power", robot.arm.motor.getPower());
+            telemetry.addData("Position", robot.chassis.getOdoPos());
+            telemetry.addData("Velocity", robot.chassis.getOdoVel());
+            telemetry.addData("Status", robot.chassis.odo.getDeviceStatus());
+            telemetry.addData("Pinpoint Frequency", robot.chassis.odo.getFrequency()); //prints/gets the current refresh rate of the Pinpoint
             telemetry.update();
         }
 
@@ -170,6 +174,7 @@ public class Teleop extends LinearOpMode {
         telemetry.addData("Orientation in 0-360", angleFloat);
         telemetry.addData("Robot Location", "(" + robot.chassis.robotX + ", " + robot.chassis.robotY + ")");
         telemetry.addData("IsRobotStable", robot.chassis.isRobotStable());
+
 
         telemetry.update();
 
