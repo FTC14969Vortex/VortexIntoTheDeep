@@ -25,9 +25,15 @@ import java.util.List;
 
 public class SimplifiedOdometryRobot {
     // Adjust these numbers to suit your robot.
-    private final double ODOM_INCHES_PER_COUNT   = 0.002969;   //  GoBilda Odometry Pod (1/226.8)
+    /*
+    Inches per count calculation: diameter is 32mm (from goBuilda website) so the circumference is  pi*diameter = 100.53096491487338mm.
+    100.53096491487338mm = 0.003952755905511811inches.
+    The encoder is 2000 counts per revolution. So the inches per count is 0.003952755905511811/2000 = 0.0019763779527559055.
+     */
+    private final double ODOM_INCHES_PER_COUNT   = 0.001978956;   //  GoBilda Odometry Pod (1/226.8)
+
     private final boolean INVERT_DRIVE_ODOMETRY  = true;       //  When driving FORWARD, the odometry value MUST increase.  If it does not, flip the value of this constant.
-    private final boolean INVERT_STRAFE_ODOMETRY = true;       //  When strafing to the LEFT, the odometry value MUST increase.  If it does not, flip the value of this constant.
+    private final boolean INVERT_STRAFE_ODOMETRY = false;       //  When strafing to the LEFT, the odometry value MUST increase.  If it does not, flip the value of this constant.
 
     private static final double DRIVE_GAIN          = 0.03;    // Strength of axial position control
     private static final double DRIVE_ACCEL         = 2.0;     // Acceleration limit.  Percent Power change per second.  1.0 = 0-100% power in 1 sec.
@@ -65,16 +71,19 @@ public class SimplifiedOdometryRobot {
     private DcMotor BLMotor;      //  control the left back drive wheel
     private DcMotor BRMotor;     //  control the right back drive wheel
 
-    public GoBildaPinpointDriver odo; //Odometry Pods
+    public DcMotor driveEncoder;       //  the Axial (front/back) Odometry Module (may overlap with motor, or may not)
+    public DcMotor strafeEncoder;      //  the Lateral (left/right) Odometry Module (may overlap with motor, or may not)
+
+//    public GoBildaPinpointDriver odo; //Odometry Pods
 
     private LinearOpMode myOpMode;
     private IMU imu;
     private ElapsedTime holdTimer = new ElapsedTime();  // User for any motion requiring a hold time or timeout.
 
     private double rawDriveOdometer    = 0; // Unmodified axial odometer count
-    private double driveOdometerOffset = 0; // Used to offset axial odometer
+    private double driveOdometerOffset = -13; // Used to offset axial odometer
     private double rawStrafeOdometer   = 0; // Unmodified lateral odometer count
-    private double strafeOdometerOffset= 0; // Used to offset lateral odometer
+    private double strafeOdometerOffset= -139.7; // Used to offset lateral odometer
     private double rawHeading       = 0; // Unmodified heading (degrees)
     private double headingOffset    = 0; // Used to offset heading
 
@@ -105,14 +114,19 @@ public class SimplifiedOdometryRobot {
 
         imu = myOpMode.hardwareMap.get(IMU.class, "imu");
 
-        //Get odometry pods
-        odo = myOpMode.hardwareMap.get(GoBildaPinpointDriver.class,"odo");
+        //  Connect to the encoder channels using the name of that channel.
+        driveEncoder = myOpMode.hardwareMap.get(DcMotor.class, "OdoX");
+        strafeEncoder = myOpMode.hardwareMap.get(DcMotor.class, "OdoY");
 
-        //Init odometry pods
-        odo.setOffsets(-13, -139.7);
-        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
-        odo.resetPosAndIMU();
+
+//        //Get odometry pods
+//        odo = myOpMode.hardwareMap.get(GoBildaPinpointDriver.class,"odo");
+//
+//        //Init odometry pods
+////        odo.setOffsets(-13, -139.7);
+//        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+//        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+//        odo.resetPosAndIMU();
 
         // Set all hubs to use the AUTO Bulk Caching mode for faster encoder reads
         List<LynxModule> allHubs = myOpMode.hardwareMap.getAll(LynxModule.class);
@@ -124,6 +138,7 @@ public class SimplifiedOdometryRobot {
         RevHubOrientationOnRobot orientationOnRobot =
                 new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.UP,
                         RevHubOrientationOnRobot.UsbFacingDirection.LEFT);
+
         imu.initialize(new IMU.Parameters(orientationOnRobot));
 
         // zero out all the odometry readings.
@@ -154,11 +169,17 @@ public class SimplifiedOdometryRobot {
      * @return true
      */
     public boolean readSensors() {
-        Pose2D pos = odo.getPosition();
-        rawDriveOdometer = pos.getX(DistanceUnit.INCH) * (INVERT_DRIVE_ODOMETRY ? -1 : 1);
-        rawStrafeOdometer = pos.getY(DistanceUnit.INCH) * (INVERT_STRAFE_ODOMETRY ? -1 : 1);
-        driveDistance = (rawDriveOdometer - driveOdometerOffset);
-        strafeDistance = (rawStrafeOdometer - strafeOdometerOffset);
+//        odo.update();
+//        Pose2D pos = odo.getPosition();
+//        rawDriveOdometer = pos.getX(DistanceUnit.INCH) * (INVERT_DRIVE_ODOMETRY ? -1 : 1);
+//        rawStrafeOdometer = pos.getY(DistanceUnit.INCH) * (INVERT_STRAFE_ODOMETRY ? -1 : 1);
+//        driveDistance = (rawDriveOdometer - driveOdometerOffset);
+//        strafeDistance = (rawStrafeOdometer - strafeOdometerOffset);
+
+        rawDriveOdometer = driveEncoder.getCurrentPosition() * (INVERT_DRIVE_ODOMETRY ? -1 : 1);
+        rawStrafeOdometer = strafeEncoder.getCurrentPosition() * (INVERT_STRAFE_ODOMETRY ? -1 : 1);
+        driveDistance = (rawDriveOdometer - driveOdometerOffset) * ODOM_INCHES_PER_COUNT;
+        strafeDistance = (rawStrafeOdometer - strafeOdometerOffset) * ODOM_INCHES_PER_COUNT;
 
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
         AngularVelocity angularVelocity = imu.getRobotAngularVelocity(AngleUnit.DEGREES);
@@ -168,9 +189,11 @@ public class SimplifiedOdometryRobot {
         turnRate    = angularVelocity.zRotationRate;
 
         if (showTelemetry) {
-            myOpMode.telemetry.addData("Odom Ax:Lat", "%6d %6d", rawDriveOdometer - driveOdometerOffset, rawStrafeOdometer - strafeOdometerOffset);
-            myOpMode.telemetry.addData("Dist Ax:Lat", "%5.2f %5.2f", driveDistance, strafeDistance);
-            myOpMode.telemetry.addData("Head Deg:Rate", "%5.2f %5.2f", heading, turnRate);
+            myOpMode.telemetry.addData("Odom X", rawDriveOdometer - driveOdometerOffset);
+            myOpMode.telemetry.addData("Odom Y", rawStrafeOdometer - strafeOdometerOffset);
+            myOpMode.telemetry.addData("Dist X", driveDistance);
+            myOpMode.telemetry.addData("Dist Y", strafeDistance);
+            myOpMode.telemetry.addData("Heading", heading);
         }
         return true;  // do this so this function can be included in the condition for a while loop to keep values fresh.
     }

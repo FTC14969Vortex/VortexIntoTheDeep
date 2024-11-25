@@ -8,6 +8,10 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.Helper.SimplifiedOdometryRobot;
 
 
@@ -30,10 +34,14 @@ public class AutoExample extends LinearOpMode
         robot.initialize(true);
 
         // Wait for driver to press start
-        telemetry.addData(">", "Touch Play to run Auto");
-        telemetry.update();
 
-        robot.odo.resetPosAndIMU();
+        while(!isStarted()) {
+            if(opModeInInit()) {
+                robot.readSensors();
+                telemetry.addData(">", "Touch Play to run Auto");
+                telemetry.update();
+             }
+        }
 
         waitForStart();
         robot.resetHeading();  // Reset heading to set a baseline for Auto
@@ -41,9 +49,14 @@ public class AutoExample extends LinearOpMode
         // Run Auto if stop was not pressed.
         if (opModeIsActive())
         {
-            robot.drive(  24, 0.60, 0.25);
-//            robot.turnTo(  180, 0.60, 0.25);
-//            robot.drive(  24, 0.60, 0.25);
+            robot.drive(  72, 0.80, 0.25);
+            robot.turnTo(180, 0.80, 0.25);
+            robot.drive(  72, 0.80, 0.25);
+            robot.turnTo(0, 0.80, 0.25);
+            robot.drive(  72, 0.80, 0.25);
+            robot.turnTo(180, 0.80, 0.25);
+            robot.drive(  72, 0.80, 0.25);
+            robot.turnTo(0, 0.80, 0.25);
         }
     }
 }
