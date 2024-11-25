@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.Helper;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -8,14 +9,16 @@ public class Claw {
 
     public double Open = 0;
     public double Close = 1;
+    public LinearOpMode myOpMode;
 
-    HardwareMap hwMap = null;
+    //Constructor
+    public Claw (LinearOpMode opmode) {
+        myOpMode = opmode;
+    }
 
-    public void init(HardwareMap ahwMap) throws InterruptedException {
-
-        hwMap = ahwMap;
+    public void init() throws InterruptedException {
         //Init motors and servos
-        servo = hwMap.get(Servo.class, "Claw");
+        servo = myOpMode.hardwareMap.get(Servo.class, "Claw");
         servo.setDirection(Servo.Direction.FORWARD);
     }
 

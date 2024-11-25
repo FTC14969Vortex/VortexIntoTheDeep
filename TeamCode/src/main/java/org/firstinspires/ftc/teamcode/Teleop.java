@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Helper.Robot;
 
 public class Teleop extends LinearOpMode {
 
-    Robot robot = new Robot();
+    Robot robot = new Robot(this);
 
     //How fast your robot will accelerate.
     public double ACCELERATION = 0.3;
@@ -35,7 +35,7 @@ public class Teleop extends LinearOpMode {
         /**
          * Instance of Robot class is initialized
          */
-        robot.init(hardwareMap);
+        robot.init();
 
         /**
          * This code is run during the init phase, and when opMode is not active
@@ -117,22 +117,6 @@ public class Teleop extends LinearOpMode {
             robot.arm.motor.setPower(swing_arm_power);
             // Set arm, wrist, and gate to pickup or delivery position with bumper.
 
-            //Speed Control
-            if (gamepad1.a){
-                robot.chassis.Drive(0.2,10F);
-
-
-            }
-            if (gamepad1.b){
-                robot.chassis.autoTurn(90,0);
-            }
-            if(gamepad1.x){
-                //robot.chassis.Drive(0,0f);
-                sleep(1000);
-                robot.chassis.stopDriveMotors();
-
-            }
-
             //Gate
             if(gamepad2.x){
                 robot.claw.close();
@@ -153,10 +137,6 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("Arm Position", robot.arm.motor.getCurrentPosition());
             telemetry.addData("Motor Status", robot.arm.motor.isBusy());
             telemetry.addData("Arm Power", robot.arm.motor.getPower());
-            telemetry.addData("Position", robot.chassis.getOdoPos());
-            telemetry.addData("Velocity", robot.chassis.getOdoVel());
-            telemetry.addData("Status", robot.chassis.odo.getDeviceStatus());
-            telemetry.addData("Pinpoint Frequency", robot.chassis.odo.getFrequency()); //prints/gets the current refresh rate of the Pinpoint
             telemetry.update();
         }
 
@@ -170,9 +150,6 @@ public class Teleop extends LinearOpMode {
         Orientation angle;
         angle = robot.chassis.imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
         telemetry.addData("Angular Orientation", angle);
-        int angleFloat = (int) (robot.chassis.modAngle(angle.firstAngle));
-        telemetry.addData("Orientation in 0-360", angleFloat);
-        telemetry.addData("Robot Location", "(" + robot.chassis.robotX + ", " + robot.chassis.robotY + ")");
         telemetry.addData("IsRobotStable", robot.chassis.isRobotStable());
 
 

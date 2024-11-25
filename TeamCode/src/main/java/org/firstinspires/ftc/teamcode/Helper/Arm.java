@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Helper;
 
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -22,10 +23,16 @@ public class Arm {
 //    int slowDown;
 
 
-    public void init(HardwareMap ahwMap) throws InterruptedException {
-        HardwareMap hwMap = ahwMap;
+    LinearOpMode myOpMode;
+
+    //Constructor
+    public Arm(LinearOpMode opmode) {
+        myOpMode = opmode;
+    }
+
+    public void init() throws InterruptedException {
         //Init motors and servos
-        motor = hwMap.get(DcMotor.class, "swingArm");
+        motor = myOpMode.hardwareMap.get(DcMotor.class, "swingArm");
         motor.setDirection(DcMotor.Direction.FORWARD);
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

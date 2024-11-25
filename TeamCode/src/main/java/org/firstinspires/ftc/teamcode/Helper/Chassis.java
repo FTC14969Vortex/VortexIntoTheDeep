@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.Helper;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -9,6 +11,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -18,30 +21,49 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.GoBildaPinpointDriver;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class Chassis {
 
-    // global location.
-    public int robotX = 0;
-    public int robotY = 0;
+    /*
+   Inches per count calculation: diameter is 32mm (from goBuilda website) so the circumference is  pi*diameter = 100.53096491487338mm.
+   100.53096491487338mm = 0.003952755905511811inches.
+   The encoder is 2000 counts per revolution. So the inches per count is 0.003952755905511811/2000 = 0.0019763779527559055.
+    */
+    private final double ODOM_INCHES_PER_COUNT   = 0.001978956;   //  GoBilda Odometry Pod (1/226.8)
 
-    public int[] Location = {robotX,robotY};
+    private final boolean INVERT_DRIVE_ODOMETRY  = true;       //  When driving FORWARD, the odometry value MUST increase.  If it does not, flip the value of this constant.
+    private final boolean INVERT_STRAFE_ODOMETRY = false;       //  When strafing to the LEFT, the odometry value MUST increase.  If it does not, flip the value of this constant.
 
+    private static final double DRIVE_GAIN          = 0.03;    // Strength of axial position control
+    private static final double DRIVE_ACCEL         = 2.0;     // Acceleration limit.  Percent Power change per second.  1.0 = 0-100% power in 1 sec.
+    private static final double DRIVE_TOLERANCE     = 0.5;     // Controller is is "inPosition" if position error is < +/- this amount
+    private static final double DRIVE_DEADBAND      = 0.2;     // Error less than this causes zero output.  Must be smaller than DRIVE_TOLERANCE
+    private static final double DRIVE_MAX_AUTO      = 0.6;     // "default" Maximum Axial power limit during autonomous
 
-    public GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
+    private static final double STRAFE_GAIN         = 0.03;    // Strength of lateral position control
+    private static final double STRAFE_ACCEL        = 1.5;     // Acceleration limit.  Percent Power change per second.  1.0 = 0-100% power in 1 sec.
+    private static final double STRAFE_TOLERANCE    = 0.5;     // Controller is is "inPosition" if position error is < +/- this amount
+    private static final double STRAFE_DEADBAND     = 0.2;     // Error less than this causes zero output.  Must be smaller than DRIVE_TOLERANCE
+    private static final double STRAFE_MAX_AUTO     = 0.6;     // "default" Maximum Lateral power limit during autonomous
 
-    //IMU
-    public  IMU imu;
+    private static final double YAW_GAIN            = 0.018;    // Strength of Yaw position control
+    private static final double YAW_ACCEL           = 3.0;     // Acceleration limit.  Percent Power change per second.  1.0 = 0-100% power in 1 sec.
+    private static final double YAW_TOLERANCE       = 1.0;     // Controller is is "inPosition" if position error is < +/- this amount
+    private static final double YAW_DEADBAND        = 0.25;    // Error less than this causes zero output.  Must be smaller than DRIVE_TOLERANCE
+    private static final double YAW_MAX_AUTO        = 0.6;     // "default" Maximum Yaw power limit during autonomous
 
-    public YawPitchRollAngles angles;
+    // Public Members
+    public double driveDistance     = 0; // scaled axial distance (+ = forward)
+    public double strafeDistance    = 0; // scaled lateral distance (+ = left)
+    public double heading           = 0; // Latest Robot heading from IMU
 
-    private ElapsedTime runtime = new ElapsedTime();
-
-    int timeout_ms;
-
-
+    // Establish a proportional controller for each axis to calculate the required power to achieve a setpoint.
+    public ProportionalControl driveController     = new ProportionalControl(DRIVE_GAIN, DRIVE_ACCEL, DRIVE_MAX_AUTO, DRIVE_TOLERANCE, DRIVE_DEADBAND, false);
+    public ProportionalControl strafeController    = new ProportionalControl(STRAFE_GAIN, STRAFE_ACCEL, STRAFE_MAX_AUTO, STRAFE_TOLERANCE, STRAFE_DEADBAND, false);
+    public ProportionalControl yawController       = new ProportionalControl(YAW_GAIN, YAW_ACCEL, YAW_MAX_AUTO, YAW_TOLERANCE,YAW_DEADBAND, true);
 
 
     //Drivetrain Motor
@@ -50,70 +72,214 @@ public class Chassis {
     public DcMotor BLMotor = null;
     public DcMotor BRMotor = null;
 
+    public DcMotor driveEncoder;       //  the Axial (front/back) Odometry Module (may overlap with motor, or may not)
+    public DcMotor strafeEncoder;      //  the Lateral (left/right) Odometry Module (may overlap with motor, or may not)
+
     //IMU
-    //How many times the encoder counts a tick per revolution of the motor.
-    static final double COUNTS_PER_MOTOR_REV_Hex= 538; // https://www.gobilda.com/5203-series-yellow-jacket-planetary-gear-motor-19-2-1-ratio-24mm-length-8mm-rex-shaft-312-rpm-3-3-5v-encoder/
-    //Gear ratio of the motor to the wheel. 1:1 would mean that 1 turn of the motor is one turn of the wheel, 2:1 would mean two turns of the motor is one turn of the wheel, and so on.
-    static final double DRIVE_GEAR_REDUCTION= 1; // This is < 1.0 if geared UP
+    public  IMU imu;
 
-    //Diameter of the wheel in inches
-    static final double WHEEL_DIAMETER_IN = 3.93701; // For figuring circumference
+    public YawPitchRollAngles angles;
 
-    //How many times the encoder counts a tick per inch moved. (Ticks per rev * Gear ration) / perimeter
-    static final double COUNTS_PER_IN = (COUNTS_PER_MOTOR_REV_Hex * DRIVE_GEAR_REDUCTION)/(WHEEL_DIAMETER_IN * 3.1415);
+    private LinearOpMode myOpMode;
+
+    private ElapsedTime holdTimer = new ElapsedTime();  // User for any motion requiring a hold time or timeout.
 
     HardwareMap hwMap = null;
 
+    private double rawDriveOdometer    = 0; // Unmodified axial odometer count
+    private double driveOdometerOffset = -13; // Used to offset axial odometer
+    private double rawStrafeOdometer   = 0; // Unmodified lateral odometer count
+    private double strafeOdometerOffset= -139.7; // Used to offset lateral odometer
+    private double rawHeading       = 0; // Unmodified heading (degrees)
+    private double headingOffset    = 0; // Used to offset heading
 
-
-    //private static LinearOpmode opModeObj;
-
-    public void init(HardwareMap ahwMap) throws InterruptedException {
-
-        hwMap = ahwMap;
-
-        //Init motors and servos
-        FLMotor = hwMap.get(DcMotor.class, "FLMotor");
-        BLMotor = hwMap.get(DcMotor.class, "BLMotor");
-        FRMotor = hwMap.get(DcMotor.class, "FRMotor");
-        BRMotor = hwMap.get(DcMotor.class, "BRMotor");
-
-        odo = hwMap.get(GoBildaPinpointDriver.class,"odo");
-        initOdometry();
+    private double turnRate           = 0; // Latest Robot Turn Rate from IMU
+    private boolean showTelemetry     = false;
 
 
 
-        //Setting the direction
-        FLMotor.setDirection(DcMotor.Direction.FORWARD);
-        BRMotor.setDirection(DcMotor.Direction.FORWARD);
-        FRMotor.setDirection(DcMotor.Direction.REVERSE);
-        BRMotor.setDirection(DcMotor.Direction.REVERSE);
-
-        // Set behavior when zero power is applied.
-        FLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        FRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        FLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        BLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        FRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        BRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    //Constructor
+    public Chassis(LinearOpMode opmode) {
+        myOpMode = opmode;
+    }
 
 
 
-        imu = hwMap.get(IMU.class, "imu");
+    /**
+     * Robot Initialization:
+     *  Use the hardware map to Connect to devices.
+     *  Perform any set-up all the hardware devices.
+     * @param showTelemetry  Set to true if you want telemetry to be displayed by the robot sensor/drive functions.
+     */
+    public void init(boolean showTelemetry) throws InterruptedException {
 
-        // Set the mounting orientation of the IMU sensor.
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
+        // !!!  Set the drive direction to ensure positive power drives each wheel forward.
+        FLMotor = setupDriveMotor("FLMotor", DcMotor.Direction.REVERSE);
+        FRMotor = setupDriveMotor("FRMotor", DcMotor.Direction.FORWARD);
+        BLMotor = setupDriveMotor( "BLMotor", DcMotor.Direction.REVERSE);
+        BRMotor = setupDriveMotor( "BRMotor",DcMotor.Direction.FORWARD);
 
-        // Define how the hub is mounted on the robot to get the correct Yaw, Pitch and Roll values.
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+        imu = myOpMode.hardwareMap.get(IMU.class, "imu");
 
-        // Now initialize the IMU with this mounting orientation
-        // Note: if you choose two conflicting directions, this initialization will cause a code exception.
+        //  Connect to the encoder channels using the name of that channel.
+        driveEncoder = myOpMode.hardwareMap.get(DcMotor.class, "OdoX");
+        strafeEncoder = myOpMode.hardwareMap.get(DcMotor.class, "OdoY");
+
+        // Set all hubs to use the AUTO Bulk Caching mode for faster encoder reads
+        List<LynxModule> allHubs = myOpMode.hardwareMap.getAll(LynxModule.class);
+        for (LynxModule module : allHubs) {
+            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
+
+        // Tell the software how the Control Hub is mounted on the robot to align the IMU XYZ axes correctly
+        RevHubOrientationOnRobot orientationOnRobot =
+                new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                        RevHubOrientationOnRobot.UsbFacingDirection.LEFT);
+
         imu.initialize(new IMU.Parameters(orientationOnRobot));
+
+        // zero out all the odometry readings.
+        resetOdometry();
+
+        // Set the desired telemetry state
+        this.showTelemetry = showTelemetry;
+    }
+
+    /**
+     *   Setup a drive motor with passed parameters.  Ensure encoder is reset.
+     * @param deviceName  Text name associated with motor in Robot Configuration
+     * @param direction   Desired direction to make the wheel run FORWARD with positive power input
+     * @return the DcMotor object
+     */
+    private DcMotor setupDriveMotor(String deviceName, DcMotor.Direction direction) {
+        DcMotor aMotor = myOpMode.hardwareMap.get(DcMotor.class, deviceName);
+        aMotor.setDirection(direction);
+        aMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);  // Reset Encoders to zero
+        aMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        aMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);  // Requires motor encoder cables to be hooked up.
+        return aMotor;
+    }
+
+    /**
+     * Read all input devices to determine the robot's motion
+     * always return true so this can be used in "while" loop conditions
+     * @return true
+     */
+    public boolean readSensors() {
+
+        rawDriveOdometer = driveEncoder.getCurrentPosition() * (INVERT_DRIVE_ODOMETRY ? -1 : 1);
+        rawStrafeOdometer = strafeEncoder.getCurrentPosition() * (INVERT_STRAFE_ODOMETRY ? -1 : 1);
+        driveDistance = (rawDriveOdometer - driveOdometerOffset) * ODOM_INCHES_PER_COUNT;
+        strafeDistance = (rawStrafeOdometer - strafeOdometerOffset) * ODOM_INCHES_PER_COUNT;
+
+        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+        AngularVelocity angularVelocity = imu.getRobotAngularVelocity(AngleUnit.DEGREES);
+
+        rawHeading  = orientation.getYaw(AngleUnit.DEGREES);
+        heading     = rawHeading - headingOffset;
+        turnRate    = angularVelocity.zRotationRate;
+
+        if (showTelemetry) {
+            myOpMode.telemetry.addData("Odom X", rawDriveOdometer - driveOdometerOffset);
+            myOpMode.telemetry.addData("Odom Y", rawStrafeOdometer - strafeOdometerOffset);
+            myOpMode.telemetry.addData("Dist X", driveDistance);
+            myOpMode.telemetry.addData("Dist Y", strafeDistance);
+            myOpMode.telemetry.addData("Heading", heading);
+        }
+        return true;  // do this so this function can be included in the condition for a while loop to keep values fresh.
+    }
+
+    //  ########################  Mid level control functions.  #############################3#
+
+    /**
+     * Drive in the axial (forward/reverse) direction, maintain the current heading and don't drift sideways
+     * @param distanceInches  Distance to travel.  +ve = forward, -ve = reverse.
+     * @param power Maximum power to apply.  This number should always be positive.
+     * @param holdTime Minimum time (sec) required to hold the final position.  0 = no hold.
+     */
+    public void drive(double distanceInches, double power, double holdTime) {
+        resetOdometry();
+
+        driveController.reset(distanceInches, power);   // achieve desired drive distance
+        strafeController.reset(0);              // Maintain zero strafe drift
+        yawController.reset();                          // Maintain last turn heading
+        holdTimer.reset();
+
+        while (myOpMode.opModeIsActive() && readSensors()){
+
+            // implement desired axis powers
+            moveRobot(driveController.getOutput(driveDistance), strafeController.getOutput(strafeDistance), yawController.getOutput(heading));
+
+            // Time to exit?
+            if (driveController.inPosition() && yawController.inPosition()) {
+                if (holdTimer.time() > holdTime) {
+                    break;   // Exit loop if we are in position, and have been there long enough.
+                }
+            } else {
+                holdTimer.reset();
+            }
+            myOpMode.sleep(10);
+        }
+        stopRobot();
+    }
+
+    /**
+     * Strafe in the lateral (left/right) direction, maintain the current heading and don't drift fwd/bwd
+     * @param distanceInches  Distance to travel.  +ve = left, -ve = right.
+     * @param power Maximum power to apply.  This number should always be positive.
+     * @param holdTime Minimum time (sec) required to hold the final position.  0 = no hold.
+     */
+    public void strafe(double distanceInches, double power, double holdTime) {
+        resetOdometry();
+
+        driveController.reset(0.0);             //  Maintain zero drive drift
+        strafeController.reset(distanceInches, power);  // Achieve desired Strafe distance
+        yawController.reset();                          // Maintain last turn angle
+        holdTimer.reset();
+
+        while (myOpMode.opModeIsActive() && readSensors()){
+
+            // implement desired axis powers
+            moveRobot(driveController.getOutput(driveDistance), strafeController.getOutput(strafeDistance), yawController.getOutput(heading));
+
+            // Time to exit?
+            if (strafeController.inPosition() && yawController.inPosition()) {
+                if (holdTimer.time() > holdTime) {
+                    break;   // Exit loop if we are in position, and have been there long enough.
+                }
+            } else {
+                holdTimer.reset();
+            }
+            myOpMode.sleep(10);
+        }
+        stopRobot();
+    }
+
+    /**
+     * Rotate to an absolute heading/direction
+     * @param headingDeg  Heading to obtain.  +ve = CCW, -ve = CW.
+     * @param power Maximum power to apply.  This number should always be positive.
+     * @param holdTime Minimum time (sec) required to hold the final position.  0 = no hold.
+     */
+    public void turnTo(double headingDeg, double power, double holdTime) {
+
+        yawController.reset(headingDeg, power);
+        while (myOpMode.opModeIsActive() && readSensors()) {
+
+            // implement desired axis powers
+            moveRobot(0, 0, yawController.getOutput(heading));
+
+            // Time to exit?
+            if (yawController.inPosition()) {
+                if (holdTimer.time() > holdTime) {
+                    break;   // Exit loop if we are in position, and have been there long enough.
+                }
+            } else {
+                holdTimer.reset();
+            }
+            myOpMode.sleep(10);
+        }
+        stopRobot();
     }
 
     public boolean isRobotStable(){
@@ -126,262 +292,79 @@ public class Chassis {
         }
     }
 
-    public void initOdometry() {
-        /*
-        Set the odometry pod positions relative to the point that the odometry computer tracks around.
-        The X pod offset refers to how far sideways from the tracking point the
-        X (forward) odometry pod is. Left of the center is a positive number,
-        right of center is a negative number. the Y pod offset refers to how far forwards from
-        the tracking point the Y (strafe) odometry pod is. forward of center is a positive number,
-        backwards is a negative number.
-         */
-        odo.setOffsets(-13, -139.7);
+    //  ########################  Low level control functions.  ###############################
 
-        /*
-        Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either
-        the goBILDA_SWINGARM_POD, or the goBILDA_4_BAR_POD.
-        If you're using another kind of odometry pod, uncomment setEncoderResolution and input the
-        number of ticks per mm of your odometry pod.
-         */
-        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        //odo.setEncoderResolution(13.26291192);
+    /**
+     * Drive the wheel motors to obtain the requested axes motions
+     * @param drive     Fwd/Rev axis power
+     * @param strafe    Left/Right axis power
+     * @param yaw       Yaw axis power
+     */
+    public void moveRobot(double drive, double strafe, double yaw){
 
+        double FLPower = drive - strafe - yaw;
+        double FRPower = drive + strafe + yaw;
+        double BLPower = drive + strafe - yaw;
+        double BRPower = drive - strafe + yaw;
 
-        /*
-        Set the direction that each of the two odometry pods count. The X (forward) pod should
-        increase when you move the robot forward. And the Y (strafe) pod should increase when
-        you move the robot to the left.
-         */
-        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        double max = Math.max(Math.abs(FLPower), Math.abs(FRPower));
+        max = Math.max(max, Math.abs(BLPower));
+        max = Math.max(max, Math.abs(BRPower));
 
-
-        /*
-        Before running the robot, recalibrate the IMU. This needs to happen when the robot is stationary
-        The IMU will automatically calibrate when first powered on, but recalibrating before running
-        the robot is a good idea to ensure that the calibration is "good".
-        resetPosAndIMU will reset the position to 0,0,0 and also recalibrate the IMU.
-        This is recommended before you run your autonomous, as a bad initial calibration can cause
-        an incorrect starting value for x, y, and heading.
-         */
-        odo.resetPosAndIMU();
-    }
-
-    //Return the position from the odometry wheels as a string (Can be used to print into telemetry)
-    public String getOdoPos() {
-        odo.update();
-         /*
-            gets the current Position (x & y in inches, and heading in degrees) of the robot, and prints it.
-             */
-        Pose2D pos = odo.getPosition();
-        String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getX(DistanceUnit.INCH), pos.getY(DistanceUnit.INCH), pos.getHeading(AngleUnit.DEGREES));
-        return data;
-    }
-
-    //Return the velocity from the odometry wheels as a string (Can be used to print into telemetry)
-    public String getOdoVel() {
-        odo.update();
-        /*
-            gets the current Velocity (x & y in in/sec and heading in degrees/sec) and prints it.
-             */
-        Pose2D vel = odo.getVelocity();
-        String velocity = String.format(Locale.US,"{XVel: %.3f, YVel: %.3f, HVel: %.3f}", vel.getX(DistanceUnit.INCH), vel.getY(DistanceUnit.INCH), vel.getHeading(AngleUnit.DEGREES));
-        return velocity;
-    }
-
-    public void Drive(double speed, float distance) {
-
-        runtime.reset();
-        timeout_ms = 10000;
-
-        robotY += distance;
-        Location[1] = robotY;
-
-        int targetFL;
-        int targetFR;
-        int targetBR;
-        int targetBL;
-
-        int FLPos = FLMotor.getCurrentPosition();
-        int FRPos = FRMotor.getCurrentPosition();
-        int BLPos = BLMotor.getCurrentPosition();
-        int BRPos = BRMotor.getCurrentPosition();
-
-        targetFR = FRPos + (int) (distance * COUNTS_PER_IN);
-        targetBR = BRPos + (int) (distance * COUNTS_PER_IN);
-        targetFL = FLPos + (int) (distance * COUNTS_PER_IN);
-        targetBL = BLPos + (int) (distance * COUNTS_PER_IN);
-
-        //Set motor targets
-        FLMotor.setTargetPosition(targetFL);
-        BLMotor.setTargetPosition(targetBL);
-        FRMotor.setTargetPosition(targetFR);
-        BRMotor.setTargetPosition(targetBR);
-
-        //set the mode to go to the target position
-        FLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        //Set the power of the motor.
-        FLMotor.setPower(speed);
-        FRMotor.setPower(speed);
-        BLMotor.setPower(speed);
-        BRMotor.setPower(speed);
-
-        while ((runtime.milliseconds() < timeout_ms) && (FLMotor.isBusy() && FRMotor.isBusy())) {
-        }
-        this.stopDriveMotors();
-    }
-
-    public void DriveWithOdo(double speed, double distance) {
-
-    }
-
-    public void Strafe(double speed, double distance) {
-
-        robotX += distance;
-
-        runtime.reset();
-        timeout_ms = 10000;
-
-        robotX += distance;
-        Location[0] = robotX;
-
-        int targetFL;
-        int targetFR;
-        int targetBR;
-        int targetBL;
-
-        int FLPos = FLMotor.getCurrentPosition();
-        int FRPos = FRMotor.getCurrentPosition();
-        int BLPos = BLMotor.getCurrentPosition();
-        int BRPos = BRMotor.getCurrentPosition();
-
-        targetFR = FRPos - (int) (distance * COUNTS_PER_IN);
-        targetBR = BRPos + (int) (distance * COUNTS_PER_IN);
-        targetFL = FLPos + (int) (distance * COUNTS_PER_IN);
-        targetBL = BLPos - (int) (distance * COUNTS_PER_IN);
-
-
-
-        //Set motor targets
-        FLMotor.setTargetPosition(targetFL);
-        BLMotor.setTargetPosition(targetBL);
-        FRMotor.setTargetPosition(targetFR);
-        BRMotor.setTargetPosition(targetBR);
-
-        //set the mode to go to the target position
-        FLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        //Set the power of the motor.
-        FLMotor.setPower(speed);
-        FRMotor.setPower(speed);
-        BLMotor.setPower(speed);
-        BRMotor.setPower(speed);
-
-        while ((runtime.milliseconds() < timeout_ms) && (FLMotor.isBusy() && FRMotor.isBusy())) {
-
-        }
-        this.stopDriveMotors();
-    }
-
-    public void stopDriveMotors(){
-        // Stop all motion;
-        FLMotor.setPower(0);
-        FRMotor.setPower(0);
-        BLMotor.setPower(0);
-        BRMotor.setPower(0);
-    }
-
-    public void DriveToPosition(double Speed, int posX, int posY, boolean forwardFirst) {
-        if(forwardFirst) {
-            this.Drive(Speed, -posY);
-            this.Strafe(Speed, -posX);
-        }
-        else{
-            this.Strafe(Speed, -posX);
-            this.Drive(Speed, -posY);
-        };
-        System.out.println(Arrays.toString(Location));
-    }
-    public float modAngle(float angle) {
-        angle = angle % 360;
-        if (angle < 0) {
-            angle += 360;
-        }
-        return angle;
-    }
-    public void turnRobotToAngle(float endAngle) {
-        YawPitchRollAngles angle;
-        angle = imu.getRobotYawPitchRollAngles();
-
-        float angleStart = modAngle((float) angle.getYaw(AngleUnit.DEGREES));
-        float angleEnd = modAngle(endAngle);
-        float angleCurrent = angleStart;
-        float direction = 0;
-
-        if (modAngle((angleEnd - angleCurrent)) >= 180) {
-            //Go Clockwise
-            direction = -1;
-        } else if (modAngle((angleEnd - angleCurrent)) <= 180) {
-            //Go Counter Clockwise
-            direction = 1;
+        //normalize the motor values
+        if (max > 1.0)  {
+            FLPower /= max;
+            FRPower /= max;
+            BLPower /= max;
+            BRPower /= max;
         }
 
-        double pwr = -0.6;
-
-
-        while (Math.abs(angleCurrent - angleEnd) > 2) {
-            FLMotor.setPower(-pwr * direction);
-            FRMotor.setPower(pwr * direction);
-            BLMotor.setPower(-pwr * direction);
-            BRMotor.setPower(pwr * direction);
-            angle = imu.getRobotYawPitchRollAngles();
-            angleCurrent = modAngle((float) angle.getYaw(AngleUnit.DEGREES));
-        }
-        stopDriveMotors();
-
-
+        //send power to the motors
+        FLMotor.setPower(FLPower);
+        FRMotor.setPower(FRPower);
+        BLMotor.setPower(BLPower);
+        BRMotor.setPower(BRPower);
     }
-    public void autoTurn(float turnAngle, float turnOffset){
-        float desc_start = 10;
-        double acc = 1;
-        double turnDirection = Math.signum(turnAngle);
-        double startAngle;
-        double currentAngle;
-        double alreadyTurned = 0;
-        double turnSpeed = 0.3;
 
-        turnAngle = Math.abs(turnAngle) - turnOffset;
+    /**
+     * Stop all motors.
+     */
+    public void stopRobot() {
+        moveRobot(0,0,0);
+    }
 
+    /**
+     * Set odometry counts and distances to zero.
+     */
+    public void resetOdometry() {
+        readSensors();
+        driveOdometerOffset = rawDriveOdometer;
+        driveDistance = 0.0;
+        driveController.reset(0);
 
-        this.FLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        this.BLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        this.FRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        this.BRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        strafeOdometerOffset = rawStrafeOdometer;
+        strafeDistance = 0.0;
+        strafeController.reset(0);
+    }
 
+    /**
+     * Reset the robot heading to zero degrees, and also lock that heading into heading controller.
+     */
+    public void resetHeading() {
+        readSensors();
+        headingOffset = rawHeading;
+        yawController.reset(0);
+        heading = 0;
+    }
 
-        startAngle = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+    public double getHeading() {return heading;}
+    public double getTurnRate() {return turnRate;}
 
-        while (alreadyTurned< turnAngle){
-
-            FLMotor.setPower(- turnSpeed * turnDirection * acc);
-            FRMotor.setPower(turnSpeed * turnDirection* acc);
-            BLMotor.setPower(-turnSpeed * turnDirection * acc);
-            BRMotor.setPower(turnSpeed * turnDirection * acc);
-            currentAngle = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-            alreadyTurned = Math.abs(currentAngle - startAngle);
-
-            if (alreadyTurned>180){
-                alreadyTurned = 360 - alreadyTurned;
-            }
-        }
-        stopDriveMotors();
-
+    /**
+     * Set the drive telemetry on or off
+     */
+    public void showTelemetry(boolean show){
+        showTelemetry = show;
     }
 }
 

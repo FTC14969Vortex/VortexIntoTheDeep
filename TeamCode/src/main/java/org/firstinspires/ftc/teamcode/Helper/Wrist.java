@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Helper;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -13,15 +14,16 @@ public class Wrist {
     public double WRIST_DELIVERY_POSITION_AUTO = 0.2;
     public double WRIST_PICKUP_POSITION = 0.309;
 
+    public LinearOpMode myOpMode;
 
+    //Constructor
+    public Wrist(LinearOpMode opmode) {
+        myOpMode = opmode;
+    }
 
-    HardwareMap hwMap = null;
-
-    public void init(HardwareMap ahwMap) throws InterruptedException {
-
-        hwMap = ahwMap;
+    public void init() throws InterruptedException {
         //Init motors and servos
-        servo = hwMap.get(Servo.class, "wrist");
+        servo = myOpMode.hardwareMap.get(Servo.class, "wrist");
         servo.setDirection(Servo.Direction.FORWARD);
     }
 

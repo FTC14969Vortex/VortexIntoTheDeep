@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-import org.firstinspires.ftc.teamcode.Helper.SimplifiedOdometryRobot;
+import org.firstinspires.ftc.teamcode.Helper.Robot;
 
 
 /*
@@ -23,40 +23,39 @@ import org.firstinspires.ftc.teamcode.Helper.SimplifiedOdometryRobot;
  */
 
 @Autonomous(name="Auto Example", group = "Auto")
+
 public class AutoExample extends LinearOpMode
 {
     // get an instance of the "Robot" class.
-    private SimplifiedOdometryRobot robot = new SimplifiedOdometryRobot(this);
+    public Robot robot = new Robot(this);
 
-    @Override public void runOpMode()
-    {
+    @Override public void runOpMode() throws InterruptedException {
         // Initialize the robot hardware & Turn on telemetry
-        robot.initialize(true);
+        robot.init();
 
         // Wait for driver to press start
-
         while(!isStarted()) {
             if(opModeInInit()) {
-                robot.readSensors();
+                robot.chassis.readSensors();
                 telemetry.addData(">", "Touch Play to run Auto");
                 telemetry.update();
              }
         }
 
         waitForStart();
-        robot.resetHeading();  // Reset heading to set a baseline for Auto
+        robot.chassis.resetHeading();  // Reset heading to set a baseline for Auto
 
         // Run Auto if stop was not pressed.
         if (opModeIsActive())
         {
-            robot.drive(  72, 0.80, 0.25);
-            robot.turnTo(180, 0.80, 0.25);
-            robot.drive(  72, 0.80, 0.25);
-            robot.turnTo(0, 0.80, 0.25);
-            robot.drive(  72, 0.80, 0.25);
-            robot.turnTo(180, 0.80, 0.25);
-            robot.drive(  72, 0.80, 0.25);
-            robot.turnTo(0, 0.80, 0.25);
+            robot.chassis.drive(  72, 0.80, 0.25);
+            robot.chassis.turnTo(180, 0.80, 0.25);
+            robot.chassis.drive(  72, 0.80, 0.25);
+            robot.chassis.turnTo(0, 0.80, 0.25);
+            robot.chassis.drive(  72, 0.80, 0.25);
+            robot.chassis.turnTo(180, 0.80, 0.25);
+            robot.chassis.drive(  72, 0.80, 0.25);
+            robot.chassis.turnTo(0, 0.80, 0.25);
         }
     }
 }

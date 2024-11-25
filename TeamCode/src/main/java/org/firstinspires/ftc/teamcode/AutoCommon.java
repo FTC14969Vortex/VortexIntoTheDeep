@@ -12,7 +12,7 @@ public class AutoCommon extends LinearOpMode{
     //------------------------------------------------------------------
 
     //Robot Object
-    public Robot robot = new Robot();
+    public Robot robot = new Robot(this);
 
     // Robot control parameters
     float DRIVE_SPEED = 0.8F;
@@ -56,10 +56,7 @@ public class AutoCommon extends LinearOpMode{
     @Override
     public void runOpMode() throws InterruptedException {
         // Initialization code here
-        robot.init(hardwareMap);
-
-
-
+        robot.init();
 
         //Wait for the play button to be pressed
         waitForStart();
@@ -87,65 +84,66 @@ public class AutoCommon extends LinearOpMode{
 
         //The intake and wrist code work for last years robot, we will edit it later for this years robot once it is built.
 
+        //TODO: make switch case with new drive methods
 
         // Code to run after the driver hits PLAY
         switch (currentStage) {
             case MOVE_TO_SUBMERSIBLE:
-                robot.arm.gotoMidPosition();
-                robot.wrist.gotoAutoPosition();
-                robot.chassis.Drive(DRIVE_SPEED, -1.5f*squareDistance);
-                sleep(1000);
-                robot.chassis.autoTurn(95.25f,TURN_OFFSET);
-                sleep(1000);
-                robot.chassis.Drive(DRIVE_SPEED, -0.625f*squareDistance);
-                sleep(1000);
-                currentStage = AutoStages.HANG_SPECIMEN;
+//                robot.arm.gotoMidPosition();
+//                robot.wrist.gotoAutoPosition();
+//                robot.chassis.Drive(DRIVE_SPEED, -1.5f*squareDistance);
+//                sleep(1000);
+//                robot.chassis.autoTurn(95.25f,TURN_OFFSET);
+//                sleep(1000);
+//                robot.chassis.Drive(DRIVE_SPEED, -0.625f*squareDistance);
+//                sleep(1000);
+//                currentStage = AutoStages.HANG_SPECIMEN;
             case HANG_SPECIMEN:
-                robot.arm.gotoHighPosition();
-                sleep(1000);
-                int highPosition = -1450;
-                robot.arm.gotoPosition(highPosition-50);
-                sleep(1000);
-                double intakeSpeed = 1.0;
-                robot.claw.open();
-                sleep(1000);
-                robot.claw.close();
-                sleep(1000);
-                currentStage = AutoStages.LOWER_ARM;
+//                robot.arm.gotoHighPosition();
+//                sleep(1000);
+//                int highPosition = -1450;
+//                robot.arm.gotoPosition(highPosition-50);
+//                sleep(1000);
+//                double intakeSpeed = 1.0;
+//                robot.claw.open();
+//                sleep(1000);
+//                robot.claw.close();
+//                sleep(1000);
+//                currentStage = AutoStages.LOWER_ARM;
             case LOWER_ARM:
-                robot.chassis.Drive(DRIVE_SPEED, 0.25f*squareDistance);
-                sleep(1000);
-                robot.arm.gotoPickupPosition();
-                sleep(1000);
-                robot.chassis.autoTurn(-95.25f,TURN_OFFSET);
-                currentStage = AutoStages.GET_SAMPLE;
+//                robot.chassis.Drive(DRIVE_SPEED, 0.25f*squareDistance);
+//                sleep(1000);
+//                robot.arm.gotoPickupPosition();
+//                sleep(1000);
+//                robot.chassis.autoTurn(-95.25f,TURN_OFFSET);
+//                currentStage = AutoStages.GET_SAMPLE;
             case GET_SAMPLE:
-                robot.claw.open();
-                sleep(1000);
-                robot.chassis.Drive(DRIVE_SPEED,-1.8f*squareDistance);
-                sleep(1000);
-                robot.claw.close();
-                sleep(1000);
-                currentStage = AutoStages.DROP_AT_BASKET;
+//                robot.claw.open();
+//                sleep(1000);
+//                robot.chassis.Drive(DRIVE_SPEED,-1.8f*squareDistance);
+//                sleep(1000);
+//                robot.claw.close();
+//                sleep(1000);
+//                currentStage = AutoStages.DROP_AT_BASKET;
             case DROP_AT_BASKET:
-                robot.chassis.autoTurn(-45, TURN_OFFSET);
-                sleep(1000);
-                robot.arm.gotoHighPosition();
-                sleep(1000);
-                robot.chassis.Drive(DRIVE_SPEED,-0.4f*squareDistance);
-                sleep(1000);
-                robot.claw.open();
-                sleep(1000);
-                robot.claw.close();
-                sleep(1000);
-                robot.chassis.Drive(DRIVE_SPEED,0.4f*squareDistance);
-                sleep(1000);
-                robot.arm.gotoPickupPosition();
-                sleep(1000);
-                robot.chassis.autoTurn(45,TURN_OFFSET);
-                currentStage = AutoStages.PREPARE_FOR_TELEOP;
+//                robot.chassis.autoTurn(-45, TURN_OFFSET);
+//                sleep(1000);
+//                robot.arm.gotoHighPosition();
+//                sleep(1000);
+//                robot.chassis.Drive(DRIVE_SPEED,-0.4f*squareDistance);
+//                sleep(1000);
+//                robot.claw.open();
+//                sleep(1000);
+//                robot.claw.close();
+//                sleep(1000);
+//                robot.chassis.Drive(DRIVE_SPEED,0.4f*squareDistance);
+//                sleep(1000);
+//                robot.arm.gotoPickupPosition();
+//                sleep(1000);
+//                robot.chassis.autoTurn(45,TURN_OFFSET);
+//                currentStage = AutoStages.PREPARE_FOR_TELEOP;
             case PREPARE_FOR_TELEOP:
-                robot.chassis.stopDriveMotors();
+//                robot.chassis.stopDriveMotors();
 
         }
     }
