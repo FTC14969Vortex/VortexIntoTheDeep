@@ -22,8 +22,11 @@ public class Intake {
         servo = myOpMode.hardwareMap.get(CRServo.class, "intake");
     }
 
-    public void MoveIntake(double position) {
-        servo.setPower(position);
+    public void MoveIntake(double power) {
+        servo.setPower(power);
+    }
+    public void stopIntake() {
+        servo.setPower(0);
     }
 
 }

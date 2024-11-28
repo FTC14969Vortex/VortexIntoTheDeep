@@ -8,24 +8,21 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 public class Robot {
-    /*
-    Properties that describe hardware.
-     */
-    private ElapsedTime runtime = new ElapsedTime();
 
-    private LinearOpMode myOpMode;
+    public Chassis chassis;
+    public Intake intake;
+    public Arm arm;
+    public Wrist wrist;
+    public Claw claw;
 
-
-    //Contructor for robot class
+    //Constructor for robot class
     public Robot(LinearOpMode opMode) {
-        myOpMode = opMode;
+        chassis = new Chassis(opMode);
+        intake = new Intake(opMode);
+        arm = new Arm(opMode);
+        wrist = new Wrist(opMode);
+        claw = new Claw(opMode);
     }
-
-    public Chassis chassis = new Chassis(myOpMode);
-    public Intake intake = new Intake(myOpMode);
-    public Arm arm = new Arm(myOpMode);
-    public Wrist wrist = new Wrist(myOpMode);
-    public Claw claw = new Claw(myOpMode);
 
     public void init() throws InterruptedException {
         chassis.init(true);

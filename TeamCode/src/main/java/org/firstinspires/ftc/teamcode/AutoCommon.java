@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Helper.Robot;
 
@@ -17,8 +16,10 @@ public class AutoCommon extends LinearOpMode{
     // Robot control parameters
     float DRIVE_SPEED = 0.8F;
     float TURN_OFFSET = 10;
-    //squareDistance is the length of one square in the 12 foot by 12 foot playing area
-    float squareDistance = 24;
+    //TILE_LENGTH is the length of one square in the 12 foot by 12 foot playing area
+    final float TILE_LENGTH = 24;
+    double drivePower = 0.8;
+    double holdTime = 0.25;
 
 
     enum AutoStages {
@@ -89,62 +90,39 @@ public class AutoCommon extends LinearOpMode{
         // Code to run after the driver hits PLAY
         switch (currentStage) {
             case MOVE_TO_SUBMERSIBLE:
-//                robot.arm.gotoMidPosition();
-//                robot.wrist.gotoAutoPosition();
-//                robot.chassis.Drive(DRIVE_SPEED, -1.5f*squareDistance);
-//                sleep(1000);
-//                robot.chassis.autoTurn(95.25f,TURN_OFFSET);
-//                sleep(1000);
-//                robot.chassis.Drive(DRIVE_SPEED, -0.625f*squareDistance);
-//                sleep(1000);
-//                currentStage = AutoStages.HANG_SPECIMEN;
+                robot.chassis.strafe(-0.5 * TILE_LENGTH, drivePower, holdTime);
+                robot.chassis.turnTo(0, drivePower, holdTime);
+                robot.chassis.drive(-TILE_LENGTH, drivePower, holdTime);
+                currentStage = AutoStages.HANG_SPECIMEN;
             case HANG_SPECIMEN:
-//                robot.arm.gotoHighPosition();
-//                sleep(1000);
-//                int highPosition = -1450;
-//                robot.arm.gotoPosition(highPosition-50);
-//                sleep(1000);
-//                double intakeSpeed = 1.0;
-//                robot.claw.open();
-//                sleep(1000);
-//                robot.claw.close();
-//                sleep(1000);
-//                currentStage = AutoStages.LOWER_ARM;
+//                robot.arm.gotoHighBar();
+                robot.chassis.drive((0.5) * TILE_LENGTH, drivePower, holdTime);
+                currentStage = AutoStages.LOWER_ARM;
             case LOWER_ARM:
-//                robot.chassis.Drive(DRIVE_SPEED, 0.25f*squareDistance);
-//                sleep(1000);
 //                robot.arm.gotoPickupPosition();
-//                sleep(1000);
-//                robot.chassis.autoTurn(-95.25f,TURN_OFFSET);
-//                currentStage = AutoStages.GET_SAMPLE;
-            case GET_SAMPLE:
-//                robot.claw.open();
-//                sleep(1000);
-//                robot.chassis.Drive(DRIVE_SPEED,-1.8f*squareDistance);
-//                sleep(1000);
-//                robot.claw.close();
-//                sleep(1000);
+                currentStage = AutoStages.PREPARE_FOR_TELEOP;
+//            case GET_SAMPLE:
+//                robot.chassis.turnTo(-90,drivePower,holdTime);
+//                robot.chassis.drive(-1.5 * TILE_LENGTH, drivePower, holdTime);
+//                robot.chassis.strafe(-TILE_LENGTH,drivePower,holdTime);
+//                robot.intake.MoveIntake(1);
 //                currentStage = AutoStages.DROP_AT_BASKET;
-            case DROP_AT_BASKET:
-//                robot.chassis.autoTurn(-45, TURN_OFFSET);
-//                sleep(1000);
-//                robot.arm.gotoHighPosition();
-//                sleep(1000);
-//                robot.chassis.Drive(DRIVE_SPEED,-0.4f*squareDistance);
-//                sleep(1000);
-//                robot.claw.open();
-//                sleep(1000);
-//                robot.claw.close();
-//                sleep(1000);
-//                robot.chassis.Drive(DRIVE_SPEED,0.4f*squareDistance);
-//                sleep(1000);
-//                robot.arm.gotoPickupPosition();
-//                sleep(1000);
-//                robot.chassis.autoTurn(45,TURN_OFFSET);
+//            case DROP_AT_BASKET:
+//                robot.chassis.strafe(TILE_LENGTH,drivePower,holdTime);
+//                robot.intake.stopIntake();
+//                robot.chassis.drive(3.5*TILE_LENGTH,drivePower,holdTime);
+//                robot.chassis.turnTo(-45,drivePower,holdTime);
+//                robot.chassis.drive(0.5*TILE_LENGTH,drivePower,holdTime);
+////                robot.arm.gotoLowBox();
 //                currentStage = AutoStages.PREPARE_FOR_TELEOP;
             case PREPARE_FOR_TELEOP:
-//                robot.chassis.stopDriveMotors();
-
+//                robot.chassis.drive(-0.5*TILE_LENGTH, drivePower, holdTime);
+//                robot.chassis.turnTo(45, drivePower, holdTime);
+//                robot.chassis.drive(-4.5*TILE_LENGTH, drivePower, holdTime);
+//                robot.chassis.strafe(-0.5*TILE_LENGTH, drivePower, holdTime);
+                robot.chassis.strafe(2.5*TILE_LENGTH, drivePower, holdTime);
+                robot.chassis.drive(0.5*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.stopRobot();
         }
     }
 }

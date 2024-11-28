@@ -19,6 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.GoBildaPinpointDriver;
+//import org.firstinspires.ftc.teamcode.Helper.ProportionalControl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -84,8 +85,6 @@ public class Chassis {
 
     private ElapsedTime holdTimer = new ElapsedTime();  // User for any motion requiring a hold time or timeout.
 
-    HardwareMap hwMap = null;
-
     private double rawDriveOdometer    = 0; // Unmodified axial odometer count
     private double driveOdometerOffset = -13; // Used to offset axial odometer
     private double rawStrafeOdometer   = 0; // Unmodified lateral odometer count
@@ -96,14 +95,10 @@ public class Chassis {
     private double turnRate           = 0; // Latest Robot Turn Rate from IMU
     private boolean showTelemetry     = false;
 
-
-
     //Constructor
     public Chassis(LinearOpMode opmode) {
         myOpMode = opmode;
     }
-
-
 
     /**
      * Robot Initialization:

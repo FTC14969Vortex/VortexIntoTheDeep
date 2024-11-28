@@ -15,11 +15,12 @@ public class Arm {
     double speed = 0.8;
     int targetPosition;
     int currentPosition;
-    public int ARM_DELIVERY_POSITION_LOW = -1712;
-    public int ARM_DELIVERY_POSITION_HIGH = -1450;
-    public int ARM_DELIVERY_POSITION_AUTO = -1373;
-    public int ARM_PICKUP_POSITION = 61;
-    public int ARM_MID_POSITION = -600;
+    public int ARM_BOX_DELIVERY_POSITION_LOW = 1600;
+    public int ARM_BAR_DELIVERY_POSITION_HIGH = 3150;
+    public int ARM_PICKUP_POSITION = 4950;
+
+    public int ARM_MID_POSITION = 790;
+    public int ARM_BAR_DELIVERY_POSITION_LOW = 4100;
 //    int slowDown;
 
 
@@ -39,7 +40,7 @@ public class Arm {
 
     }
 
-// ARM WITH BUTTONS V2
+    // ARM WITH BUTTONS V2
     public void gotoPosition(int targetPosition) {
         ElapsedTime runtime = new ElapsedTime();
         timeout_ms = 3000;
@@ -78,19 +79,20 @@ public class Arm {
 
     }
 
-    public void gotoLowPosition(){
-        this.gotoPosition(ARM_DELIVERY_POSITION_LOW);
+    public void gotoPickUpPosition(){
+        this.gotoPosition(ARM_PICKUP_POSITION);
     }
 
-    public void gotoHighPosition(){
-        this.gotoPosition(ARM_DELIVERY_POSITION_HIGH);
+    public void gotoHighBar(){
+        this.gotoPosition(ARM_BAR_DELIVERY_POSITION_HIGH);
     }
-    public void gotoAutoPosition(){
-        this.gotoPosition(ARM_DELIVERY_POSITION_AUTO);
+    public void gotoLowBar(){
+        this.gotoPosition(ARM_BAR_DELIVERY_POSITION_LOW);
     }
 
-    public void gotoMidPosition(){
-        this.gotoPosition(ARM_MID_POSITION);
-    }
+    public void gotoLowBox() { this.gotoPosition(ARM_BOX_DELIVERY_POSITION_LOW); }
+
+    public void gotoMidPosition() { this.gotoPosition(ARM_MID_POSITION); }
+
 
 }

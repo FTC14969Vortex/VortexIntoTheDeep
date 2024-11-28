@@ -20,9 +20,6 @@ public class Teleop extends LinearOpMode {
     //How fast your robot will accelerate.
     public double ACCELERATION = 0.3;
 
-
-    double INTAKE_SPEED = 1;
-
     //Motor powers
     public double fl_power = 0;
     public double bl_power = 0;
