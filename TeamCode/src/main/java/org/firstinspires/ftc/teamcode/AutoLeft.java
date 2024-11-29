@@ -6,8 +6,8 @@ import org.firstinspires.ftc.teamcode.Helper.Robot;
 
 
 
-@Autonomous(name = "Auto Common", group = "Auto")
-public class AutoCommon extends LinearOpMode{
+@Autonomous(name = "Auto Left", group = "Auto")
+public class AutoLeft extends LinearOpMode{
     //------------------------------------------------------------------
 
     //Robot Object
@@ -95,31 +95,35 @@ public class AutoCommon extends LinearOpMode{
                 robot.chassis.drive(-TILE_LENGTH, drivePower, holdTime);
                 currentStage = AutoStages.HANG_SPECIMEN;
             case HANG_SPECIMEN:
-//                robot.arm.gotoHighBar();
+                robot.arm.gotoHighBar();
                 robot.chassis.drive((0.5) * TILE_LENGTH, drivePower, holdTime);
                 currentStage = AutoStages.LOWER_ARM;
             case LOWER_ARM:
-//                robot.arm.gotoPickupPosition();
+                robot.arm.gotoPickupPosition();
                 currentStage = AutoStages.PREPARE_FOR_TELEOP;
-//            case GET_SAMPLE:
-//                robot.chassis.turnTo(-90,drivePower,holdTime);
-//                robot.chassis.drive(-1.5 * TILE_LENGTH, drivePower, holdTime);
-//                robot.chassis.strafe(-TILE_LENGTH,drivePower,holdTime);
-//                robot.intake.MoveIntake(1);
-//                currentStage = AutoStages.DROP_AT_BASKET;
-//            case DROP_AT_BASKET:
-//                robot.chassis.strafe(TILE_LENGTH,drivePower,holdTime);
-//                robot.intake.stopIntake();
-//                robot.chassis.drive(3.5*TILE_LENGTH,drivePower,holdTime);
-//                robot.chassis.turnTo(-45,drivePower,holdTime);
-//                robot.chassis.drive(0.5*TILE_LENGTH,drivePower,holdTime);
-////                robot.arm.gotoLowBox();
-//                currentStage = AutoStages.PREPARE_FOR_TELEOP;
+            case GET_SAMPLE:
+                robot.chassis.turnTo(90,drivePower,holdTime);
+                robot.chassis.drive(-1.5 * TILE_LENGTH, drivePower, holdTime);
+                robot.chassis.strafe(TILE_LENGTH,drivePower,holdTime);
+                robot.intake.MoveIntake(1);
+                sleep(1000);
+                currentStage = AutoStages.DROP_AT_BASKET;
+            case DROP_AT_BASKET:
+                robot.intake.stopIntake();
+                robot.chassis.strafe(-TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.turnTo(-45,drivePower,holdTime);
+                robot.chassis.drive(0.5*TILE_LENGTH,drivePower,holdTime);
+                robot.arm.gotoLowBox();
+                robot.intake.MoveIntake(-1);
+                sleep(1000);
+                robot.intake.stopIntake();
+                currentStage = AutoStages.PREPARE_FOR_TELEOP;
             case PREPARE_FOR_TELEOP:
-//                robot.chassis.drive(-0.5*TILE_LENGTH, drivePower, holdTime);
-//                robot.chassis.turnTo(45, drivePower, holdTime);
-//                robot.chassis.drive(-4.5*TILE_LENGTH, drivePower, holdTime);
-//                robot.chassis.strafe(-0.5*TILE_LENGTH, drivePower, holdTime);
+                robot.chassis.drive(-0.5*TILE_LENGTH, drivePower, holdTime);
+                robot.chassis.turnTo(45, drivePower, holdTime);
+                robot.chassis.drive(-4.5*TILE_LENGTH, drivePower, holdTime);
+                robot.chassis.strafe(-0.5*TILE_LENGTH, drivePower, holdTime);
+
                 robot.chassis.strafe(2.5*TILE_LENGTH, drivePower, holdTime);
                 robot.chassis.drive(0.5*TILE_LENGTH,drivePower,holdTime);
                 robot.chassis.stopRobot();

@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-public class Arm {
+public class  Arm {
 
     //Object creation
     public DcMotor motor;
