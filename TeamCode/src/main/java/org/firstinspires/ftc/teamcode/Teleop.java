@@ -66,7 +66,7 @@ public class Teleop extends LinearOpMode {
             // Controller to motor powers.
             double move_y_axis = gamepad1.left_stick_y;
             double move_x_axis = -gamepad1.left_stick_x;
-            double pivot_turn = -gamepad1.right_stick_x;
+            double pivot_turn = gamepad1.right_stick_x;
 
 
             //Sets the target power
@@ -89,11 +89,11 @@ public class Teleop extends LinearOpMode {
 
             //Outake
             if(gamepad2.left_trigger != 0) {
-                robot.intake.MoveIntake(-gamepad2.left_trigger);
+                robot.intake.MoveIntake(gamepad2.left_trigger);
             }
             //Intake
             if(gamepad2.right_trigger != 0) {
-                robot.intake.MoveIntake(gamepad2.right_trigger);
+                robot.intake.MoveIntake(-gamepad2.right_trigger);
             }
             //stop the intake
             if(gamepad2.x) {
@@ -101,7 +101,7 @@ public class Teleop extends LinearOpMode {
             }
 
 
-            robot.wrist.gotoPosition(robot.wrist.servo.getPosition() + gamepad2.right_stick_x * 0.01);
+            robot.wrist.gotoPosition(robot.wrist.servo.getPosition() + -gamepad2.right_stick_x * 0.01);
             /**
              * Joystick controls for Slider, Arm, Wrist, Gate on GAMEPAD 2
              */

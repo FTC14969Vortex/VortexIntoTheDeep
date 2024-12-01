@@ -48,14 +48,19 @@ public class AutoExample extends LinearOpMode
         // Run Auto if stop was not pressed.
         if (opModeIsActive())
         {
-            robot.chassis.drive(  72, 0.80, 0.25);
-            robot.chassis.turnTo(180, 0.80, 0.25);
-            robot.chassis.drive(  72, 0.80, 0.25);
-            robot.chassis.turnTo(0, 0.80, 0.25);
-            robot.chassis.drive(  72, 0.80, 0.25);
-            robot.chassis.turnTo(180, 0.80, 0.25);
-            robot.chassis.drive(  72, 0.80, 0.25);
-            robot.chassis.turnTo(0, 0.80, 0.25);
+            sleep(1000);
+            robot.arm.gotoHighBar();
+            sleep(1000);
+            robot.arm.gotoPickUpPosition();
+            sleep(1000);
+            robot.arm.gotoLowBar();
+            sleep(1000);
+            robot.arm.gotoPickUpPosition();
+            sleep(1000);
+//            robot.arm.gotoLowBox();
+//            sleep(1000);
+            sleep(1000);
+            robot.arm.gotoPosition(0);
         }
     }
 }

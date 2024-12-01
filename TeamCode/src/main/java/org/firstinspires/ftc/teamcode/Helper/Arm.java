@@ -19,10 +19,11 @@ public class  Arm {
     public int ARM_BAR_DELIVERY_POSITION_HIGH = 3150;
     public int ARM_PICKUP_POSITION = 4950;
 
-    public int ARM_MID_POSITION = 790;
+    public int ARM_MID_POSITION = 2400;
     public int ARM_BAR_DELIVERY_POSITION_LOW = 4100;
 //    int slowDown;
 
+    public double ARM_HOLDING_POWER = 0.05;
 
     LinearOpMode myOpMode;
 
@@ -57,7 +58,11 @@ public class  Arm {
         while ((runtime.milliseconds() < timeout_ms) && (motor.isBusy())) {
         }
 
-        motor.setPower(0.05); //Holding power.
+        if(motor.getCurrentPosition() > ARM_MID_POSITION) {
+            motor.setPower(-ARM_HOLDING_POWER); //Holding power.
+        } else {
+            motor.setPower(ARM_HOLDING_POWER);
+        }
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
@@ -71,12 +76,6 @@ public class  Arm {
         while (runtime.milliseconds() < targetTime) {
         }
         motor.setPower(0);
-    }
-
-
-    public void gotoPickupPosition(){
-        this.gotoPosition(ARM_PICKUP_POSITION);
-
     }
 
     public void gotoPickUpPosition(){
