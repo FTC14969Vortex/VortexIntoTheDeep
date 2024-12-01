@@ -99,7 +99,7 @@ public class AutoRight extends LinearOpMode{
                 robot.chassis.drive((0.5) * TILE_LENGTH, drivePower, holdTime);
                 currentStage = AutoStages.LOWER_ARM;
             case LOWER_ARM:
-                robot.arm.gotoPickupPosition();
+                robot.arm.gotoPickUpPosition();
                 currentStage = AutoRight.AutoStages.PREPARE_FOR_TELEOP;
             case GET_SAMPLE:
                 robot.chassis.turnTo(90,drivePower,holdTime);
