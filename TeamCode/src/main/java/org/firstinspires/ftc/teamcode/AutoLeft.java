@@ -90,43 +90,53 @@ public class AutoLeft extends LinearOpMode{
         // Code to run after the driver hits PLAY
         switch (currentStage) {
             case MOVE_TO_SUBMERSIBLE:
-                robot.chassis.strafe(-0.5 * TILE_LENGTH, drivePower, holdTime);
-                robot.chassis.turnTo(0, drivePower, holdTime);
-                robot.chassis.drive(-TILE_LENGTH, drivePower, holdTime);
-                currentStage = AutoStages.HANG_SPECIMEN;
+                robot.chassis.drive(-5,drivePower,holdTime);
+                robot.arm.gotoPickUpPosition();
+                robot.chassis.drive(-0.4*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.turnTo(90,drivePower,holdTime);
+                robot.chassis.drive(-2*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.turnTo(127,drivePower,holdTime);
+                robot.arm.gotoLowBox();
+                robot.chassis.drive(-0.5*TILE_LENGTH,drivePower,holdTime);
+//                robot.chassis.strafe(-0.5 * TILE_LENGTH, drivePower, holdTime);
+//                robot.chassis.turnTo(0, drivePower, holdTime);
+//                robot.chassis.drive(-TILE_LENGTH, drivePower, holdTime);
+                currentStage = AutoStages.PREPARE_FOR_TELEOP;
             case HANG_SPECIMEN:
-                robot.arm.gotoHighBar();
-                robot.chassis.drive((0.5) * TILE_LENGTH, drivePower, holdTime);
+
+//                robot.arm.gotoHighBar();
+//                robot.chassis.drive((0.5) * TILE_LENGTH, drivePower, holdTime);
                 currentStage = AutoStages.LOWER_ARM;
             case LOWER_ARM:
-                robot.arm.gotoPickupPosition();
+//                robot.arm.gotoPickupPosition();
                 currentStage = AutoStages.PREPARE_FOR_TELEOP;
             case GET_SAMPLE:
-                robot.chassis.turnTo(90,drivePower,holdTime);
-                robot.chassis.drive(-1.5 * TILE_LENGTH, drivePower, holdTime);
-                robot.chassis.strafe(TILE_LENGTH,drivePower,holdTime);
-                robot.intake.MoveIntake(1);
-                sleep(1000);
+//                robot.chassis.turnTo(90,drivePower,holdTime);
+//                robot.chassis.drive(-1.5 * TILE_LENGTH, drivePower, holdTime);
+//                robot.chassis.strafe(TILE_LENGTH,drivePower,holdTime);
+//                robot.intake.MoveIntake(1);
+//                sleep(1000);
+//                robot.intake.stopIntake();
                 currentStage = AutoStages.DROP_AT_BASKET;
             case DROP_AT_BASKET:
-                robot.intake.stopIntake();
-                robot.chassis.strafe(-TILE_LENGTH,drivePower,holdTime);
-                robot.chassis.turnTo(-45,drivePower,holdTime);
-                robot.chassis.drive(0.5*TILE_LENGTH,drivePower,holdTime);
-                robot.arm.gotoLowBox();
+//                robot.chassis.strafe(-TILE_LENGTH,drivePower,holdTime);
+//                robot.chassis.turnTo(-45,drivePower,holdTime);
+//                robot.chassis.drive(0.5*TILE_LENGTH,drivePower,holdTime);
                 robot.intake.MoveIntake(-1);
-                sleep(1000);
+                sleep(3000);
                 robot.intake.stopIntake();
+                robot.arm.gotoPosition(0);
                 currentStage = AutoStages.PREPARE_FOR_TELEOP;
             case PREPARE_FOR_TELEOP:
-                robot.chassis.drive(-0.5*TILE_LENGTH, drivePower, holdTime);
-                robot.chassis.turnTo(45, drivePower, holdTime);
-                robot.chassis.drive(-4.5*TILE_LENGTH, drivePower, holdTime);
+//                This code is for if we were returning to the park from box
+                robot.chassis.drive(0.5*TILE_LENGTH, drivePower, holdTime);
+                robot.chassis.turnTo(90, drivePower, holdTime);
+                robot.chassis.drive(3.5*TILE_LENGTH, drivePower, holdTime);
                 robot.chassis.strafe(-0.5*TILE_LENGTH, drivePower, holdTime);
-
-                robot.chassis.strafe(2.5*TILE_LENGTH, drivePower, holdTime);
-                robot.chassis.drive(0.5*TILE_LENGTH,drivePower,holdTime);
-                robot.chassis.stopRobot();
+//                This code is for if we return from the submersible
+//                robot.chassis.strafe(2.5*TILE_LENGTH, drivePower, holdTime);
+//                robot.chassis.drive(0.5*TILE_LENGTH,drivePower,holdTime);
+//                robot.chassis.stopRobot();
         }
     }
 }

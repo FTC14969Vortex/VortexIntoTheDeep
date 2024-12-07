@@ -89,11 +89,11 @@ public class Teleop extends LinearOpMode {
 
             //Outake
             if(gamepad2.left_trigger != 0) {
-                robot.intake.MoveIntake(gamepad2.left_trigger);
+                robot.intake.MoveIntake(-gamepad2.left_trigger);
             }
             //Intake
             if(gamepad2.right_trigger != 0) {
-                robot.intake.MoveIntake(-gamepad2.right_trigger);
+                robot.intake.MoveIntake(gamepad2.right_trigger);
             }
             //stop the intake
             if(gamepad2.x) {
