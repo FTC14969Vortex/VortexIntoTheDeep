@@ -9,9 +9,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.Helper.Robot;
 
 
@@ -22,9 +19,9 @@ import org.firstinspires.ftc.teamcode.Helper.Robot;
  * The IMU gyro is used to stabilize the heading during all motions
  */
 
-@Autonomous(name="Auto Example", group = "Auto")
+@Autonomous(name="Auto Park", group = "Auto")
 
-public class AutoExample extends LinearOpMode
+public class AutoPark extends LinearOpMode
 {
     // get an instance of the "Robot" class.
     public Robot robot = new Robot(this);
@@ -44,23 +41,8 @@ public class AutoExample extends LinearOpMode
 
         waitForStart();
         robot.chassis.resetHeading();  // Reset heading to set a baseline for Auto
-
+        robot.chassis.drive(-48, 0.8,0.25);
         // Run Auto if stop was not pressed.
-        if (opModeIsActive())
-        {
-            sleep(1000);
-            robot.arm.gotoHighBar();
-            sleep(1000);
-            robot.arm.gotoPickUpPosition();
-            sleep(1000);
-            robot.arm.gotoLowBar();
-            sleep(1000);
-            robot.arm.gotoPickUpPosition();
-            sleep(1000);
-//            robot.arm.gotoLowBox();
-//            sleep(1000);
-            sleep(1000);
-            robot.arm.gotoPosition(0);
-        }
+//
     }
 }

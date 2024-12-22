@@ -12,7 +12,7 @@ public class  Arm {
     //Object creation
     public DcMotor motor;
     int timeout_ms = 5000;
-    double speed = 0.8;
+    double speed = 1;
     int targetPosition;
     int currentPosition;
     public int ARM_BOX_DELIVERY_POSITION_LOW = 3000;

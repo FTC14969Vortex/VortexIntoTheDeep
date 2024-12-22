@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.Helper.Robot;
 
 
 
-@Autonomous(name = "Auto Left", group = "Auto")
+@Autonomous(name = "Auto Right", group = "Auto")
 public class AutoRight extends LinearOpMode{
     //------------------------------------------------------------------
 
@@ -90,18 +90,20 @@ public class AutoRight extends LinearOpMode{
         // Code to run after the driver hits PLAY
         switch (currentStage) {
             case MOVE_TO_SUBMERSIBLE:
-                robot.chassis.drive(-5,drivePower,holdTime);
-                robot.arm.gotoPickUpPosition();
-                robot.chassis.drive(-0.4*TILE_LENGTH,drivePower,holdTime);
-                robot.chassis.turnTo(90,drivePower,holdTime);
-                robot.chassis.drive(-2*TILE_LENGTH,drivePower,holdTime);
-                robot.chassis.turnTo(127,drivePower,holdTime);
-                robot.arm.gotoLowBox();
-                robot.chassis.drive(-0.6*TILE_LENGTH,drivePower,holdTime);
+//                robot.chassis.drive(-5,drivePower,holdTime);
+//                robot.arm.gotoPickUpPosition();
+//                robot.chassis.drive(-0.4*TILE_LENGTH,drivePower,holdTime);
+//                robot.chassis.turnTo(90,drivePower,holdTime);
+//                robot.chassis.drive(-2.25*TILE_LENGTH,drivePower,holdTime);
+//                robot.chassis.turnTo(125,drivePower,holdTime);
+//                robot.arm.gotoLowBox();
+//                robot.chassis.drive(-0.525*TILE_LENGTH,drivePower,holdTime);
 //                robot.chassis.strafe(-0.5 * TILE_LENGTH, drivePower, holdTime);
 //                robot.chassis.turnTo(0, drivePower, holdTime);
 //                robot.chassis.drive(-TILE_LENGTH, drivePower, holdTime);
-                currentStage = AutoStages.PREPARE_FOR_TELEOP;
+//                currentStage = AutoStages.PREPARE_FOR_TELEOP;
+
+                robot.chassis.drive(-2 * TILE_LENGTH, drivePower, holdTime);
             case HANG_SPECIMEN:
 
 //                robot.arm.gotoHighBar();
@@ -122,17 +124,17 @@ public class AutoRight extends LinearOpMode{
 //                robot.chassis.strafe(-TILE_LENGTH,drivePower,holdTime);
 //                robot.chassis.turnTo(-45,drivePower,holdTime);
 //                robot.chassis.drive(0.5*TILE_LENGTH,drivePower,holdTime);
-                robot.intake.MoveIntake(-1);
-                sleep(3000);
-                robot.intake.stopIntake();
-                robot.arm.gotoPosition(0);
+//                robot.intake.MoveIntake(-1);
+//                sleep(3000);
+//                robot.intake.stopIntake();
+//                robot.arm.gotoPosition(0);
                 currentStage = AutoStages.PREPARE_FOR_TELEOP;
             case PREPARE_FOR_TELEOP:
 //                This code is for if we were returning to the park from box
-                robot.chassis.drive(0.5*TILE_LENGTH, drivePower, holdTime);
-                robot.chassis.turnTo(90, drivePower, holdTime);
-                robot.chassis.drive(3.5*TILE_LENGTH, drivePower, holdTime);
-                robot.chassis.strafe(-0.5*TILE_LENGTH, drivePower, holdTime);
+//                robot.chassis.drive(0.5*TILE_LENGTH, drivePower, holdTime);
+//                robot.chassis.turnTo(90, drivePower, holdTime);
+//                robot.chassis.drive(3.5*TILE_LENGTH, drivePower, holdTime);
+//                robot.chassis.strafe(-0.5*TILE_LENGTH, drivePower, holdTime);
 //                This code is for if we return from the submersible
 //                robot.chassis.strafe(2.5*TILE_LENGTH, drivePower, holdTime);
 //                robot.chassis.drive(0.5*TILE_LENGTH,drivePower,holdTime);
