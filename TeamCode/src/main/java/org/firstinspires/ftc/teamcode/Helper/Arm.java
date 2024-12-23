@@ -42,31 +42,40 @@ public class  Arm {
     }
 
     // ARM WITH BUTTONS V2
-    public void gotoPosition(int targetPosition) {
-        ElapsedTime runtime = new ElapsedTime();
-        timeout_ms = 3000;
-        currentPosition = motor.getCurrentPosition();
+
+    public void gotoPosition (int targetPosition) {
         motor.setTargetPosition(targetPosition);
-        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        speed = speed * Math.signum(targetPosition - currentPosition);
-        //Set the power of the motor.
         motor.setPower(speed);
-        runtime.reset();
+        while(motor.isBusy()) {
 
-        while ((runtime.milliseconds() < timeout_ms) && (motor.isBusy())) {
         }
-
-        if(motor.getCurrentPosition() > ARM_MID_POSITION) {
-            motor.setPower(-ARM_HOLDING_POWER); //Holding power.
-        } else {
-            motor.setPower(ARM_HOLDING_POWER);
-        }
-        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-
     }
+//    public void gotoPosition(int targetPosition) {
+//        ElapsedTime runtime = new ElapsedTime();
+//        timeout_ms = 3000;
+//        currentPosition = motor.getCurrentPosition();
+//        motor.setTargetPosition(targetPosition);
+//        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//
+//        speed = speed * Math.signum(targetPosition - currentPosition);
+//        //Set the power of the motor.
+//        motor.setPower(speed);
+//        runtime.reset();
+//
+//        while ((runtime.milliseconds() < timeout_ms) && (motor.isBusy())) {
+//        }
+//
+//        if(motor.getCurrentPosition() > ARM_MID_POSITION) {
+//            motor.setPower(-ARM_HOLDING_POWER); //Holding power.
+//        } else {
+//            motor.setPower(ARM_HOLDING_POWER);
+//        }
+//        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//
+//
+//    }
 
     public void runWithoutEncoder(int targetTime) {
         ElapsedTime runtime = new ElapsedTime();

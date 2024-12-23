@@ -59,6 +59,9 @@ public class AutoRight extends LinearOpMode{
         // Initialization code here
         robot.init();
 
+        //Reset all chassis settings to ensure they are correct
+        robot.chassis.resetAll();
+
         //Wait for the play button to be pressed
         waitForStart();
 
@@ -90,20 +93,20 @@ public class AutoRight extends LinearOpMode{
         // Code to run after the driver hits PLAY
         switch (currentStage) {
             case MOVE_TO_SUBMERSIBLE:
-//                robot.chassis.drive(-5,drivePower,holdTime);
-//                robot.arm.gotoPickUpPosition();
-//                robot.chassis.drive(-0.4*TILE_LENGTH,drivePower,holdTime);
-//                robot.chassis.turnTo(90,drivePower,holdTime);
-//                robot.chassis.drive(-2.25*TILE_LENGTH,drivePower,holdTime);
-//                robot.chassis.turnTo(125,drivePower,holdTime);
-//                robot.arm.gotoLowBox();
-//                robot.chassis.drive(-0.525*TILE_LENGTH,drivePower,holdTime);
-//                robot.chassis.strafe(-0.5 * TILE_LENGTH, drivePower, holdTime);
-//                robot.chassis.turnTo(0, drivePower, holdTime);
-//                robot.chassis.drive(-TILE_LENGTH, drivePower, holdTime);
-//                currentStage = AutoStages.PREPARE_FOR_TELEOP;
+                robot.chassis.drive(-5,drivePower,holdTime);
+                robot.arm.gotoPickUpPosition();
+                robot.chassis.drive(-0.4*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.turnTo(90,drivePower,holdTime);
+                robot.chassis.drive(-2.25*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.turnTo(125,drivePower,holdTime);
+                robot.arm.gotoLowBox();
+                robot.chassis.drive(-0.525*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.strafe(-0.5 * TILE_LENGTH, drivePower, holdTime);
+                robot.chassis.turnTo(0, drivePower, holdTime);
+                robot.chassis.drive(-TILE_LENGTH, drivePower, holdTime);
+                currentStage = AutoStages.PREPARE_FOR_TELEOP;
 
-                robot.chassis.drive(-2 * TILE_LENGTH, drivePower, holdTime);
+//                robot.chassis.drive(-2 * TILE_LENGTH, drivePower, holdTime);
             case HANG_SPECIMEN:
 
 //                robot.arm.gotoHighBar();

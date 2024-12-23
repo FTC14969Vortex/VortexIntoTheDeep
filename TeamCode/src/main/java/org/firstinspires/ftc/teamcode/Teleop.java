@@ -114,13 +114,13 @@ public class Teleop extends LinearOpMode {
             robot.arm.motor.setPower(swing_arm_power);
             // Set arm, wrist, and gate to pickup or delivery position with bumper.
 
-            //Gate
-            if(gamepad2.x){
-                robot.claw.close();
-            }
-            if(gamepad2.y){
-                robot.claw.open();
-            }
+//            //Gate
+//            if(gamepad2.x){
+//                robot.claw.close();
+//            }
+//            if(gamepad2.y){
+//                robot.arm.gotoLowBox();
+//            }
 
             YawPitchRollAngles imu = robot.chassis.imu.getRobotYawPitchRollAngles();
             //Telemetry

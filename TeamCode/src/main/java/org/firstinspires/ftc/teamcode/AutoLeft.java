@@ -59,6 +59,9 @@ public class AutoLeft extends LinearOpMode{
         // Initialization code here
         robot.init();
 
+        //Reset all chassis settings to ensure they are correct
+        robot.chassis.resetAll();
+
         //Wait for the play button to be pressed
         waitForStart();
 
@@ -93,7 +96,7 @@ public class AutoLeft extends LinearOpMode{
                 robot.chassis.turnTo(0, drivePower, holdTime);
                 robot.chassis.drive(-TILE_LENGTH * 0.4 ,drivePower,holdTime);
                 robot.chassis.turnTo(135,drivePower,holdTime);
-                robot.chassis.drive(-0.3*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.drive(-0.5*TILE_LENGTH,drivePower,holdTime);
                 robot.chassis.strafe(0.55 * TILE_LENGTH, drivePower, holdTime);
                 robot.arm.gotoLowBox();
                 currentStage = AutoStages.DROP_AT_BASKET;
@@ -106,7 +109,7 @@ public class AutoLeft extends LinearOpMode{
                 currentStage = AutoLeft.AutoStages.PREPARE_FOR_TELEOP;
             case PREPARE_FOR_TELEOP:
 //                This code is for if we were returning to the park from box
-                robot.chassis.drive(-0.2*TILE_LENGTH, drivePower, holdTime);
+                robot.chassis.drive(0.5*TILE_LENGTH, drivePower, holdTime);
                 robot.arm.gotoPosition(0);
                 robot.chassis.turnTo(0, drivePower, holdTime);
                 robot.chassis.drive(5, drivePower, holdTime);

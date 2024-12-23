@@ -355,6 +355,19 @@ public class Chassis {
     public double getHeading() {return heading;}
     public double getTurnRate() {return turnRate;}
 
+    public void resetAll () {
+        resetOdometry();
+        resetHeading();
+        FLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        FRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        FLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
     /**
      * Set the drive telemetry on or off
      */
