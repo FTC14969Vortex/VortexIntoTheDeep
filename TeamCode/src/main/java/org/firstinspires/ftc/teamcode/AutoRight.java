@@ -19,7 +19,7 @@ public class AutoRight extends LinearOpMode{
     //TILE_LENGTH is the length of one square in the 12 foot by 12 foot playing area
     final float TILE_LENGTH = 24;
     double drivePower = 0.8;
-    double holdTime = 0.25;
+    double holdTime = 0.125;
 
 
     enum AutoStages {
@@ -93,17 +93,19 @@ public class AutoRight extends LinearOpMode{
         // Code to run after the driver hits PLAY
         switch (currentStage) {
             case MOVE_TO_SUBMERSIBLE:
-                robot.chassis.drive(-5,drivePower,holdTime);
-                robot.arm.gotoPickUpPosition();
-                robot.chassis.drive(-0.4*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.drive(-0.65*TILE_LENGTH,drivePower,holdTime);
                 robot.chassis.turnTo(90,drivePower,holdTime);
                 robot.chassis.drive(-2.25*TILE_LENGTH,drivePower,holdTime);
                 robot.chassis.turnTo(125,drivePower,holdTime);
                 robot.arm.gotoLowBox();
-                robot.chassis.drive(-0.525*TILE_LENGTH,drivePower,holdTime);
-                robot.chassis.strafe(-0.5 * TILE_LENGTH, drivePower, holdTime);
+                robot.chassis.drive(-0.55*TILE_LENGTH,drivePower,holdTime);
+                robot.intake.MoveIntake(-1);
+                sleep(1000);
+                robot.intake.stopIntake();
+                robot.chassis.drive(0.55*TILE_LENGTH,drivePower,holdTime);
                 robot.chassis.turnTo(0, drivePower, holdTime);
-                robot.chassis.drive(-TILE_LENGTH, drivePower, holdTime);
+                robot.chassis.drive(-4*TILE_LENGTH,drivePower,holdTime);
+
                 currentStage = AutoStages.PREPARE_FOR_TELEOP;
 
 //                robot.chassis.drive(-2 * TILE_LENGTH, drivePower, holdTime);

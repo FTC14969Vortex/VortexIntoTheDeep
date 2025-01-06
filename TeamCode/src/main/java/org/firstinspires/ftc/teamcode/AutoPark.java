@@ -41,7 +41,7 @@ public class AutoPark extends LinearOpMode
 
         waitForStart();
         robot.chassis.resetHeading();  // Reset heading to set a baseline for Auto
-        robot.chassis.drive(-48, 0.8,0.25);
+        robot.chassis.drive(-48, 0.8,0.125);
         // Run Auto if stop was not pressed.
 //
     }
