@@ -99,6 +99,12 @@ public class Teleop extends LinearOpMode {
             if(gamepad2.x) {
                 robot.intake.servo.setPower(0);
             }
+            if(gamepad2.dpad_right){
+                robot.wrist.gotoPosition(1);
+            }
+            if(gamepad2.dpad_left){
+                robot.wrist.gotoPosition(-1);
+            }
 
 
             robot.wrist.gotoPosition(robot.wrist.servo.getPosition() + -gamepad2.right_stick_x * 0.01);
