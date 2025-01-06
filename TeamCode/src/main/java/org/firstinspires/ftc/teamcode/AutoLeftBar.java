@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Helper.Robot;
 
+@Autonomous(name = "Auto Left Bar", group = "Auto")
 
-
-@Autonomous(name = "Auto Left", group = "Auto")
-public class AutoLeft extends LinearOpMode{
+public class AutoLeftBar extends LinearOpMode {
     //------------------------------------------------------------------
 
     //Robot Object
@@ -31,8 +31,7 @@ public class AutoLeft extends LinearOpMode{
         PREPARE_FOR_TELEOP
     }
 
-    AutoStages currentStage = AutoStages.MOVE_TO_SUBMERSIBLE;
-
+    AutoRightBar.AutoStages currentStage = AutoRightBar.AutoStages.MOVE_TO_SUBMERSIBLE;
     public double SUB_POS_X = 0;
     public double SUB_POS_Y = 0;
     public double BASKET_POS_X = 0;
@@ -93,28 +92,24 @@ public class AutoLeft extends LinearOpMode{
         // Code to run after the driver hits PLAY
         switch (currentStage) {
             case MOVE_TO_SUBMERSIBLE:
-                robot.chassis.turnTo(0, drivePower, holdTime);
-                robot.chassis.drive(-TILE_LENGTH * 0.4 ,drivePower,holdTime);
-                robot.chassis.turnTo(135,drivePower,holdTime);
-                robot.chassis.drive(-0.5*TILE_LENGTH,drivePower,holdTime);
-                robot.chassis.strafe(0.55 * TILE_LENGTH, drivePower, holdTime);
-                robot.arm.gotoLowBox();
-                currentStage = AutoStages.DROP_AT_BASKET;
+                currentStage = AutoRightBar.AutoStages.HANG_SPECIMEN;
 
+            case HANG_SPECIMEN:
+
+                currentStage = AutoRightBar.AutoStages.LOWER_ARM;
+            case LOWER_ARM:
+
+                currentStage = AutoRightBar.AutoStages.GET_SAMPLE;
+            case GET_SAMPLE:
+
+                currentStage = AutoRightBar.AutoStages.DROP_AT_BASKET;
             case DROP_AT_BASKET:
 
-                robot.intake.MoveIntake(-1);
-                sleep(3000);
-                robot.intake.stopIntake();
-                currentStage = AutoLeft.AutoStages.PREPARE_FOR_TELEOP;
+                currentStage = AutoRightBar.AutoStages.PREPARE_FOR_TELEOP;
             case PREPARE_FOR_TELEOP:
-//                This code is for if we were returning to the park from box
-                robot.chassis.drive(0.5*TILE_LENGTH, drivePower, holdTime);
-                robot.arm.gotoPosition(0);
-                robot.chassis.turnTo(0, drivePower, holdTime);
-                robot.chassis.drive(5, drivePower, holdTime);
-//                robot.chassis.strafe(4.5*TILE_LENGTH, drivePower, holdTime);
-//                robot.chassis.stopRobot();
+
         }
     }
 }
+
+

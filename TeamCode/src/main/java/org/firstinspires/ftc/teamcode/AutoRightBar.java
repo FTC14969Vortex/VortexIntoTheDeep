@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Helper.Robot;
 
+@Autonomous(name = "Auto Right Bar", group = "Auto")
 
-
-@Autonomous(name = "Auto Right", group = "Auto")
-public class AutoRight extends LinearOpMode{
+public class AutoRightBar extends LinearOpMode {
     //------------------------------------------------------------------
 
     //Robot Object
@@ -31,8 +31,7 @@ public class AutoRight extends LinearOpMode{
         PREPARE_FOR_TELEOP
     }
 
-    AutoStages currentStage = AutoStages.MOVE_TO_SUBMERSIBLE;
-
+    AutoRightBar.AutoStages currentStage = AutoRightBar.AutoStages.MOVE_TO_SUBMERSIBLE;
     public double SUB_POS_X = 0;
     public double SUB_POS_Y = 0;
     public double BASKET_POS_X = 0;
@@ -93,39 +92,35 @@ public class AutoRight extends LinearOpMode{
         // Code to run after the driver hits PLAY
         switch (currentStage) {
             case MOVE_TO_SUBMERSIBLE:
-                robot.chassis.drive(-0.65*TILE_LENGTH,drivePower,holdTime);
-                robot.chassis.turnTo(90,drivePower,holdTime);
-                robot.chassis.drive(-2.25*TILE_LENGTH,drivePower,holdTime);
-                robot.chassis.turnTo(125,drivePower,holdTime);
-                robot.arm.gotoLowBox();
-                robot.chassis.drive(-0.55*TILE_LENGTH,drivePower,holdTime);
-                robot.intake.MoveIntake(-1);
-                sleep(1000);
-                robot.intake.stopIntake();
-                robot.chassis.drive(0.55*TILE_LENGTH,drivePower,holdTime);
-                robot.chassis.turnTo(0, drivePower, holdTime);
-                robot.chassis.drive(-4*TILE_LENGTH,drivePower,holdTime);
+                currentStage = AutoRightBar.AutoStages.HANG_SPECIMEN;
 
-                currentStage = AutoStages.PREPARE_FOR_TELEOP;
-
-//                robot.chassis.drive(-2 * TILE_LENGTH, drivePower, holdTime);
             case HANG_SPECIMEN:
 
+                currentStage = AutoRightBar.AutoStages.LOWER_ARM;
+            case LOWER_ARM:
+
+                currentStage = AutoRightBar.AutoStages.GET_SAMPLE;
+            case GET_SAMPLE:
+
+                currentStage = AutoRightBar.AutoStages.DROP_AT_BASKET;
+            case DROP_AT_BASKET:
+
+                currentStage = AutoRightBar.AutoStages.PREPARE_FOR_TELEOP;
+            case PREPARE_FOR_TELEOP:
+
+        }
+    }
+}
+//                robot.chassis.drive(-2 * TILE_LENGTH, drivePower, holdTime);
 //                robot.arm.gotoHighBar();
 //                robot.chassis.drive((0.5) * TILE_LENGTH, drivePower, holdTime);
-                currentStage = AutoStages.LOWER_ARM;
-            case LOWER_ARM:
 //                robot.arm.gotoPickupPosition();
-                currentStage = AutoStages.PREPARE_FOR_TELEOP;
-            case GET_SAMPLE:
 //                robot.chassis.turnTo(90,drivePower,holdTime);
 //                robot.chassis.drive(-1.5 * TILE_LENGTH, drivePower, holdTime);
 //                robot.chassis.strafe(TILE_LENGTH,drivePower,holdTime);
 //                robot.intake.MoveIntake(1);
 //                sleep(1000);
 //                robot.intake.stopIntake();
-                currentStage = AutoStages.DROP_AT_BASKET;
-            case DROP_AT_BASKET:
 //                robot.chassis.strafe(-TILE_LENGTH,drivePower,holdTime);
 //                robot.chassis.turnTo(-45,drivePower,holdTime);
 //                robot.chassis.drive(0.5*TILE_LENGTH,drivePower,holdTime);
@@ -133,8 +128,6 @@ public class AutoRight extends LinearOpMode{
 //                sleep(3000);
 //                robot.intake.stopIntake();
 //                robot.arm.gotoPosition(0);
-                currentStage = AutoStages.PREPARE_FOR_TELEOP;
-            case PREPARE_FOR_TELEOP:
 //                This code is for if we were returning to the park from box
 //                robot.chassis.drive(0.5*TILE_LENGTH, drivePower, holdTime);
 //                robot.chassis.turnTo(90, drivePower, holdTime);
@@ -144,6 +137,3 @@ public class AutoRight extends LinearOpMode{
 //                robot.chassis.strafe(2.5*TILE_LENGTH, drivePower, holdTime);
 //                robot.chassis.drive(0.5*TILE_LENGTH,drivePower,holdTime);
 //                robot.chassis.stopRobot();
-        }
-    }
-}
