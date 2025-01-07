@@ -100,13 +100,10 @@ public class Teleop extends LinearOpMode {
                 robot.intake.servo.setPower(0);
             }
             if(gamepad2.dpad_right){
-                robot.wrist.gotoPosition(1);
+                robot.wrist.turnToHangPos();
             }
             if(gamepad2.dpad_left){
-                robot.wrist.gotoPosition(-1);
-            }
-            if(gamepad2.dpad_up){
-                robot.wrist.gotoPosition(0);
+                robot.wrist.turnToMidPos();
             }
 
 
@@ -116,6 +113,7 @@ public class Teleop extends LinearOpMode {
              */
 
             double swing_arm_power = -gamepad2.left_stick_y * 0.7;
+
 
 
             // Running without encoder allows the arm to be swung from current position.

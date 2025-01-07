@@ -14,12 +14,12 @@ public class AutoRightBasket extends LinearOpMode{
     public Robot robot = new Robot(this);
 
     // Robot control parameters
-    float DRIVE_SPEED = 0.8F;
+    float DRIVE_SPEED = 1F;
     float TURN_OFFSET = 10;
     //TILE_LENGTH is the length of one square in the 12 foot by 12 foot playing area
     final float TILE_LENGTH = 24;
     double drivePower = 0.8;
-    double holdTime = 0.125;
+    double holdTime = 0.025;
 
 
     enum AutoStages {

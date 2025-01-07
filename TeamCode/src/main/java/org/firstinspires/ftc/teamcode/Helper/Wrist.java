@@ -9,10 +9,9 @@ public class Wrist {
     //servo in use is 5 turn: 0.01 change ~ 5 degrees.
     public double TARGET_POSITION;
 //
-//    public double WRIST_DELIVERY_POSITION_HIGH = 0.2;
-//    public double WRIST_DELIVERY_POSITION_LOW = 0.22;
-//    public double WRIST_DELIVERY_POSITION_AUTO = 0.2;
-//    public double WRIST_PICKUP_POSITION = 0.309;
+    public double WRIST_HANG_POS = 1;
+    public double WRIST_MID_POS = 0.66;
+
 
     public LinearOpMode myOpMode;
 
@@ -25,6 +24,14 @@ public class Wrist {
         //Init motors and servos
         servo = myOpMode.hardwareMap.get(Servo.class, "wrist");
         servo.setDirection(Servo.Direction.FORWARD);
+    }
+
+    public void turnToHangPos() {
+        gotoPosition(WRIST_HANG_POS);
+    }
+
+    public void turnToMidPos() {
+        gotoPosition(WRIST_MID_POS);
     }
 
     public void gotoPosition(double currPos) {servo.setPosition(currPos); }
