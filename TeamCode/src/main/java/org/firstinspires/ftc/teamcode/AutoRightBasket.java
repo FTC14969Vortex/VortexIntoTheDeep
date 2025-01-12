@@ -95,20 +95,22 @@ public class AutoRightBasket extends LinearOpMode{
                 robot.chassis.drive(-0.65*TILE_LENGTH,drivePower,holdTime);
                 robot.chassis.turnTo(90,drivePower,holdTime);
                 robot.chassis.drive(-2.25*TILE_LENGTH,drivePower,holdTime);
-                robot.chassis.turnTo(125,drivePower,holdTime);
+                robot.chassis.turnTo(132,drivePower,holdTime);
 
                 currentStage = AutoRightBasket.AutoStages.RAISE_ARM;
 
             case RAISE_ARM:
                 robot.arm.gotoLowBox();
-                robot.chassis.drive(-0.55*TILE_LENGTH,drivePower,holdTime);
+                robot.wrist.turnToMidPos();
+                robot.chassis.drive(-0.47*TILE_LENGTH,drivePower,holdTime);
+                robot.intake.MoveIntake(-1);
+                sleep(3000);
+                robot.intake.stopIntake();
 
                 currentStage = AutoRightBasket.AutoStages.DROP_SAMPLE;
 
             case DROP_SAMPLE:
-                robot.intake.MoveIntake(-1);
-                sleep(1000);
-                robot.intake.stopIntake();
+
 
                 currentStage = AutoRightBasket.AutoStages.LOWER_ARM;
 
@@ -119,8 +121,9 @@ public class AutoRightBasket extends LinearOpMode{
                 currentStage = AutoRightBasket.AutoStages.PARK;
 
             case PARK:
-                robot.chassis.turnTo(0, drivePower, holdTime);
-                robot.chassis.drive(-4*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.turnTo(90, drivePower, holdTime);
+                robot.chassis.drive(3.5*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.strafe(TILE_LENGTH, drivePower, holdTime);
 
         }
     }

@@ -26,7 +26,11 @@ public class Teleop extends LinearOpMode {
     public double fr_power = 0;
     public double br_power = 0;
 
-    public double DRIVETRAIN_SPEED = 0.5;
+    //Count for gearshift
+    int count = 0;
+
+
+    public double DRIVETRAIN_SPEED = 0.4;
     @Override
     public void runOpMode() throws InterruptedException{
         /**
@@ -81,11 +85,23 @@ public class Teleop extends LinearOpMode {
             fr_power += ACCELERATION * (target_fr_power - fr_power);
             br_power += ACCELERATION * (target_br_power - br_power);
 
+            //gearshift
+            if(gamepad1.a) {
+                if(count % 2 == 0) {
+                    DRIVETRAIN_SPEED = 0.4;
+                } else {
+                    DRIVETRAIN_SPEED = 0.6;
+                }
+                count++;
+            }
 
             robot.chassis.FLMotor.setPower(DRIVETRAIN_SPEED * fl_power);
             robot.chassis.BLMotor.setPower(DRIVETRAIN_SPEED * bl_power);
             robot.chassis.FRMotor.setPower(DRIVETRAIN_SPEED * fr_power);
             robot.chassis.BRMotor.setPower(DRIVETRAIN_SPEED * br_power);
+
+            //gearshift
+
 
             //Outake
             if(gamepad2.left_trigger != 0) {
@@ -120,14 +136,6 @@ public class Teleop extends LinearOpMode {
             robot.arm.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             robot.arm.motor.setPower(swing_arm_power);
             // Set arm, wrist, and gate to pickup or delivery position with bumper.
-
-//            //Gate
-//            if(gamepad2.x){
-//                robot.claw.close();
-//            }
-//            if(gamepad2.y){
-//                robot.arm.gotoLowBox();
-//            }
 
             YawPitchRollAngles imu = robot.chassis.imu.getRobotYawPitchRollAngles();
             //Telemetry

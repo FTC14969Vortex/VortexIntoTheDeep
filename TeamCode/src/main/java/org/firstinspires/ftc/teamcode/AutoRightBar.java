@@ -93,7 +93,7 @@ public class AutoRightBar extends LinearOpMode {
         switch (currentStage) {
             case MOVE_TO_SUBMERSIBLE:
                 robot.chassis.drive(-0.75*TILE_LENGTH,drivePower,holdTime);
-                robot.chassis.strafe(-0.5*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.strafe(-0.18*TILE_LENGTH,drivePower,holdTime);
                 robot.chassis.drive(-0.15*TILE_LENGTH,drivePower,holdTime);
 
                 //robot.chassis.drive(-0.9*TILE_LENGTH, drivePower, holdTime);
@@ -108,12 +108,13 @@ public class AutoRightBar extends LinearOpMode {
                 sleep(500);
                 robot.intake.stopIntake();
                 currentStage = AutoRightBar.AutoStages.LOWER_ARM;
+//
             case LOWER_ARM:
                 robot.arm.gotoPosition(0);
 
                 currentStage = AutoRightBar.AutoStages.GET_SAMPLE;
             case GET_SAMPLE:
-                robot.chassis.strafe(1.5*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.strafe(1.18*TILE_LENGTH,drivePower,holdTime);
                 robot.chassis.drive(-1.8*TILE_LENGTH,drivePower,holdTime);
                 robot.chassis.strafe(0.5*TILE_LENGTH,drivePower,holdTime);
                 robot.chassis.drive(2*TILE_LENGTH,drivePower,holdTime);

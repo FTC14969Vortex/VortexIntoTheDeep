@@ -94,16 +94,16 @@ public class AutoLeftBasket extends LinearOpMode{
         // Code to run after the driver hits PLAY
         switch (currentStage) {
             case MOVE_TO_BASKET:
-                robot.chassis.turnTo(0, drivePower, holdTime);
                 robot.chassis.drive(-TILE_LENGTH * 0.4 ,drivePower,holdTime);
                 robot.chassis.turnTo(135,drivePower,holdTime);
-                robot.chassis.drive(-0.5*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.drive(-0.2*TILE_LENGTH,drivePower,holdTime);
                 robot.chassis.strafe(0.55 * TILE_LENGTH, drivePower, holdTime);
                 currentStage = AutoStages.RAISE_ARM;
 
             case RAISE_ARM:
                 robot.arm.gotoLowBox();
-
+                robot.wrist.turnToMidPos();
+                robot.chassis.drive(-0.26*TILE_LENGTH,drivePower,holdTime);
                 currentStage = AutoStages.DROP_SPECIMEN;
 
             case DROP_SPECIMEN:
@@ -111,17 +111,20 @@ public class AutoLeftBasket extends LinearOpMode{
                 sleep(3000);
                 robot.intake.stopIntake();
 
+
                 currentStage = AutoStages.LOWER_ARM;
 
             case LOWER_ARM:
-                robot.chassis.drive(0.5*TILE_LENGTH, drivePower, holdTime);
                 robot.arm.gotoPosition(0);
+                robot.chassis.drive(0.5*TILE_LENGTH, drivePower, holdTime);
 
                 currentStage = AutoStages.PARK;
 
             case PARK:
                 robot.chassis.turnTo(0, drivePower, holdTime);
-                robot.chassis.drive(5, drivePower, holdTime);
+//                robot.chassis.drive(5, drivePower, holdTime);
+//                robot.chassis.strafe(3.5*TILE_LENGTH,drivePower,holdTime);
+//                robot.chassis.drive(0.4*TILE_LENGTH,drivePower,holdTime);
         }
     }
 }
