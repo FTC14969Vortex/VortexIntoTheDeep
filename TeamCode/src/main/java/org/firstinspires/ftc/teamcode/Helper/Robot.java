@@ -14,6 +14,7 @@ public class Robot {
     public Arm arm;
     public Wrist wrist;
     public Claw claw;
+    public Slider slider;
 
     //Constructor for robot class
     public Robot(LinearOpMode opMode) {
@@ -22,6 +23,7 @@ public class Robot {
         arm = new Arm(opMode);
         wrist = new Wrist(opMode);
         claw = new Claw(opMode);
+        slider = new Slider(opMode);
     }
 
     public void init() throws InterruptedException {
@@ -30,5 +32,6 @@ public class Robot {
         arm.init();
         wrist.init();
         claw.init();
+        slider.init();
     }
 }

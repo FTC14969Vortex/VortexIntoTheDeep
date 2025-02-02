@@ -10,7 +10,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Intake {
 
-    public CRServo servo;
+    public CRServo servo1;
+    public CRServo servo2;
+
     public LinearOpMode myOpMode;
 
     //Constructor
@@ -20,16 +22,20 @@ public class Intake {
 
     //Initializing hardware maps and motors for intake.
     public void init() {
-        servo = myOpMode.hardwareMap.get(CRServo.class, "intake");
-        servo.setDirection(DcMotorSimple.Direction.REVERSE);
+        servo1 = myOpMode.hardwareMap.get(CRServo.class, "intake1");
+        servo1.setDirection(DcMotorSimple.Direction.REVERSE);
+        servo2 = myOpMode.hardwareMap.get(CRServo.class, "intake2");
+        servo2.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     public void MoveIntake(double power) {
 
-        servo.setPower(power);
+        servo1.setPower(power);
+        servo2.setPower(power);
     }
     public void stopIntake() {
-        servo.setPower(0);
+        servo1.setPower(0);
+        servo2.setPower(0);
     }
 
 }
