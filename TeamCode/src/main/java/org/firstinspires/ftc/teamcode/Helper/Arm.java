@@ -16,7 +16,8 @@ public class  Arm {
     int targetPosition;
     int currentPosition;
     public int ARM_BOX_DELIVERY_POSITION_LOW = 3000;
-    public int ARM_BAR_DELIVERY_POSITION_HIGH = 3150;
+    public int ARM_BAR_DELIVERY_POSITION_HIGH1 = 3150;
+    public int ARM_BAR_DELIVERY_POSITION_HIGH2 = 3150;
     public int ARM_PICKUP_POSITION = 4950;
 
     public int ARM_MID_POSITION = 2400;
@@ -91,8 +92,11 @@ public class  Arm {
         this.gotoPosition(ARM_PICKUP_POSITION);
     }
 
-    public void gotoHighBar(){
-        this.gotoPosition(ARM_BAR_DELIVERY_POSITION_HIGH);
+    public void gotoHighBar1(){
+        this.gotoPosition(ARM_BAR_DELIVERY_POSITION_HIGH1);
+    }
+    public void gotoHighBar2(){
+        this.gotoPosition(ARM_BAR_DELIVERY_POSITION_HIGH2);
     }
     public void gotoLowBar(){
         this.gotoPosition(ARM_BAR_DELIVERY_POSITION_LOW);

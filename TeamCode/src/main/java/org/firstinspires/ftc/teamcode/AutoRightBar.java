@@ -94,23 +94,24 @@ public class AutoRightBar extends LinearOpMode {
             case MOVE_TO_SUBMERSIBLE:
                 robot.chassis.drive(-0.75*TILE_LENGTH,drivePower,holdTime);
                 robot.chassis.strafe(-0.18*TILE_LENGTH,drivePower,holdTime);
-                robot.chassis.drive(-0.15*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.turnTo(180,drivePower,holdTime);
 
                 //robot.chassis.drive(-0.9*TILE_LENGTH, drivePower, holdTime);
                 currentStage = AutoRightBar.AutoStages.HANG_SPECIMEN;
 
             case HANG_SPECIMEN:
-                robot.arm.gotoMidPosition();
+                robot.arm.gotoHighBar1();
                 robot.wrist.turnToHangPos();
-                robot.arm.gotoHighBar();
-                robot.chassis.drive(0.5*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.drive(0.3*TILE_LENGTH,drivePower,holdTime);
+                robot.arm.gotoHighBar2();
                 robot.intake.MoveIntake(-1);
                 sleep(500);
                 robot.intake.stopIntake();
+                robot.chassis.drive(-0.3*TILE_LENGTH,drivePower,holdTime);
                 currentStage = AutoRightBar.AutoStages.LOWER_ARM;
 //
             case LOWER_ARM:
-                robot.arm.gotoPosition(0);
+                robot.arm.gotoMidPosition();
 
                 currentStage = AutoRightBar.AutoStages.GET_SAMPLE;
             case GET_SAMPLE:

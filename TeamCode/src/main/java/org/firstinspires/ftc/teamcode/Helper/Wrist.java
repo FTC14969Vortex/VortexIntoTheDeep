@@ -7,10 +7,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Wrist {
     public Servo servo;
     //servo in use is 5 turn: 0.01 change ~ 5 degrees.
-    public double TARGET_POSITION;
 //
     public double WRIST_HANG_POS = 1;
-    public double WRIST_MID_POS = 0.66;
+    public double WRIST_PICK_UP_POS = 0.66;
 
 
     public LinearOpMode myOpMode;
@@ -30,8 +29,8 @@ public class Wrist {
         gotoPosition(WRIST_HANG_POS);
     }
 
-    public void turnToMidPos() {
-        gotoPosition(WRIST_MID_POS);
+    public void turnToPickUpPos() {
+        gotoPosition(WRIST_PICK_UP_POS);
     }
 
     public void gotoPosition(double currPos) {servo.setPosition(currPos); }
