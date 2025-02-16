@@ -73,6 +73,7 @@ public class Teleop extends LinearOpMode {
             double pivot_turn = gamepad1.right_stick_x;
 
             double slider_power = gamepad2.right_stick_y;
+            double wrist_power = gamepad2.right_stick_x;
 
 
             //Sets the target power
@@ -123,11 +124,17 @@ public class Teleop extends LinearOpMode {
                 robot.wrist.turnToHangPos();
             }
             if(gamepad2.dpad_left){
-                robot.wrist.turnToMidPos();
+                robot.wrist.turnToPickUpPos();
+            }
+            if(gamepad2.right_bumper){
+                robot.slider.MoveSlider(1);
+            }
+            if(gamepad2.left_bumper){
+                robot.slider.MoveSlider(-1);
             }
 
 
-//            robot.wrist.gotoPosition(robot.wrist.servo.getPosition() + -gamepad2.right_stick_x * 0.01);
+            robot.wrist.gotoPosition(robot.wrist.servo.getPosition() + -gamepad2.right_stick_x * 0.01);
 
             /**
              * Joystick controls for Slider, Arm, Wrist, Gate on GAMEPAD 2

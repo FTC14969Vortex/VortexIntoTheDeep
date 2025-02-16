@@ -102,7 +102,7 @@ public class AutoLeftBasket extends LinearOpMode{
 
             case RAISE_ARM:
                 robot.arm.gotoLowBox();
-                robot.wrist.turnToMidPos();
+                robot.wrist.turnToPickUpPos();
                 robot.chassis.drive(-0.26*TILE_LENGTH,drivePower,holdTime);
                 currentStage = AutoStages.DROP_SPECIMEN;
 

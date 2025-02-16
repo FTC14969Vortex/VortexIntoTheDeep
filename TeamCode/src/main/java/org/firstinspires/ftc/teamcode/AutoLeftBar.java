@@ -100,7 +100,7 @@ public class AutoLeftBar extends LinearOpMode {
             case HANG_SPECIMEN:
                 robot.arm.gotoMidPosition();
                 robot.wrist.gotoPosition(1);
-                robot.arm.gotoHighBar();
+                robot.arm.gotoHighBar1();
                 robot.chassis.drive(0.5*TILE_LENGTH,drivePower,holdTime);
                 robot.intake.MoveIntake(-1);
                 sleep(500);

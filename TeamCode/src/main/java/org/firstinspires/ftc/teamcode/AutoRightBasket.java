@@ -101,7 +101,7 @@ public class AutoRightBasket extends LinearOpMode{
 
             case RAISE_ARM:
                 robot.arm.gotoLowBox();
-                robot.wrist.turnToMidPos();
+                robot.wrist.turnToPickUpPos();
                 robot.chassis.drive(-0.47*TILE_LENGTH,drivePower,holdTime);
                 robot.intake.MoveIntake(-1);
                 sleep(3000);
