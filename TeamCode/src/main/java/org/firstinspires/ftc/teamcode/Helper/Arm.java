@@ -16,12 +16,11 @@ public class  Arm {
     int targetPosition;
     int currentPosition;
     public int ARM_BOX_DELIVERY_POSITION_LOW = 3000;
-    public int ARM_BAR_DELIVERY_POSITION_HIGH1 = 3150;
-    public int ARM_BAR_DELIVERY_POSITION_HIGH2 = 3150;
+    public int ARM_BAR_DELIVERY_POSITION_HIGH1 = -800;
     public int ARM_PICKUP_POSITION = 4950;
 
-    public int ARM_MID_POSITION = 2400;
-    public int ARM_BAR_DELIVERY_POSITION_LOW = 4100;
+    public int ARM_MID_POSITION = -370;
+    public int ARM_BOX_DELIVERY_POSITION_HIGH = 4100;
 //    int slowDown;
 
     public double ARM_HOLDING_POWER = 0.05;
@@ -95,12 +94,7 @@ public class  Arm {
     public void gotoHighBar1(){
         this.gotoPosition(ARM_BAR_DELIVERY_POSITION_HIGH1);
     }
-    public void gotoHighBar2(){
-        this.gotoPosition(ARM_BAR_DELIVERY_POSITION_HIGH2);
-    }
-    public void gotoLowBar(){
-        this.gotoPosition(ARM_BAR_DELIVERY_POSITION_LOW);
-    }
+    public void gotoHighBox(){this.gotoPosition(ARM_BOX_DELIVERY_POSITION_HIGH);}
 
     public void gotoLowBox() { this.gotoPosition(ARM_BOX_DELIVERY_POSITION_LOW); }
 

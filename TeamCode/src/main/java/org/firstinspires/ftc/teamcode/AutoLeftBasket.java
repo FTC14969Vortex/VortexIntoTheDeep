@@ -23,16 +23,18 @@ public class AutoLeftBasket extends LinearOpMode{
 
 
     enum AutoStages {
-        MOVE_TO_BASKET,
-        RAISE_ARM,
-        DROP_SPECIMEN
-        ,
-        LOWER_ARM,
+        DROP_SAMPLE1,
+        PICK_UP_SAMPLE2,
+        DROP_SAMPLE2,
+        PICK_UP_SAMPLE3,
+        DROP_SAMPLE3,
+        PICK_UP_SAMPLE4,
+        DROP_SAMPLE4,
         PARK,
 
     }
 
-    AutoStages currentStage = AutoStages.MOVE_TO_BASKET;
+    AutoStages currentStage = AutoStages.DROP_SAMPLE1;
 
     public double SUB_POS_X = 0;
     public double SUB_POS_Y = 0;
@@ -93,38 +95,100 @@ public class AutoLeftBasket extends LinearOpMode{
 
         // Code to run after the driver hits PLAY
         switch (currentStage) {
-            case MOVE_TO_BASKET:
-                robot.chassis.drive(-TILE_LENGTH * 0.4 ,drivePower,holdTime);
-                robot.chassis.turnTo(135,drivePower,holdTime);
-                robot.chassis.drive(-0.2*TILE_LENGTH,drivePower,holdTime);
-                robot.chassis.strafe(0.55 * TILE_LENGTH, drivePower, holdTime);
-                currentStage = AutoStages.RAISE_ARM;
+            case DROP_SAMPLE1:
 
-            case RAISE_ARM:
+                robot.chassis.drive(-1.25*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.turnTo(225,drivePower,holdTime);
+                robot.chassis.drive(0.75*TILE_LENGTH,drivePower,holdTime);
                 robot.arm.gotoLowBox();
-                robot.wrist.turnToPickUpPos();
-                robot.chassis.drive(-0.26*TILE_LENGTH,drivePower,holdTime);
-                currentStage = AutoStages.DROP_SPECIMEN;
-
-            case DROP_SPECIMEN:
+                robot.wrist.turnToStraightPosition();
+                robot.slider.gotoSliderHighBoxPosition();
                 robot.intake.MoveIntake(-1);
                 sleep(3000);
                 robot.intake.stopIntake();
 
+                currentStage = AutoLeftBasket.AutoStages.PICK_UP_SAMPLE2;
 
-                currentStage = AutoStages.LOWER_ARM;
+            case PICK_UP_SAMPLE2:
 
-            case LOWER_ARM:
-                robot.arm.gotoPosition(0);
-                robot.chassis.drive(0.5*TILE_LENGTH, drivePower, holdTime);
+                robot.slider.gotoSliderPickUpPosition();
+                robot.arm.gotoPickUpPosition();
+                robot.chassis.drive(-0.25*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.turnTo(180,drivePower,holdTime);
+                robot.chassis.drive(0.25*TILE_LENGTH,drivePower,holdTime);
+                robot.intake.MoveIntake(-1);
+                sleep(3000);
+                robot.intake.stopIntake();
 
-                currentStage = AutoStages.PARK;
+                currentStage = AutoLeftBasket.AutoStages.DROP_SAMPLE2;
 
+            case DROP_SAMPLE2:
+
+                robot.chassis.drive(0.25*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.turnTo(90,drivePower,holdTime);
+                robot.chassis.drive(0.25*TILE_LENGTH,drivePower,holdTime);
+                robot.arm.gotoHighBox();
+                robot.slider.gotoSliderHighBoxPosition();
+                robot.intake.MoveIntake(-1);
+                sleep(3000);
+                robot.intake.stopIntake();
+
+                currentStage = AutoLeftBasket.AutoStages.PICK_UP_SAMPLE3;
+
+            case PICK_UP_SAMPLE3:
+
+                robot.slider.gotoSliderPickUpPosition();
+                robot.arm.gotoPickUpPosition();
+                robot.chassis.drive(-0.25*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.turnTo(180,drivePower,holdTime);
+                robot.chassis.drive(0.25*TILE_LENGTH,drivePower,holdTime);
+                robot.intake.MoveIntake(-1);
+                sleep(3000);
+                robot.intake.stopIntake();
+
+                currentStage = AutoLeftBasket.AutoStages.DROP_SAMPLE3;
+
+            case DROP_SAMPLE3:
+
+                robot.chassis.drive(0.25*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.turnTo(90,drivePower,holdTime);
+                robot.chassis.drive(0.25*TILE_LENGTH,drivePower,holdTime);
+                robot.arm.gotoHighBox();
+                robot.slider.gotoSliderHighBoxPosition();
+                robot.intake.MoveIntake(-1);
+                sleep(3000);
+                robot.intake.stopIntake();
+
+                currentStage = AutoLeftBasket.AutoStages.PICK_UP_SAMPLE4;
+
+            case PICK_UP_SAMPLE4:
+
+                robot.slider.gotoSliderPickUpPosition();
+                robot.arm.gotoPickUpPosition();
+                robot.chassis.drive(-0.25*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.turnTo(180,drivePower,holdTime);
+                robot.chassis.drive(0.25*TILE_LENGTH,drivePower,holdTime);
+                robot.intake.MoveIntake(-1);
+                sleep(3000);
+                robot.intake.stopIntake();
+
+                currentStage = AutoLeftBasket.AutoStages.DROP_SAMPLE4;
+            case DROP_SAMPLE4:
+
+                robot.chassis.drive(0.25*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.turnTo(90,drivePower,holdTime);
+                robot.chassis.drive(0.25*TILE_LENGTH,drivePower,holdTime);
+                robot.arm.gotoHighBox();
+                robot.slider.gotoSliderHighBoxPosition();
+                robot.intake.MoveIntake(-1);
+                sleep(3000);
+                robot.intake.stopIntake();
+
+                currentStage = AutoLeftBasket.AutoStages.PARK;
             case PARK:
-                robot.chassis.turnTo(0, drivePower, holdTime);
-//                robot.chassis.drive(5, drivePower, holdTime);
-//                robot.chassis.strafe(3.5*TILE_LENGTH,drivePower,holdTime);
-//                robot.chassis.drive(0.4*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.turnTo(90, drivePower, holdTime);
+                robot.chassis.drive(3.5*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.strafe(TILE_LENGTH, drivePower, holdTime);
         }
     }
 }

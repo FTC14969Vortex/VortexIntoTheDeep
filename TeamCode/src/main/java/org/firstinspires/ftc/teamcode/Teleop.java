@@ -61,19 +61,19 @@ public class Teleop extends LinearOpMode {
 
 
             //open and close claw function
-            if(gamepad1.a){
-                robot.claw.open();
-            }
-            if(gamepad1.b){
-                robot.claw.close();
-            }
+//            if(gamepad1.a){
+//                robot.claw.open();
+//            }
+//            if(gamepad1.b){
+//                robot.claw.close();
+//            }
             // Controller to motor powers.
-            double move_y_axis = gamepad1.left_stick_y;
-            double move_x_axis = -gamepad1.left_stick_x;
+            double move_y_axis = -gamepad1.left_stick_y;
+            double move_x_axis = gamepad1.left_stick_x;
             double pivot_turn = gamepad1.right_stick_x;
 
-            double slider_power = gamepad2.right_stick_y;
-            double wrist_power = gamepad2.right_stick_x;
+            double wrist_power = gamepad2.right_stick_y;
+
 
 
             //Sets the target power
@@ -103,51 +103,86 @@ public class Teleop extends LinearOpMode {
             robot.chassis.FRMotor.setPower(DRIVETRAIN_SPEED * fr_power);
             robot.chassis.BRMotor.setPower(DRIVETRAIN_SPEED * br_power);
 
-            robot.slider.servo.setPower(slider_power);
 
             //gearshift
+            double slider_power = 0;
+            robot.slider.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.slider.motor.setPower(slider_power);
 
 
             //Outake
-            if(gamepad2.left_trigger != 0) {
-                robot.intake.MoveIntake(-gamepad2.left_trigger);
+            if(gamepad1.left_trigger!=0) {
+                robot.intake.MoveIntake(1);
             }
             //Intake
-            if(gamepad2.right_trigger != 0) {
-                robot.intake.MoveIntake(gamepad2.right_trigger);
+            if(gamepad1.right_trigger!=0) {
+                robot.intake.MoveIntake(-1);
             }
             //stop the intake
-            if(gamepad2.x) {
+            if(gamepad1.right_bumper) {
                 robot.intake.stopIntake();
             }
-            if(gamepad2.dpad_right){
-                robot.wrist.turnToHangPos();
+            if(gamepad2.y){
+                robot.wrist.gotoPosition(1);
             }
-            if(gamepad2.dpad_left){
-                robot.wrist.turnToPickUpPos();
+            if(gamepad2.x){
+                robot.wrist.gotoPosition(0.4567);
             }
-            if(gamepad2.right_bumper){
-                robot.slider.MoveSlider(1);
+            if(gamepad2.b){
+                robot.wrist.gotoPosition(0.66);
             }
-            if(gamepad2.left_bumper){
-                robot.slider.MoveSlider(-1);
+            if(gamepad2.a){
+                robot.wrist.gotoPosition(0.1139);
             }
-
-
-            robot.wrist.gotoPosition(robot.wrist.servo.getPosition() + -gamepad2.right_stick_x * 0.01);
+            if(gamepad2.dpad_up){
+                robot.arm.gotoHighBox();
+                robot.slider.gotoSliderHighBoxPosition();
+                robot.wrist.goToHighBox();
+            }
+            if(gamepad2.left_trigger !=0){
+                slider_power = gamepad2.left_trigger;
+            }
+            if(gamepad2.right_trigger !=0){
+                slider_power = -gamepad2.right_trigger;
+            }
 
             /**
              * Joystick controls for Slider, Arm, Wrist, Gate on GAMEPAD 2
              */
-
-            double swing_arm_power = -gamepad2.left_stick_y * 0.7;
-
-
-
-            // Running without encoder allows the arm to be swung from current position.
+            robot.slider.motor.setPower(slider_power);
+            double swing_arm_power = gamepad2.left_stick_y * 0.4;
             robot.arm.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            int armPosition = robot.arm.motor.getCurrentPosition();
             robot.arm.motor.setPower(swing_arm_power);
-            // Set arm, wrist, and gate to pickup or delivery position with bumper.
+            int armVertPosition = 1500;
+            double backwardsHoldPower = 0.27;
+            double frontHoldPower = -0.29;
+            if(gamepad2.left_stick_y ==0) {
+                if (armPosition > armVertPosition) {
+                    robot.arm.motor.setPower(backwardsHoldPower);
+                } else if(armPosition < armVertPosition){
+                    if(robot.slider.motor.getCurrentPosition() <-1000){
+                        robot.arm.motor.setPower(frontHoldPower-0.2);
+                    }
+                    else if(robot.slider.motor.getCurrentPosition() <-500){
+                        robot.arm.motor.setPower(frontHoldPower-0.1 );
+                    }
+                    else if(robot.slider.motor.getCurrentPosition() >-500){
+                        robot.arm.motor.setPower(frontHoldPower);
+                    }
+                }
+            }
+            else{
+                robot.arm.motor.setPower(swing_arm_power);
+            }
+
+            // Arm code
+
+
+            // Wrist Code
+            robot.wrist.gotoPosition(robot.wrist.servo.getPosition() + -gamepad2.right_stick_y * 0.02);
+
+
 
             YawPitchRollAngles imu = robot.chassis.imu.getRobotYawPitchRollAngles();
             //Telemetry
@@ -161,6 +196,8 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("Arm Position", robot.arm.motor.getCurrentPosition());
             telemetry.addData("Motor Status", robot.arm.motor.isBusy());
             telemetry.addData("Arm Power", robot.arm.motor.getPower());
+            telemetry.addData("Slider Position", robot.slider.motor.getCurrentPosition());
+            telemetry.addData("Wrist Position", robot.wrist.servo.getPosition());
             telemetry.update();
         }
 

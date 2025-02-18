@@ -4,32 +4,31 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Helper.Robot;
+import org.firstinspires.ftc.teamcode.Helper.Chassis;
 
 @Autonomous(name = "Auto Right Bar", group = "Auto")
 
-public class AutoRightBar extends LinearOpMode {
+public class AutoRightBar extends LinearOpMode  {
     //------------------------------------------------------------------
 
     //Robot Object
     public Robot robot = new Robot(this);
 
     // Robot control parameters
-    float DRIVE_SPEED = 1F;
-    float TURN_OFFSET = 10;
     //TILE_LENGTH is the length of one square in the 12 foot by 12 foot playing area
     final float TILE_LENGTH = 24;
-    double drivePower = 2;
-    double holdTime = 0.00001;
+    double drivePower = 20;
+    double holdTime = 0 ;
 
 
     enum AutoStages {
         MOVE_TO_SUBMERSIBLE,
-        HANG_SPECIMEN,
-        LOWER_ARM,
+        HANG_SPECIMEN1,
         GET_SAMPLE,
-        DROP_AT_BASKET,
+        HANG_SPECIMEN2,
+        HANG_SPECIMEN3,
+        HANG_SPECIMEN4,
         PARK,
-        HANG_THREE_SPECIMEN,
 
     }
 
@@ -56,7 +55,7 @@ public class AutoRightBar extends LinearOpMode {
     }
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode()  throws InterruptedException  {
         // Initialization code here
         robot.init();
 
@@ -94,41 +93,40 @@ public class AutoRightBar extends LinearOpMode {
         // Code to run after the driver hits PLAY
         switch (currentStage) {
             case MOVE_TO_SUBMERSIBLE:
-                robot.chassis.drive(-0.75*TILE_LENGTH,drivePower,holdTime);
-                robot.chassis.strafe(-0.18*TILE_LENGTH,drivePower,holdTime);
-                robot.chassis.turnTo(180,drivePower,holdTime);
+                robot.chassis.setDriveTolerance(6);
+                robot.chassis.setYawTolerance(6);
+                robot.chassis.setStrafeTolerance(6);
+                robot.chassis.setDriveAccel(0.1);
+                robot.chassis.setStrafeAccel(0.1);
+                robot.chassis.setYawAccel(0.1);
+                robot.chassis.strafe(0.18*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.drive(1.05*TILE_LENGTH,drivePower,holdTime);
 
-                //robot.chassis.drive(-0.9*TILE_LENGTH, drivePower, holdTime);
-                currentStage = AutoRightBar.AutoStages.HANG_SPECIMEN;
+                currentStage = AutoRightBar.AutoStages.HANG_SPECIMEN1;
 
-            case HANG_SPECIMEN:
-                robot.arm.gotoHighBar1();
-                robot.wrist.turnToHangPos();
-                robot.chassis.drive(0.3*TILE_LENGTH,drivePower,holdTime);
-                robot.arm.gotoHighBar2();
-                robot.intake.MoveIntake(-1);
-                sleep(500);
-                robot.intake.stopIntake();
-                robot.chassis.drive(-0.3*TILE_LENGTH,drivePower,holdTime);
-                currentStage = AutoRightBar.AutoStages.LOWER_ARM;
-//
-            case LOWER_ARM:
-                robot.arm.gotoMidPosition();
+            case HANG_SPECIMEN1:
+//                robot.arm.gotoHighBar1();
+//                robot.wrist.turnToStraightPosition();
+//                robot.arm.gotoMidPosition();
+//                robot.intake.MoveIntake(-1);
+//                sleep(500);
+//                robot.intake.stopIntake();
+                robot.chassis.drive(-0.42*TILE_LENGTH,drivePower,holdTime);
 
                 currentStage = AutoRightBar.AutoStages.GET_SAMPLE;
             case GET_SAMPLE:
-                robot.chassis.strafe(1.18*TILE_LENGTH,drivePower,holdTime);
-                robot.chassis.drive(-1.8*TILE_LENGTH,drivePower,holdTime);
-                robot.chassis.strafe(0.5*TILE_LENGTH,drivePower,holdTime);
-                robot.chassis.drive(2*TILE_LENGTH,drivePower,holdTime);
-                robot.chassis.drive(-2*TILE_LENGTH,drivePower,holdTime);
-                robot.chassis.strafe(0.45*TILE_LENGTH,drivePower,holdTime);
-                robot.chassis.drive(2*TILE_LENGTH,drivePower,holdTime);
 
-                currentStage = AutoRightBar.AutoStages.PARK;
-            case PARK:
-                currentStage = AutoStages.HANG_THREE_SPECIMEN;
-            case HANG_THREE_SPECIMEN:
+                robot.chassis.strafe(-1.18*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.drive(1.6*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.strafe(-0.5*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.drive(-2*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.drive(2*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.strafe(-0.45*TILE_LENGTH,drivePower,holdTime);
+                robot.chassis.drive(-2.1*TILE_LENGTH,drivePower,holdTime);
+
+                currentStage = AutoStages.HANG_SPECIMEN2;
+            case HANG_SPECIMEN2:
+
                 robot.chassis.strafe(TILE_LENGTH,drivePower,holdTime);
                 robot.chassis.turnTo(270,drivePower,holdTime);
                 robot.arm.gotoMidPosition();
@@ -136,52 +134,55 @@ public class AutoRightBar extends LinearOpMode {
                 robot.intake.MoveIntake(1);
                 sleep(500);
                 robot.intake.stopIntake();
-                //Intake 1
+
                 robot.chassis.drive(-2.2*TILE_LENGTH,drivePower,holdTime);
                 robot.chassis.turnTo(0,drivePower,holdTime);
                 robot.chassis.drive(-0.75*TILE_LENGTH,drivePower,holdTime);
-                robot.arm.gotoHighBar2();
                 sleep(500);
                 robot.intake.MoveIntake(1);
                 robot.chassis.drive(0.75*TILE_LENGTH,drivePower,holdTime);
-                //Hang 1
+
+                currentStage = AutoRightBar.AutoStages.HANG_SPECIMEN3;
+            case HANG_SPECIMEN3:
+
                 robot.chassis.turnTo(270,drivePower,holdTime);
                 robot.arm.gotoMidPosition();
                 robot.chassis.drive(2.2*TILE_LENGTH,drivePower,holdTime);
                 robot.intake.MoveIntake(1);
                 sleep(500);
                 robot.intake.stopIntake();
-                //Intake 2
+
                 robot.chassis.drive(-2.2*TILE_LENGTH,drivePower,holdTime);
                 robot.chassis.turnTo(0,drivePower,holdTime);
                 robot.chassis.drive(-0.75*TILE_LENGTH,drivePower,holdTime);
-                robot.arm.gotoHighBar2();
                 sleep(500);
                 robot.intake.MoveIntake(1);
                 robot.chassis.drive(0.75*TILE_LENGTH,drivePower,holdTime);
-                //Hang 2
+
+                currentStage = AutoRightBar.AutoStages.HANG_SPECIMEN4;
+
+            case HANG_SPECIMEN4:
+
                 robot.chassis.turnTo(270,drivePower,holdTime);
                 robot.arm.gotoMidPosition();
                 robot.chassis.drive(2.2*TILE_LENGTH,drivePower,holdTime);
                 robot.intake.MoveIntake(1);
                 sleep(500);
                 robot.intake.stopIntake();
-                //Intake 3
+
                 robot.chassis.drive(-2.2*TILE_LENGTH,drivePower,holdTime);
                 robot.chassis.turnTo(0,drivePower,holdTime);
                 robot.chassis.drive(-0.75*TILE_LENGTH,drivePower,holdTime);
-                robot.arm.gotoHighBar2();
                 sleep(500);
                 robot.intake.MoveIntake(1);
                 robot.chassis.drive(0.75*TILE_LENGTH,drivePower,holdTime);
-                //Hang 3
+
+                currentStage = AutoRightBar.AutoStages.PARK;
+
+            case PARK:
+
                 robot.chassis.turnTo(270,drivePower,holdTime);
                 robot.chassis.drive(2.2*TILE_LENGTH,drivePower,holdTime);
-                //Park
-
-
-
-
 
         }
     }

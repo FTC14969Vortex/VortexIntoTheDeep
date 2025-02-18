@@ -38,23 +38,41 @@ public class Chassis {
     private final boolean INVERT_DRIVE_ODOMETRY  = true;       //  When driving FORWARD, the odometry value MUST increase.  If it does not, flip the value of this constant.
     private final boolean INVERT_STRAFE_ODOMETRY = false;       //  When strafing to the LEFT, the odometry value MUST increase.  If it does not, flip the value of this constant.
 
-    private static final double DRIVE_GAIN          = 0.03;    // Strength of axial position control
-    private static final double DRIVE_ACCEL         = 2.0;     // Acceleration limit.  Percent Power change per second.  1.0 = 0-100% power in 1 sec.
-    private static final double DRIVE_TOLERANCE     = 0.5;     // Controller is is "inPosition" if position error is < +/- this amount
+    private static final double DRIVE_GAIN          = 0.06;    // Strength of axial position control
+    protected static double DRIVE_ACCEL         = 2;     // Acceleration limit.  Percent Power change per second.  1.0 = 0-100% power in 1 sec.
+    protected static double DRIVE_TOLERANCE     = 0.5;     // Controller is is "inPosition" if position error is < +/- this amount
     private static final double DRIVE_DEADBAND      = 0.2;     // Error less than this causes zero output.  Must be smaller than DRIVE_TOLERANCE
     private static final double DRIVE_MAX_AUTO      = 0.6;     // "default" Maximum Axial power limit during autonomous
 
     private static final double STRAFE_GAIN         = 0.03;    // Strength of lateral position control
-    private static final double STRAFE_ACCEL        = 1.5;     // Acceleration limit.  Percent Power change per second.  1.0 = 0-100% power in 1 sec.
-    private static final double STRAFE_TOLERANCE    = 0.5;     // Controller is is "inPosition" if position error is < +/- this amount
+    protected static double STRAFE_ACCEL        = 2;     // Acceleration limit.  Percent Power change per second.  1.0 = 0-100% power in 1 sec.
+    protected static double STRAFE_TOLERANCE    = 0.5;     // Controller is is "inPosition" if position error is < +/- this amount
     private static final double STRAFE_DEADBAND     = 0.2;     // Error less than this causes zero output.  Must be smaller than DRIVE_TOLERANCE
     private static final double STRAFE_MAX_AUTO     = 0.6;     // "default" Maximum Lateral power limit during autonomous
 
     private static final double YAW_GAIN            = 0.018;    // Strength of Yaw position control
-    private static final double YAW_ACCEL           = 3.0;     // Acceleration limit.  Percent Power change per second.  1.0 = 0-100% power in 1 sec.
-    private static final double YAW_TOLERANCE       = 1.0;     // Controller is is "inPosition" if position error is < +/- this amount
+    protected static double YAW_ACCEL           = 3.0;     // Acceleration limit.  Percent Power change per second.  1.0 = 0-100% power in 1 sec.
+    protected static double YAW_TOLERANCE       = 1.0;     // Controller is is "inPosition" if position error is < +/- this amount
     private static final double YAW_DEADBAND        = 0.25;    // Error less than this causes zero output.  Must be smaller than DRIVE_TOLERANCE
     private static final double YAW_MAX_AUTO        = 0.6;     // "default" Maximum Yaw power limit during autonomous
+    public void setDriveAccel(double DRIVE_ACCEL){
+        this.DRIVE_ACCEL = DRIVE_ACCEL;
+    }
+    public void setStrafeAccel(double STRAFE_ACCEL){
+        this.STRAFE_ACCEL = STRAFE_ACCEL;
+    }
+    public void setYawAccel(double YAW_ACCEL){
+        this.YAW_ACCEL = YAW_ACCEL;
+    }
+    public void setDriveTolerance(double DRIVE_TOLERANCE){
+        this.DRIVE_TOLERANCE = DRIVE_TOLERANCE;
+    }
+    public void setStrafeTolerance(double STRAFE_TOLERANCE){
+        this.STRAFE_TOLERANCE= STRAFE_TOLERANCE;
+    }
+    public void setYawTolerance(double YAW_TOLERANCE){
+        this.YAW_TOLERANCE = YAW_TOLERANCE;
+    }
 
     // Public Members
     public double driveDistance     = 0; // scaled axial distance (+ = forward)
