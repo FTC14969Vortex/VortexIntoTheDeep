@@ -4,218 +4,51 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-import org.firstinspires.ftc.teamcode.Helper.Robot;
-
 @TeleOp(name = "TeleOp", group = "TeleOp")
 
 public class Teleop extends LinearOpMode {
+//
+//    public DcMotor motor = hardwareMap.get(DcMotor.class, "motor");
+//
+//    @Override
+//    public void runOpMode() throws InterruptedException{
+//
+//        motor.setDirection(DcMotor.Direction.FORWARD);
+//        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//
+//
+//        waitForStart();
+//
+//        while (opModeIsActive()) {
+//
+//            double power = gamepad1.left_stick_y;
+//            // Set the power of the motor
+//            motor.setPower(power);
+//
+//        }
+//
+//    }
 
-    Robot robot = new Robot(this);
+public DcMotor  motor   = null;
+@Override
+    public void runOpMode() {
+    double power;
 
-    //How fast your robot will accelerate.
-    public double ACCELERATION = 0.3;
+    motor = hardwareMap.get(DcMotor.class, "motor");
 
-    //Motor powers
-    public double fl_power = 0;
-    public double bl_power = 0;
-    public double fr_power = 0;
-    public double br_power = 0;
+    motor.setDirection(DcMotor.Direction.FORWARD);
 
-    //Count for gearshift
-    int count = 0;
+    waitForStart();
 
+//    while (opModeIsActive()) {
+        motor.setPower(1);
+        sleep(5000);
+        motor.setPower(0);
 
-    public double DRIVETRAIN_SPEED = 0.4;
-    @Override
-    public void runOpMode() throws InterruptedException{
-        /**
-         * Instance of Robot class is initialized
-         */
-        robot.init();
-
-        /**
-         * This code is run during the init phase, and when opMode is not active
-         * i.e. When "INIT" Button is pressed on the Driver Station App
-         */
-
-
-        robot.chassis.FLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.chassis.BLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.chassis.FRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.chassis.BRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        waitForStart();
-
-        while (opModeIsActive()) {
-
-            /**
-             * Joystick controls for Drivetrain, Intake on GAMEPAD 1
-             */
-
-            //Drive train
-
-
-            //open and close claw function
-//            if(gamepad1.a){
-//                robot.claw.open();
-//            }
-//            if(gamepad1.b){
-//                robot.claw.close();
-//            }
-            // Controller to motor powers.
-            double move_y_axis = -gamepad1.left_stick_y;
-            double move_x_axis = gamepad1.left_stick_x;
-            double pivot_turn = gamepad1.right_stick_x;
-
-            double wrist_power = gamepad2.right_stick_y;
-
-
-
-            //Sets the target power
-            double target_fl_power = move_y_axis + move_x_axis + pivot_turn;
-            double target_bl_power = move_y_axis - move_x_axis + pivot_turn;
-            double target_fr_power = move_y_axis - move_x_axis - pivot_turn;
-            double target_br_power = move_y_axis + move_x_axis - pivot_turn;
-
-            //Adds how far you are from target power, times acceleration to the current power.
-            fl_power += ACCELERATION * (target_fl_power - fl_power);
-            bl_power += ACCELERATION * (target_bl_power - bl_power);
-            fr_power += ACCELERATION * (target_fr_power - fr_power);
-            br_power += ACCELERATION * (target_br_power - br_power);
-
-            //gearshift
-            if(gamepad1.a) {
-                if(count % 2 == 0) {
-                    DRIVETRAIN_SPEED = 0.4;
-                } else {
-                    DRIVETRAIN_SPEED = 0.6;
-                }
-                count++;
-            }
-
-            robot.chassis.FLMotor.setPower(DRIVETRAIN_SPEED * fl_power);
-            robot.chassis.BLMotor.setPower(DRIVETRAIN_SPEED * bl_power);
-            robot.chassis.FRMotor.setPower(DRIVETRAIN_SPEED * fr_power);
-            robot.chassis.BRMotor.setPower(DRIVETRAIN_SPEED * br_power);
-
-
-            //gearshift
-            double slider_power = 0;
-            robot.slider.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            robot.slider.motor.setPower(slider_power);
-
-
-            //Outake
-            if(gamepad1.left_trigger!=0) {
-                robot.intake.MoveIntake(1);
-            }
-            //Intake
-            if(gamepad1.right_trigger!=0) {
-                robot.intake.MoveIntake(-1);
-            }
-            //stop the intake
-            if(gamepad1.right_bumper) {
-                robot.intake.stopIntake();
-            }
-            if(gamepad2.y){
-                robot.wrist.gotoPosition(1);
-            }
-            if(gamepad2.x){
-                robot.wrist.gotoPosition(0.4567);
-            }
-            if(gamepad2.b){
-                robot.wrist.gotoPosition(0.66);
-            }
-            if(gamepad2.a){
-                robot.wrist.gotoPosition(0.1139);
-            }
-            if(gamepad2.dpad_up){
-                robot.arm.gotoHighBox();
-                robot.slider.gotoSliderHighBoxPosition();
-                robot.wrist.goToHighBox();
-            }
-            if(gamepad2.left_trigger !=0){
-                slider_power = gamepad2.left_trigger;
-            }
-            if(gamepad2.right_trigger !=0){
-                slider_power = -gamepad2.right_trigger;
-            }
-
-            /**
-             * Joystick controls for Slider, Arm, Wrist, Gate on GAMEPAD 2
-             */
-            robot.slider.motor.setPower(slider_power);
-            double swing_arm_power = gamepad2.left_stick_y * 0.4;
-            robot.arm.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            int armPosition = robot.arm.motor.getCurrentPosition();
-            robot.arm.motor.setPower(swing_arm_power);
-            int armVertPosition = 1500;
-            double backwardsHoldPower = 0.27;
-            double frontHoldPower = -0.29;
-            if(gamepad2.left_stick_y ==0) {
-                if (armPosition > armVertPosition) {
-                    robot.arm.motor.setPower(backwardsHoldPower);
-                } else if(armPosition < armVertPosition){
-                    if(robot.slider.motor.getCurrentPosition() <-1000){
-                        robot.arm.motor.setPower(frontHoldPower-0.2);
-                    }
-                    else if(robot.slider.motor.getCurrentPosition() <-500){
-                        robot.arm.motor.setPower(frontHoldPower-0.1 );
-                    }
-                    else if(robot.slider.motor.getCurrentPosition() >-500){
-                        robot.arm.motor.setPower(frontHoldPower);
-                    }
-                }
-            }
-            else{
-                robot.arm.motor.setPower(swing_arm_power);
-            }
-
-            // Arm code
-
-
-            // Wrist Code
-            robot.wrist.gotoPosition(robot.wrist.servo.getPosition() + -gamepad2.right_stick_y * 0.02);
-
-
-
-            YawPitchRollAngles imu = robot.chassis.imu.getRobotYawPitchRollAngles();
-            //Telemetry
-            telemetry.addData("FL Motor Encoder", robot.chassis.FLMotor.getCurrentPosition());
-            telemetry.addData("BL Motor Encoder", robot.chassis.BLMotor.getCurrentPosition());
-            telemetry.addData("BR Motor Encoder", robot.chassis.BRMotor.getCurrentPosition());
-            telemetry.addData("FR Motor Encoder", robot.chassis.FRMotor.getCurrentPosition());
-            telemetry.addData("Yaw", imu.getYaw(AngleUnit.DEGREES));
-            telemetry.addData("Pitch", imu.getPitch(AngleUnit.DEGREES));
-            telemetry.addData("Roll", imu.getRoll(AngleUnit.DEGREES));
-            telemetry.addData("Arm Position", robot.arm.motor.getCurrentPosition());
-            telemetry.addData("Motor Status", robot.arm.motor.isBusy());
-            telemetry.addData("Arm Power", robot.arm.motor.getPower());
-            telemetry.addData("Slider Position", robot.slider.motor.getCurrentPosition());
-            telemetry.addData("Wrist Position", robot.wrist.servo.getPosition());
-            telemetry.update();
-        }
-
-
-
-
-        telemetry.addData("FL Motor Encoder", robot.chassis.FLMotor.getCurrentPosition());
-        telemetry.addData("BL Motor Encoder", robot.chassis.BLMotor.getCurrentPosition());
-        telemetry.addData("BR Motor Encoder", robot.chassis.BRMotor.getCurrentPosition());
-        telemetry.addData("FR Motor Encoder", robot.chassis.FRMotor.getCurrentPosition());
-        Orientation angle;
-        angle = robot.chassis.imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
-        telemetry.addData("Angular Orientation", angle);
-        telemetry.addData("IsRobotStable", robot.chassis.isRobotStable());
-
-
+        telemetry.addData("Encoder Position", motor.getCurrentPosition());
         telemetry.update();
 
-    }
-
+        sleep(5000);
+}
 }
