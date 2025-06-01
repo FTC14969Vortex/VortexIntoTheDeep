@@ -7,48 +7,26 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @TeleOp(name = "TeleOp", group = "TeleOp")
 
 public class Teleop extends LinearOpMode {
-//
-//    public DcMotor motor = hardwareMap.get(DcMotor.class, "motor");
-//
-//    @Override
-//    public void runOpMode() throws InterruptedException{
-//
-//        motor.setDirection(DcMotor.Direction.FORWARD);
-//        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//
-//
-//        waitForStart();
-//
-//        while (opModeIsActive()) {
-//
-//            double power = gamepad1.left_stick_y;
-//            // Set the power of the motor
-//            motor.setPower(power);
-//
-//        }
-//
-//    }
+    public DcMotor motor = null;
+    @Override
 
-public DcMotor  motor   = null;
-@Override
     public void runOpMode() {
-    double power;
+        double power;
 
-    motor = hardwareMap.get(DcMotor.class, "motor");
+        motor = hardwareMap.get(DcMotor.class, "motor");
 
-    motor.setDirection(DcMotor.Direction.FORWARD);
+        motor.setDirection(DcMotor.Direction.FORWARD);
 
-    waitForStart();
+        waitForStart();
 
-//    while (opModeIsActive()) {
-        motor.setPower(1);
-        sleep(5000);
-        motor.setPower(0);
+        while (opModeIsActive()) {
 
-        telemetry.addData("Encoder Position", motor.getCurrentPosition());
-        telemetry.update();
+            power = gamepad1.right_stick_x;
+            motor.setPower(power);
 
-        sleep(5000);
-}
+            telemetry.addData("Encoder Position", motor.getCurrentPosition());
+            telemetry.update();
+        }
+    }
 }
