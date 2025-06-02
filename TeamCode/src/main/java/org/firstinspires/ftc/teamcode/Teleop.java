@@ -14,7 +14,7 @@ public class Teleop extends LinearOpMode {
     public void runOpMode() {
         double power;
 
-        motor = hardwareMap.get(DcMotor.class, "motor");
+        motor = hardwareMap.get(DcMotor.class, "backLeftDrive");
 
         motor.setDirection(DcMotor.Direction.FORWARD);
 
