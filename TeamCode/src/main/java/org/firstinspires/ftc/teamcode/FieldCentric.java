@@ -123,7 +123,8 @@ public class FieldCentric extends LinearOpMode {
             // Denominator is the largest motor power (absolute value) or 1
             // This ensures all the powers maintain the same ratio,
             // but only if at least one is out of the range [-1, 1]
-            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(yaw), 1) * 1.7; //Multiply by 1.7 to reduce speed
+            double speed = 1.7;
+            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(yaw), 1) * speed; //Multiply by 1.7 to reduce speed
             leftFrontPower = (rotY + rotX + yaw) / denominator;
             rightFrontPower = (rotY - rotX + yaw) / denominator;
             leftBackPower = (rotY - rotX - yaw) / denominator;
