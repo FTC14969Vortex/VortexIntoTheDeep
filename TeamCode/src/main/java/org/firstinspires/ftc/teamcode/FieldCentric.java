@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Helper.GoBildaPinpointDriver;
 
 @TeleOp(name = "TeleOpCoachPeter", group = "TeleOp")
 
@@ -21,7 +23,7 @@ public class FieldCentric extends LinearOpMode {
     private DcMotor FRMotor;
     private DcMotor BRMotor;
     // The IMU sensor object
-    private IMU imu;
+    GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
 
     double leftFrontPower;
     double leftBackPower;
@@ -57,6 +59,8 @@ public class FieldCentric extends LinearOpMode {
         FRMotor = hardwareMap.get(DcMotor.class, "frontRightDrive");
         BRMotor = hardwareMap.get(DcMotor.class, "backRightDrive");
 
+        odo = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
+
         // ########################################################################################
         // !!! IMPORTANT Drive Information. Test your motor directions. !!!!!
         // ########################################################################################
@@ -78,19 +82,8 @@ public class FieldCentric extends LinearOpMode {
         BRMotor.setDirection(DcMotor.Direction.FORWARD);
 
 
-        // Set up the parameters with which we will use our IMU. Note that integration
-        // algorithm here just reports accelerations to the logcat log; it doesn't actually
-        // provide positional information.
-        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                RevHubOrientationOnRobot.UsbFacingDirection.LEFT));
-
-        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
-        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
-        // and named "imu".
-        imu = hardwareMap.get(IMU.class, "imu");
-        imu.initialize(parameters);
-
+        // Recalibrate IMU
+        odo.recalibrateIMU();
 
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
@@ -101,7 +94,7 @@ public class FieldCentric extends LinearOpMode {
         while (opModeIsActive()) {
 
             if (gamepad1.a) {
-                imu.resetYaw();
+                odo.recalibrateIMU();
             }
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
@@ -112,7 +105,7 @@ public class FieldCentric extends LinearOpMode {
             lateral = gamepad1.left_stick_x; // Strafe left/right (positive is right, negation is left)
             yaw = gamepad1.right_stick_x; // Turn left/rigth (positive is clockwise, negative is counter-clockwise)
 
-            double botHeading = -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+            double botHeading = -odo.getHeading(AngleUnit.RADIANS); // Get the robot's heading in radians
             telemetry.addLine("botHeading " + botHeading);
 
             // Rotate the movement direction counter to the bot's rotation
@@ -126,8 +119,8 @@ public class FieldCentric extends LinearOpMode {
             double speed = 1.7;
             double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(yaw), 1) * speed; //Multiply by 1.7 to reduce speed
             leftFrontPower = (rotY + rotX + yaw) / denominator;
-            rightFrontPower = (rotY - rotX + yaw) / denominator;
-            leftBackPower = (rotY - rotX - yaw) / denominator;
+            rightFrontPower = (rotY - rotX - yaw) / denominator;
+            leftBackPower = (rotY - rotX + yaw) / denominator;
             rightBackPower = (rotY + rotX - yaw) / denominator;
 
             // Send calculated power to wheels.
