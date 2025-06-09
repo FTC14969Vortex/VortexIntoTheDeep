@@ -13,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Helper.GoBildaPinpointDriver;
 
-@TeleOp(name = "TeleOpCoachPeter", group = "TeleOp")
+@TeleOp(name = "FieldCentricChris", group = "TeleOp")
 
 public class FieldCentric extends LinearOpMode {
 
@@ -84,6 +84,7 @@ public class FieldCentric extends LinearOpMode {
 
         // Recalibrate IMU
         odo.recalibrateIMU();
+        odo.resetPosAndIMU();
 
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
@@ -94,7 +95,7 @@ public class FieldCentric extends LinearOpMode {
         while (opModeIsActive()) {
 
             if (gamepad1.a) {
-                odo.recalibrateIMU();
+                odo.resetPosAndIMU();
             }
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
@@ -105,6 +106,7 @@ public class FieldCentric extends LinearOpMode {
             lateral = gamepad1.left_stick_x; // Strafe left/right (positive is right, negation is left)
             yaw = gamepad1.right_stick_x; // Turn left/rigth (positive is clockwise, negative is counter-clockwise)
 
+            odo.update();
             double botHeading = -odo.getHeading(AngleUnit.RADIANS); // Get the robot's heading in radians
             telemetry.addLine("botHeading " + botHeading);
 
