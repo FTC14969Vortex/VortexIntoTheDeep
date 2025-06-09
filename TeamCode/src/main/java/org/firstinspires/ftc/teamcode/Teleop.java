@@ -20,13 +20,13 @@ public class Teleop extends LinearOpMode {
 
         waitForStart();
 
-        while (opModeIsActive()) {
+            while (opModeIsActive()) {
 
-            power = gamepad1.right_stick_x;
-            motor.setPower(power);
+                power = gamepad1.right_stick_x;
+                motor.setPower(power);
 
-            telemetry.addData("Encoder Position", motor.getCurrentPosition());
-            telemetry.update();
-        }
+                telemetry.addData("Encoder Position", motor.getCurrentPosition());
+                telemetry.update();
+            }
     }
 }
