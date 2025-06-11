@@ -7,26 +7,35 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @TeleOp(name = "TeleOp", group = "TeleOp")
 
 public class Teleop extends LinearOpMode {
-//        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    public DcMotor motor = null;
+    Chassis chassis;
+    double axial;
+    double lateral;
+    double yaw;
+
     @Override
-
     public void runOpMode() {
-        double power;
-
-        motor = hardwareMap.get(DcMotor.class, "backLeftDrive");
-
-        motor.setDirection(DcMotor.Direction.FORWARD);
+        chassis = new Chassis();
+        chassis.init(this);
 
         waitForStart();
 
         while (opModeIsActive()) {
 
-            power = gamepad1.right_stick_x;
-            motor.setPower(power);
+            if (gamepad1.a) {
+                chassis.resetIMU();
+            }
+            if (gamepad1.b) {
+                if (chassis.getDriveMode() == Chassis.DriveMode.ROBOT_CENTRIC) {
+                    chassis.setDriveMode(Chassis.DriveMode.FIELD_CENTRIC);
+                } else {
+                    chassis.setDriveMode(Chassis.DriveMode.ROBOT_CENTRIC);
+                }
+            }
+            axial = -gamepad1.left_stick_y; // Forward/Backward (inverted joystick for push forward = positive)
+            lateral = gamepad1.left_stick_x; // Strafe left/right (positive is right, negation is left)
+            yaw = gamepad1.right_stick_x; // Turn left/rigth (positive is clockwise, negative is counter-clockwise)
 
-            telemetry.addData("Encoder Position", motor.getCurrentPosition());
-            telemetry.update();
+            chassis.drive(axial, lateral, yaw);
         }
     }
 }
