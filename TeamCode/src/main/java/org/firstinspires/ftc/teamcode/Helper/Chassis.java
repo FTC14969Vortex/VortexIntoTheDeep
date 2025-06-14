@@ -3,12 +3,15 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Chassis {
     double leftFrontPower;
     double leftBackPower;
     double rightFrontPower;
     double rightBackPower;
+    private GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
 
     private DcMotor frontLeftDrive;
     private DcMotor backLeftDrive;
@@ -16,6 +19,7 @@ public class Chassis {
     private DcMotor backRightDrive;
 
     private OpMode opMode;
+    private DriveMode driveMode;
 
     public enum DriveMode {
 
@@ -30,27 +34,34 @@ public class Chassis {
         backLeftDrive = opMode.hardwareMap.get(DcMotor.class, "backLeftDrive");
         frontRightDrive = opMode.hardwareMap.get(DcMotor.class, "frontRightDrive");
         backRightDrive = opMode.hardwareMap.get(DcMotor.class, "backRightDrive");
+        odo = opMode.hardwareMap.get(GoBildaPinpointDriver.class,"odo");
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
+        odo.recalibrateIMU();
+        odo.resetPosAndIMU();
+    }
+    public void setDriveMode(DriveMode driveMode) {
+        // save driveMode to use in drive()
+        this.driveMode = driveMode;
 
     }
-    void setDriveMode(DriveMode mode) {
+    public void resetIMU(){
+        odo.resetPosAndIMU();
+    }
 
-    }  // gamepad B
-    void resetIMU(){
-
-    }                    // gamepad A
-    // Print out
-    // - Driving Mode
-    // - Odometry computer's reading of (heading, x, y)
     void updateTelemetry() {
         // opMode.telemetry.addData("Status", "Run Time: " + runtime);
+        opMode.telemetry.addData("Drive Mode", driveMode);
         opMode.telemetry.addData("Front left/Right", JavaUtil.formatNumber(leftFrontPower, 4, 2) + ", " + JavaUtil.formatNumber(rightFrontPower, 4, 2));
         opMode.telemetry.addData("Back  left/Right", JavaUtil.formatNumber(leftBackPower, 4, 2) + ", " + JavaUtil.formatNumber(rightBackPower, 4, 2));
+        odo.update();
+        opMode.telemetry.addData("botHeading", JavaUtil.formatNumber(odo.getHeading(AngleUnit.RADIANS), 4, 2));
+        opMode.telemetry.addData("botX", JavaUtil.formatNumber(odo.getPosX(DistanceUnit.CM), 4, 2));
+        opMode.telemetry.addData("botY", JavaUtil.formatNumber(odo.getPosY(DistanceUnit.CM), 4, 2));
         opMode.telemetry.update();
 
     }
@@ -61,12 +72,24 @@ public class Chassis {
      * @param yaw     The turning/rotational power from right joystick X direction (-1.0 to 1.0).
      */
     public void drive(double axial, double lateral, double yaw){
-        double max;
+        // If in field centric mode read botHeading from odo otherwise set botHeading equal to zero
+        double botHeading;
+        if (driveMode == DriveMode.FIELD_CENTRIC) {
+            odo.update();
+            botHeading = -odo.getHeading(AngleUnit.RADIANS); // Get the robot's heading in radians
+        }
+        else {
+            botHeading = 0;
+        }
 
-        leftFrontPower = axial + lateral + yaw;
-        rightFrontPower = axial - lateral - yaw;
-        leftBackPower = axial - lateral + yaw;
-        rightBackPower = axial + lateral - yaw;
+        double max;
+        double lateral_1 = lateral * Math.cos(botHeading) - axial * Math.sin(botHeading);
+        double axial_1 = lateral * Math.sin(botHeading) + axial * Math.cos(botHeading);
+
+        leftFrontPower = axial_1 + lateral_1 + yaw;
+        rightFrontPower = axial_1 - lateral_1 - yaw;
+        leftBackPower = axial_1 - lateral_1 + yaw;
+        rightBackPower = axial_1 + lateral_1 - yaw;
         // Normalize the values so no wheel power exceeds 100%
         // This ensures that the robot maintains the desired motion.
         max = JavaUtil.maxOfList(JavaUtil.createListWith(Math.abs(leftFrontPower), Math.abs(rightFrontPower), Math.abs(leftBackPower), Math.abs(rightBackPower)));
