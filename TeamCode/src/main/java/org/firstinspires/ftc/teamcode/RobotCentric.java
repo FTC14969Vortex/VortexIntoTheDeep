@@ -1,29 +1,21 @@
 //imports
 package org.firstinspires.ftc.teamcode;
-
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.Helper.GoBildaPinpointDriver;
 
-@TeleOp(name = "FieldCentric", group = "TeleOp")
+@TeleOp(name = "RobotCentric", group = "TeleOp")
 
-public class FieldCentric extends LinearOpMode {
+public class RobotCentric extends LinearOpMode {
 
-    // The Motor objects
-    private DcMotor FLMotor;
-    private DcMotor BLMotor;
-    private DcMotor FRMotor;
-    private DcMotor BRMotor;
-    // The IMU sensor object
-    GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
+
+    private DcMotor frontLeftDrive;
+    private DcMotor backLeftDrive;
+    private DcMotor frontRightDrive;
+    private DcMotor backRightDrive;
 
     double leftFrontPower;
     double leftBackPower;
@@ -50,17 +42,18 @@ public class FieldCentric extends LinearOpMode {
      */
     @Override
     public void runOpMode() {
-        double axial;
-        double lateral;
-        double yaw;
+        ElapsedTime runtime;
+        float axial;
+        float lateral;
+        float yaw;
+        double max;
 
-        FLMotor = hardwareMap.get(DcMotor.class, "frontLeftDrive");
-        BLMotor = hardwareMap.get(DcMotor.class, "backLeftDrive");
-        FRMotor = hardwareMap.get(DcMotor.class, "frontRightDrive");
-        BRMotor = hardwareMap.get(DcMotor.class, "backRightDrive");
+        frontLeftDrive = hardwareMap.get(DcMotor.class, "frontLeftDrive");
+        backLeftDrive = hardwareMap.get(DcMotor.class, "backLeftDrive");
+        frontRightDrive = hardwareMap.get(DcMotor.class, "frontRightDrive");
+        backRightDrive = hardwareMap.get(DcMotor.class, "backRightDrive");
 
-        odo = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
-
+        runtime = new ElapsedTime();
         // ########################################################################################
         // !!! IMPORTANT Drive Information. Test your motor directions. !!!!!
         // ########################################################################################
@@ -76,67 +69,47 @@ public class FieldCentric extends LinearOpMode {
         // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward.
         // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
         // <--- Click blue icon to see important note re. testing motor directions.
-        FLMotor.setDirection(DcMotor.Direction.REVERSE);
-        BLMotor.setDirection(DcMotor.Direction.REVERSE);
-        FRMotor.setDirection(DcMotor.Direction.FORWARD);
-        BRMotor.setDirection(DcMotor.Direction.FORWARD);
-
-
-        // Recalibrate IMU
-        odo.recalibrateIMU();
-        odo.resetPosAndIMU();
-
+        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
+        backRightDrive.setDirection(DcMotor.Direction.FORWARD);
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         waitForStart();
-
+        runtime.reset();
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-
-            if (gamepad1.a) {
-                odo.resetPosAndIMU();
-            }
-
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             // Note: pushing stick forward gives negative value
-            // stick Y direction: up is -, down is +
-            // stick X direction: left is -, right is +
-            axial = -gamepad1.left_stick_y; // Forward/Backward (inverted joystick for push forward = positive)
-            lateral = gamepad1.left_stick_x; // Strafe left/right (positive is right, negation is left)
-            yaw = gamepad1.right_stick_x; // Turn left/rigth (positive is clockwise, negative is counter-clockwise)
-
-            odo.update();
-            double botHeading = -odo.getHeading(AngleUnit.RADIANS); // Get the robot's heading in radians
-            telemetry.addLine("botHeading " + botHeading);
-
-            // Rotate the movement direction counter to the bot's rotation
-            double rotX = lateral * Math.cos(botHeading) - axial * Math.sin(botHeading);
-            double rotY = lateral * Math.sin(botHeading) + axial * Math.cos(botHeading);
-            rotX = rotX * 1.1; //counteract imperfect strafing
-
-            // Denominator is the largest motor power (absolute value) or 1
-            // This ensures all the powers maintain the same ratio,
-            // but only if at least one is out of the range [-1, 1]
-            double speed = 1.7;
-            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(yaw), 1) * speed; //Multiply by 1.7 to reduce speed
-            leftFrontPower = (rotY + rotX + yaw) / denominator;
-            rightFrontPower = (rotY - rotX - yaw) / denominator;
-            leftBackPower = (rotY - rotX + yaw) / denominator;
-            rightBackPower = (rotY + rotX - yaw) / denominator;
-
+            axial = -gamepad1.left_stick_y;
+            lateral = gamepad1.left_stick_x;
+            yaw = gamepad1.right_stick_x;
+            // Combine the joystick requests for each axis-motion to determine each wheel's power.
+            // Set up a variable for each drive wheel to save the power level for telemetry.
+            leftFrontPower = axial + lateral + yaw;
+            rightFrontPower = (axial - lateral) - yaw;
+            leftBackPower = (axial - lateral) + yaw;
+            rightBackPower = (axial + lateral) - yaw;
+            // Normalize the values so no wheel power exceeds 100%
+            // This ensures that the robot maintains the desired motion.
+            max = JavaUtil.maxOfList(JavaUtil.createListWith(Math.abs(leftFrontPower), Math.abs(rightFrontPower), Math.abs(leftBackPower), Math.abs(rightBackPower)));
+            if (max > 1) {
+                leftFrontPower = leftFrontPower / max;
+                rightFrontPower = rightFrontPower / max;
+                leftBackPower = leftBackPower / max;
+                rightBackPower = rightBackPower / max;
+            }
             // Send calculated power to wheels.
-            FLMotor.setPower(leftFrontPower);
-            FRMotor.setPower(rightFrontPower);
-            BLMotor.setPower(leftBackPower);
-            BRMotor.setPower(rightBackPower);
-
+            frontLeftDrive.setPower(leftFrontPower);
+            frontRightDrive.setPower(rightFrontPower);
+            backLeftDrive.setPower(leftBackPower);
+            backRightDrive.setPower(rightBackPower);
             // Show the elapsed game time and wheel power.
-            //telemetry.addData("Status", "Run Time: " + runtime);
+            telemetry.addData("Status", "Run Time: " + runtime);
             telemetry.addData("Front left/Right", JavaUtil.formatNumber(leftFrontPower, 4, 2) + ", " + JavaUtil.formatNumber(rightFrontPower, 4, 2));
             telemetry.addData("Back  left/Right", JavaUtil.formatNumber(leftBackPower, 4, 2) + ", " + JavaUtil.formatNumber(rightBackPower, 4, 2));
             telemetry.update();
-
         }
     }
 }
