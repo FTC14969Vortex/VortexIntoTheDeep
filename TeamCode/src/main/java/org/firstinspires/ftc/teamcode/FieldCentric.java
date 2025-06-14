@@ -106,24 +106,31 @@ public class FieldCentric extends LinearOpMode {
             lateral = gamepad1.left_stick_x; // Strafe left/right (positive is right, negation is left)
             yaw = gamepad1.right_stick_x; // Turn left/rigth (positive is clockwise, negative is counter-clockwise)
 
+            // robot centric
+            //double botHeading=0;
+
+            // field centric
             odo.update();
             double botHeading = -odo.getHeading(AngleUnit.RADIANS); // Get the robot's heading in radians
+
             telemetry.addLine("botHeading " + botHeading);
 
             // Rotate the movement direction counter to the bot's rotation
-            double rotX = lateral * Math.cos(botHeading) - axial * Math.sin(botHeading);
-            double rotY = lateral * Math.sin(botHeading) + axial * Math.cos(botHeading);
-            rotX = rotX * 1.1; //counteract imperfect strafing
+            // field centric
+            double lateral_1 = lateral * Math.cos(botHeading) - axial * Math.sin(botHeading);
+            double axial_1 = lateral * Math.sin(botHeading) + axial * Math.cos(botHeading);
+
+            lateral_1 = lateral_1 * 1.1; //counteract imperfect strafing
 
             // Denominator is the largest motor power (absolute value) or 1
             // This ensures all the powers maintain the same ratio,
             // but only if at least one is out of the range [-1, 1]
             double speed = 1.7;
-            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(yaw), 1) * speed; //Multiply by 1.7 to reduce speed
-            leftFrontPower = (rotY + rotX + yaw) / denominator;
-            rightFrontPower = (rotY - rotX - yaw) / denominator;
-            leftBackPower = (rotY - rotX + yaw) / denominator;
-            rightBackPower = (rotY + rotX - yaw) / denominator;
+            double denominator = Math.max(Math.abs(axial_1) + Math.abs(lateral_1) + Math.abs(yaw), 1) * speed; //Multiply by 1.7 to reduce speed
+            leftFrontPower = (axial_1 + lateral_1 + yaw) / denominator;
+            rightFrontPower = (axial_1 - lateral_1 - yaw) / denominator;
+            leftBackPower = (axial_1 - lateral_1 + yaw) / denominator;
+            rightBackPower = (axial_1 + lateral_1 - yaw) / denominator;
 
             // Send calculated power to wheels.
             FLMotor.setPower(leftFrontPower);
