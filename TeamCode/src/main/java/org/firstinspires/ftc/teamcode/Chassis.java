@@ -53,6 +53,7 @@ public class Chassis {
     }
     public void setDriveMode(DriveMode mode) {
         this.driveMode = mode;
+        telemetry.addData("Changing driveMode to:", mode.toString() );
     }
     public DriveMode getDriveMode() {
         return this.driveMode;
@@ -77,12 +78,14 @@ public class Chassis {
      * @param yaw     The turning/rotational power from right joystick X direction (-1.0 to 1.0).
      */
     void drive(double axial, double lateral, double yaw) {
+        odo.update();
         double botHeading =0;
         if (driveMode == DriveMode.FIELD_CENTRIC) {
-            odo.update();
             botHeading = -odo.getHeading(AngleUnit.RADIANS); // Get the robot's heading in radians
             telemetry.addLine("botHeading " + botHeading);
         }
+        telemetry.addData("axial:", axial);
+        telemetry.addData("lateral:", lateral);
 
         // Rotate the movement direction counter to the bot's rotation
         double rotX = lateral * Math.cos(botHeading) - axial * Math.sin(botHeading);
@@ -98,6 +101,11 @@ public class Chassis {
         rightFrontPower = (rotY - rotX - yaw) / denominator;
         leftBackPower = (rotY - rotX + yaw) / denominator;
         rightBackPower = (rotY + rotX - yaw) / denominator;
+
+        FLMotor.setPower(leftBackPower);
+        FRMotor.setPower(rightFrontPower);
+        BLMotor.setPower(leftBackPower);
+        BRMotor.setPower(rightBackPower);
         updateTelemetry();
     }
 }
