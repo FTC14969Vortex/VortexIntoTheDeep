@@ -95,9 +95,6 @@ public class Chassis {
         driveMode = mode;
     }  // gamepad B
 
-    public DriveMode getDriveMode() {
-        return driveMode;
-    }
     public void resetIMU() {
         odo.resetPosAndIMU();
         odo.update();

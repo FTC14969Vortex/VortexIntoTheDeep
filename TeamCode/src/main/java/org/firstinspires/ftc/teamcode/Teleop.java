@@ -34,12 +34,11 @@ public class Teleop extends LinearOpMode {
                 chassis.resetIMU();
             }
 
-            if (gamepad1.b) {
-                if (chassis.getDriveMode() == Chassis.DriveMode.ROBOT_CENTRIC) {
+            if (gamepad1.x) {
                     chassis.setDriveMode(Chassis.DriveMode.FIELD_CENTRIC);
-                }
-                else
-                    chassis.setDriveMode(Chassis.DriveMode.ROBOT_CENTRIC);
+            }
+            if (gamepad1.y) {
+                chassis.setDriveMode(Chassis.DriveMode.ROBOT_CENTRIC);
             }
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
