@@ -35,10 +35,10 @@ public class Teleop extends LinearOpMode {
             }
 
             if (gamepad1.x) {
-                    chassis.setDriveMode(Chassis.DriveMode.FIELD_CENTRIC);
+                chassis.setDriveMode(Chassis.DriveMode.FIELD_CENTRIC);
                     telemetry.addLine("FIELD_CENTRIC");
             }
-            if (gamepad1.y) {
+            else if (gamepad1.y) {
                 chassis.setDriveMode(Chassis.DriveMode.ROBOT_CENTRIC);
                 telemetry.addLine("ROBOT_CENTRIC");
             }
