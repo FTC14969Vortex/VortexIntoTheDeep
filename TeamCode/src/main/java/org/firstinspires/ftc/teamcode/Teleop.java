@@ -17,8 +17,6 @@ import org.firstinspires.ftc.teamcode.Chassis;
 @TeleOp(name = "TeleopEL", group = "TeleOp")
 
 public class Teleop extends LinearOpMode {
-    Chassis vortexChassis;
-
 
     /**
      * This OpMode illustrates driving a 4-motor Omni-Directional (or Holonomic) robot.
@@ -44,6 +42,7 @@ public class Teleop extends LinearOpMode {
         double axial;
         double lateral;
         double yaw;
+        Chassis vortexChassis;
 
         telemetry.addData("Status", "Before creating Chassis object");
         telemetry.update();
