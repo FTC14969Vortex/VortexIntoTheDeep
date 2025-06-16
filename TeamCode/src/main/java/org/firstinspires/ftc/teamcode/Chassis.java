@@ -118,7 +118,11 @@ public class Chassis {
      */
     public void drive(double axial, double lateral, double yaw){
         odo.update();
-        double botHeading = -odo.getHeading(AngleUnit.RADIANS); // Get the robot's heading in radians
+        double botHeading = 0;
+        if (driveMode == DriveMode.FIELD_CENTRIC) {
+            botHeading = -odo.getHeading(AngleUnit.RADIANS); // Get the robot's heading in radians
+        }
+
         updateTelemetry();
 
 
