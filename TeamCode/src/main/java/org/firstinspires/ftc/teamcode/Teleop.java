@@ -48,13 +48,23 @@ public class Teleop extends LinearOpMode {
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
+            //reset if A is pressed
             if (gamepad1.a) {
                 vortexChassis.resetIMU();
             }
 
+            /*
             if (gamepad1.b) {
                 vortexChassis.setDriveMode(vortexChassis.getDriveMode()==Chassis.DriveMode.ROBOT_CENTRIC?
                     Chassis.DriveMode.FIELD_CENTRIC:Chassis.DriveMode.ROBOT_CENTRIC);
+            }
+            */
+
+            if (gamepad1.x) {
+                vortexChassis.setDriveMode(Chassis.DriveMode.FIELD_CENTRIC);
+            }
+            else if (gamepad1.y) {
+                vortexChassis.setDriveMode(Chassis.DriveMode.ROBOT_CENTRIC);
             }
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.

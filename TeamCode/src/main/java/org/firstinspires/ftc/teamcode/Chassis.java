@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Helper.GoBildaPinpointDriver;
 
 
@@ -28,10 +29,6 @@ public class Chassis {
     private double leftBackPower=0;
     private double rightFrontPower=0;
     private double rightBackPower=0;
-
-    private double rotX=0;
-    private double rotY=0;
-    private double botHeading=0;
 
     void init(OpMode opMode) {
 
@@ -74,11 +71,7 @@ public class Chassis {
     // gamepad B
     void setDriveMode(DriveMode mode) {
         dMode = mode;        
-    }  
-    DriveMode getDriveMode() {
-        return dMode;
     }
-
 
     // gamepad A
     void resetIMU() {
@@ -89,11 +82,14 @@ public class Chassis {
     // - Driving Mode
     // - Odometry computer's reading of (heading, x, y)
     void updateTelemetry() {
+        odo.update();
+
         theOpMode.telemetry.addLine("Driving mode " + (dMode==DriveMode.ROBOT_CENTRIC?
                     "ROBOT_CENTRIC":"FIELD_CENTRIC"));
-        theOpMode.telemetry.addLine("botHeading " + botHeading);
-        theOpMode.telemetry.addLine("rotX " + rotY);
-        theOpMode.telemetry.addLine("rotY " + rotY);    
+
+        theOpMode.telemetry.addData("botHeading", JavaUtil.formatNumber(odo.getHeading(AngleUnit.RADIANS), 4, 2));
+        theOpMode.telemetry.addData("botX", JavaUtil.formatNumber(odo.getPosX(DistanceUnit.CM), 4, 2));
+        theOpMode.telemetry.addData("botY", JavaUtil.formatNumber(odo.getPosY(DistanceUnit.CM), 4, 2));
 
         theOpMode.telemetry.addData("Front left/Right", JavaUtil.formatNumber(leftFrontPower, 4, 2) + ", " +
             JavaUtil.formatNumber(rightFrontPower, 4, 2));
@@ -110,6 +106,9 @@ public class Chassis {
      * @param yaw     The turning/rotational power from right joystick X direction (-1.0 to 1.0).
      */
     void drive(double axial, double lateral, double yaw) {
+            double rotX;
+            double rotY;
+            double botHeading;
 
             odo.update();
             if (dMode==Chassis.DriveMode.ROBOT_CENTRIC) {
