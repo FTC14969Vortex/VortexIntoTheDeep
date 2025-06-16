@@ -119,11 +119,17 @@ public class FieldCentric extends LinearOpMode {
             // This ensures all the powers maintain the same ratio,
             // but only if at least one is out of the range [-1, 1]
             double speed = 1.7;
+            leftFrontPower = (rotY + rotX + yaw);
+            rightFrontPower = (rotY - rotX - yaw);
+            leftBackPower = (rotY - rotX + yaw);
+            rightBackPower = (rotY + rotX - yaw);
+
             double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(yaw), 1) * speed; //Multiply by 1.7 to reduce speed
-            leftFrontPower = (rotY + rotX + yaw) / denominator;
-            rightFrontPower = (rotY - rotX - yaw) / denominator;
-            leftBackPower = (rotY - rotX + yaw) / denominator;
-            rightBackPower = (rotY + rotX - yaw) / denominator;
+
+            leftFrontPower = leftFrontPower / denominator;
+            rightFrontPower = rightFrontPower / denominator;
+            leftBackPower = leftBackPower / denominator;
+            rightBackPower = rightBackPower / denominator;
 
             // Send calculated power to wheels.
             FLMotor.setPower(leftFrontPower);
