@@ -1,32 +1,26 @@
 //imports
 package org.firstinspires.ftc.teamcode;
-
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Helper.GoBildaPinpointDriver;
 
 public class Chassis {
     // The Motor objects
+    private double botHeading;
     private DcMotor FLMotor;
     private DcMotor BLMotor;
     private DcMotor FRMotor;
     private DcMotor BRMotor;
     // The IMU sensor object
-    GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
+    private GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
 
-    double leftFrontPower;
-    double leftBackPower;
-    double rightFrontPower;
-    double rightBackPower;
+    private double leftFrontPower;
+    private double leftBackPower;
+    private double rightFrontPower;
+    private double rightBackPower;
 
     /**
      * This OpMode illustrates driving a 4-motor Omni-Directional (or Holonomic) robot.
@@ -103,9 +97,7 @@ public class Chassis {
     // - Driving Mode
     // - Odometry computer's reading of (heading, x, y)
     public void updateTelemetry() {
-        opMode.telemetry.addData("Status", "Initialized");
-        opMode.telemetry.update();
-        opMode.telemetry.addLine("botHeading " + -odo.getHeading(AngleUnit.RADIANS));
+        opMode.telemetry.addLine("botHeading " + botHeading);
         opMode.telemetry.addData("Front left/Right", JavaUtil.formatNumber(leftFrontPower, 4, 2) + ", " + JavaUtil.formatNumber(rightFrontPower, 4, 2));
         opMode.telemetry.addData("Back  left/Right", JavaUtil.formatNumber(leftBackPower, 4, 2) + ", " + JavaUtil.formatNumber(rightBackPower, 4, 2));
         opMode.telemetry.addData("botX", JavaUtil.formatNumber(odo.getPosX(DistanceUnit.CM), 4, 2));
@@ -120,13 +112,10 @@ public class Chassis {
      */
     public void drive(double axial, double lateral, double yaw){
         odo.update();
-        double botHeading = 0;
+        botHeading = 0;
         if (driveMode == DriveMode.FIELD_CENTRIC) {
             botHeading = -odo.getHeading(AngleUnit.RADIANS); // Get the robot's heading in radians
         }
-
-        updateTelemetry();
-
 
         // Rotate the movement direction counter to the bot's rotation
         double rotX = lateral * Math.cos(botHeading) - axial * Math.sin(botHeading);

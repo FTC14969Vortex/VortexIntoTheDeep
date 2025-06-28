@@ -1,17 +1,7 @@
 //imports
 package org.firstinspires.ftc.teamcode;
-
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
-import org.firstinspires.ftc.robotcore.external.JavaUtil;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.Helper.GoBildaPinpointDriver;
 
 @TeleOp(name = "TeleopSophia", group = "TeleOp")
 
@@ -24,6 +14,7 @@ public class Teleop extends LinearOpMode {
         double yaw;
         Chassis chassis = new Chassis();
         chassis.init(this);
+        telemetry.addData("Status", "Initialized");
 
         waitForStart();
 
@@ -49,7 +40,7 @@ public class Teleop extends LinearOpMode {
             // stick X direction: left is -, right is +
             axial = -gamepad1.left_stick_y; // Forward/Backward (inverted joystick for push forward = positive)
             lateral = gamepad1.left_stick_x; // Strafe left/right (positive is right, negation is left)
-            yaw = gamepad1.right_stick_x; // Turn left/rigth (positive is clockwise, negative is counter-clockwise)
+            yaw = gamepad1.right_stick_x; // Turn left/right with (positive is clockwise, negative is counter-clockwise)
 
             chassis.drive(axial,lateral,yaw);
         }
