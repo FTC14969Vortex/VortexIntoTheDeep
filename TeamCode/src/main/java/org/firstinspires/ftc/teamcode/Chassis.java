@@ -91,7 +91,6 @@ public class Chassis {
 
     public void resetIMU() {
         odo.resetPosAndIMU();
-        odo.update();
     }                    // gamepad A
     // Print out
     // - Driving Mode
@@ -114,6 +113,7 @@ public class Chassis {
         odo.update();
         botHeading = 0;
         if (driveMode == DriveMode.FIELD_CENTRIC) {
+            odo.update();
             botHeading = -odo.getHeading(AngleUnit.RADIANS); // Get the robot's heading in radians
         }
 
