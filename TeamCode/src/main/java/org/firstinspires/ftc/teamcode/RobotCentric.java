@@ -33,8 +33,8 @@ public class RobotCentric extends LinearOpMode {
             float axial = -gamepad1.left_stick_y;
             float lateral = gamepad1.left_stick_x;
             float yaw = gamepad1.right_stick_x;
-            chassis.drive(axial, lateral, yaw);
-            chassis.updateTelemetry();
+            chassis.drive(axial, lateral, yaw, 0.5);
+            //chassis.updateTelemetry();
 
         }
     }
