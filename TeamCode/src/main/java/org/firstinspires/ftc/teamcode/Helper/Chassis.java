@@ -53,7 +53,7 @@ public class Chassis {
         odo.resetPosAndIMU();
     }
 
-    void updateTelemetry() {
+    public void updateTelemetry() {
         // opMode.telemetry.addData("Status", "Run Time: " + runtime);
         opMode.telemetry.addData("Drive Mode", driveMode);
         opMode.telemetry.addData("Front left/Right", JavaUtil.formatNumber(leftFrontPower, 4, 2) + ", " + JavaUtil.formatNumber(rightFrontPower, 4, 2));
