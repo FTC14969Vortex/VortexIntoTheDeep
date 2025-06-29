@@ -1,18 +1,13 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Helper;
 
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.Helper.GoBildaPinpointDriver;
 
 public class Chassis {
     public enum DriveMode {
@@ -35,7 +30,7 @@ public class Chassis {
     double rightFrontPower;
     double rightBackPower;
 
-    void init(OpMode opMode) {
+    public void init(OpMode opMode) {
         hardwareMap = opMode.hardwareMap;
         telemetry = opMode.telemetry;
         FLMotor = hardwareMap.get(DcMotor.class, "frontLeftDrive");
@@ -54,10 +49,13 @@ public class Chassis {
     public void setDriveMode(DriveMode mode) {
         this.driveMode = mode;
         telemetry.addData("Changing driveMode to:", mode.toString() );
+        telemetry.update();
     }
+
     public DriveMode getDriveMode() {
         return this.driveMode;
     }
+
     public void resetIMU() {
         odo.resetPosAndIMU();
     }
@@ -77,16 +75,13 @@ public class Chassis {
      * @param lateral The strafing (left/right) power from left joystick X direction (-1.0 to 1.0).
      * @param yaw     The turning/rotational power from right joystick X direction (-1.0 to 1.0).
      */
-    void drive(double axial, double lateral, double yaw) {
+    public void drive(double axial, double lateral, double yaw) {
         odo.update();
         double botHeading =0;
         if (driveMode == DriveMode.FIELD_CENTRIC) {
             botHeading = -odo.getHeading(AngleUnit.RADIANS); // Get the robot's heading in radians
             telemetry.addLine("botHeading " + botHeading);
         }
-        telemetry.addData("axial:", axial);
-        telemetry.addData("lateral:", lateral);
-
         // Rotate the movement direction counter to the bot's rotation
         double rotX = lateral * Math.cos(botHeading) - axial * Math.sin(botHeading);
         double rotY = lateral * Math.sin(botHeading) + axial * Math.cos(botHeading);
@@ -106,6 +101,5 @@ public class Chassis {
         FRMotor.setPower(rightFrontPower);
         BLMotor.setPower(leftBackPower);
         BRMotor.setPower(rightBackPower);
-        updateTelemetry();
     }
 }
