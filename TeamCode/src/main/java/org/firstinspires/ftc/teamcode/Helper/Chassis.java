@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Helper;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -18,7 +19,7 @@ public class Chassis {
     private DcMotor frontRightDrive;
     private DcMotor backRightDrive;
 
-    private OpMode opMode;
+    private LinearOpMode opMode;
     private DriveMode driveMode;
 
     public enum DriveMode {
@@ -27,7 +28,7 @@ public class Chassis {
         FIELD_CENTRIC
     }
 
-    public void init(OpMode opMode) {
+    public void init(LinearOpMode opMode) {
 
         this.opMode = opMode;
         frontLeftDrive = opMode.hardwareMap.get(DcMotor.class, "frontLeftDrive");
@@ -106,4 +107,57 @@ public class Chassis {
         backRightDrive.setPower(rightBackPower);
 
     }
+
+    private double clip(double value, double min, double max) {
+        return Math.max(min, Math.min(value, max));
+    }
+
+    private double angleWrap(double angle) {
+        while (angle > Math.PI) angle -= 2 * Math.PI;
+        while (angle < -Math.PI) angle += 2 * Math.PI;
+        return angle;
+    }
+
+    public void goToPosition(double xTargetCM, double yTargetCM, double headingTargetDeg, double maxPower) {
+        double headingTargetRad = Math.toRadians(headingTargetDeg);
+
+        final double POSITION_TOLERANCE_CM = 2.0;             // Stop if within 2cm
+        final double ANGLE_TOLERANCE_RAD = Math.toRadians(3); // ~3 degrees
+
+        ElapsedTime timer = new ElapsedTime();
+        timer.reset();
+
+        while (this.opMode.opModeIsActive()) {
+            odo.update();
+
+            double xCurr = odo.getPosX(DistanceUnit.CM);
+            double yCurr = odo.getPosY(DistanceUnit.CM);
+            double headingCurr = odo.getHeading(AngleUnit.RADIANS);
+
+            double dx = xTargetCM - xCurr;
+            double dy = yTargetCM - yCurr;
+            double distance = Math.sqrt(dx*dx + dy*dy);
+            double headingError = angleWrap(headingTargetRad - headingCurr);
+
+            if (distance < POSITION_TOLERANCE_CM && Math.abs(headingError) < ANGLE_TOLERANCE_RAD) break;
+
+            // Direct field-relative movement
+            double strafe = clip(dx * 0.03, -maxPower, maxPower);
+            double forward = clip(dy * 0.03, -maxPower, maxPower);
+            double turn = clip(headingError * 0.8, -maxPower, maxPower);
+
+            drive(forward, strafe, turn);
+
+            // Telemetry
+            opMode.telemetry.addData("Target", "(%.1f, %.1f)", xTargetCM, yTargetCM);
+            opMode.telemetry.addData("Current", "(%.1f, %.1f)", xCurr, yCurr);
+            opMode.telemetry.addData("Distance", "%.1f cm", distance);
+            opMode.telemetry.addData("Heading Error", "%.1f deg", Math.toDegrees(headingError));
+            opMode.telemetry.update();
+        }
+
+        // Stop robot
+        this.drive(0, 0, 0);
+    }
+
 }
