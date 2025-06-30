@@ -14,8 +14,8 @@ public class Teleop extends LinearOpMode {
     @Override
     public void runOpMode() {
         Chassis chassis = new Chassis();
-        chassis.setDriveMode(Chassis.DriveMode.ROBOT_CENTRIC);
         chassis.init(this);
+        chassis.setDriveMode(Chassis.DriveMode.ROBOT_CENTRIC);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
