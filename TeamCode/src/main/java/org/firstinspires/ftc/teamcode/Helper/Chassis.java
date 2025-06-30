@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.internal.camera.delegating.DelegatingCaptureSequence;
 
 public class Chassis {
     double leftFrontPower;
@@ -139,14 +140,30 @@ public class Chassis {
             double distance = Math.sqrt(dx*dx + dy*dy);
             double headingError = angleWrap(headingTargetRad - headingCurr);
 
-            if (distance < POSITION_TOLERANCE_CM && Math.abs(headingError) < ANGLE_TOLERANCE_RAD) break;
+            if (distance < POSITION_TOLERANCE_CM && Math.abs(headingError) < ANGLE_TOLERANCE_RAD) {
+                break;
+            }
 
             // Direct field-relative movement
-            double strafe = clip(dx * 0.03, -maxPower, maxPower);
-            double forward = clip(dy * 0.03, -maxPower, maxPower);
-            double turn = clip(headingError * 0.8, -maxPower, maxPower);
-
-            drive(forward, strafe, turn);
+            double xPower;
+            if (dx > 0) {
+                xPower = .2;
+            } else {
+                xPower = -.2;
+            }
+            double yPower;
+            if (dy > 0) {
+                yPower = -.2;
+            } else {
+                yPower = .2;
+            }
+            double headingPower;
+            if (headingError > 0) {
+                headingPower = .2;
+            } else {
+                headingPower = -.2;
+            }
+            drive(yPower, xPower, headingPower);
 
             // Telemetry
             opMode.telemetry.addData("Target", "(%.1f, %.1f)", xTargetCM, yTargetCM);
