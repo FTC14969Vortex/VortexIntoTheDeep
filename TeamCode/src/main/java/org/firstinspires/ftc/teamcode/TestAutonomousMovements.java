@@ -43,8 +43,11 @@ public class TestAutonomousMovements extends LinearOpMode {
 //
 //            // Follow the path
 //            chassis.followPath(path, power, timeoutMs);
-            chassis.goToPosition(new Pose2D(DistanceUnit.MM, x0, y0 + 12 * inch2mm, AngleUnit.RADIANS, heading), driveSpeed, timeoutMs);
-
+            //chassis.goToPosition(new Pose2D(DistanceUnit.MM, x0, y0 + 36 * inch2mm, AngleUnit.RADIANS, heading), driveSpeed, timeoutMs);
+           // chassis.goToPosition(new Pose2D(DistanceUnit.MM, x0 + 36 * inch2mm, y0, AngleUnit.RADIANS, heading), driveSpeed, timeoutMs);
+            //chassis.goToPosition(new Pose2D(DistanceUnit.MM, x0, y0 - 36 * inch2mm, AngleUnit.RADIANS, heading), driveSpeed, timeoutMs);
+            //chassis.goToPosition(new Pose2D(DistanceUnit.MM, x0 - 36 * inch2mm, y0, AngleUnit.RADIANS, heading), driveSpeed, timeoutMs);
+            chassis.goToPosition(new Pose2D(DistanceUnit.MM, x0 -24 * inch2mm, y0 + 24, AngleUnit.RADIANS, heading), driveSpeed, timeoutMs);
             chassis.stop();
         }
     }

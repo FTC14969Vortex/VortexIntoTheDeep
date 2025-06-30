@@ -36,7 +36,7 @@ public class Teleop extends LinearOpMode {
             float axial = -gamepad1.left_stick_y;
             float lateral = gamepad1.left_stick_x;
             float yaw = gamepad1.right_stick_x;
-            chassis.drive(axial, lateral, yaw);
+            //chassis.drive(axial, lateral, yaw);
         }
     }
 }

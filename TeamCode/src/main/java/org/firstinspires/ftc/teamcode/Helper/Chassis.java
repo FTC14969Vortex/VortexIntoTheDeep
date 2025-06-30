@@ -168,7 +168,7 @@ public class Chassis {
             Pose2D currentPose = getPoseEstimate();
             double dx = targetPose.getX(DistanceUnit.MM) - currentPose.getX(DistanceUnit.MM);
             double dy = targetPose.getY(DistanceUnit.MM) - currentPose.getY(DistanceUnit.MM);
-            double distance = Math.hypot(dx, dy);
+            double distance = Math.hypot(dx, dy); // distance = sqrt(dx^2 + dy^2)
 
             double heading = currentPose.getHeading(AngleUnit.RADIANS);
             double angleToTarget = Math.atan2(dy, dx);
@@ -181,6 +181,7 @@ public class Chassis {
 
             if (dx < POSITION_TOLERANCE_MM && dy < POSITION_TOLERANCE_MM && Math.abs(headingError) < ANGLE_TOLERANCE_RAD) {
                 stop();
+                break;
             }
 
             // Apply full PID for distance
