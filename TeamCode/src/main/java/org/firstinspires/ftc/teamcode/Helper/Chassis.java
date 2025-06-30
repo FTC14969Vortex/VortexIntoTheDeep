@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.internal.camera.delegating.DelegatingCaptureSequence;
 
 public class Chassis {
@@ -109,72 +110,32 @@ public class Chassis {
 
     }
 
-    private double clip(double value, double min, double max) {
-        return Math.max(min, Math.min(value, max));
-    }
+    /**
+     * Moves the robot to the target position.
+     * @param targetPose The target position.
+     * @param maxPower The maximum power to use.
+     * @param timeoutSeconds The timeout in seconds.
+     */
+    public void goToPosition(Pose2D targetPose, double maxPower, double timeoutSeconds) {
+        double xTargetCM = targetPose.getX(DistanceUnit.CM);
+        double yTargetCM = targetPose.getY(DistanceUnit.CM);
+        double headingTargetRad = targetPose.getHeading(AngleUnit.RADIANS);
 
-    private double angleWrap(double angle) {
-        while (angle > Math.PI) angle -= 2 * Math.PI;
-        while (angle < -Math.PI) angle += 2 * Math.PI;
-        return angle;
-    }
+        odo.update();
+        double headingCurr = odo.getHeading(AngleUnit.RADIANS);
+        double xCurr = odo.getPosX(DistanceUnit.CM);
+        double yCurr = odo.getPosY(DistanceUnit.CM);
 
-    public void goToPosition(double xTargetCM, double yTargetCM, double headingTargetDeg, double maxPower) {
-        double headingTargetRad = Math.toRadians(headingTargetDeg);
-
-        final double POSITION_TOLERANCE_CM = 2.0;             // Stop if within 2cm
+        final double POSITION_TOLERANCE_CM = 3.0;             // Stop if within 2cm
         final double ANGLE_TOLERANCE_RAD = Math.toRadians(3); // ~3 degrees
 
-        ElapsedTime timer = new ElapsedTime();
-        timer.reset();
+        //
+        // Implement this while loop to move the robot to the target position
+        //
+        while (opMode.opModeIsActive()) {
 
-        while (this.opMode.opModeIsActive()) {
-            odo.update();
-
-            double xCurr = odo.getPosX(DistanceUnit.CM);
-            double yCurr = odo.getPosY(DistanceUnit.CM);
-            double headingCurr = odo.getHeading(AngleUnit.RADIANS);
-
-            double dx = xTargetCM - xCurr;
-            double dy = yTargetCM - yCurr;
-            double distance = Math.sqrt(dx*dx + dy*dy);
-            double headingError = angleWrap(headingTargetRad - headingCurr);
-
-            if (distance < POSITION_TOLERANCE_CM && Math.abs(headingError) < ANGLE_TOLERANCE_RAD) {
-                break;
-            }
-
-            // Direct field-relative movement
-            double xPower;
-            if (dx > 0) {
-                xPower = .2;
-            } else {
-                xPower = -.2;
-            }
-            double yPower;
-            if (dy > 0) {
-                yPower = -.2;
-            } else {
-                yPower = .2;
-            }
-            double headingPower;
-            if (headingError > 0) {
-                headingPower = .2;
-            } else {
-                headingPower = -.2;
-            }
-            drive(yPower, xPower, headingPower);
-
-            // Telemetry
-            opMode.telemetry.addData("Target", "(%.1f, %.1f)", xTargetCM, yTargetCM);
-            opMode.telemetry.addData("Current", "(%.1f, %.1f)", xCurr, yCurr);
-            opMode.telemetry.addData("Distance", "%.1f cm", distance);
-            opMode.telemetry.addData("Heading Error", "%.1f deg", Math.toDegrees(headingError));
-            opMode.telemetry.update();
         }
 
-        // Stop robot
-        this.drive(0, 0, 0);
     }
 
 }

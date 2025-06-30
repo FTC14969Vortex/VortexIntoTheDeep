@@ -3,6 +3,10 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
 import org.firstinspires.ftc.teamcode.Helper.Chassis;
 
 @Autonomous(name = "SampleAuto_Mecanum", group = "Auto")
@@ -17,8 +21,18 @@ public class SampleAuto extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
-        // Move chassis
+        // Move chassis autonomously
         double maxPower = 0.5;
-        chassis.goToPosition(100, 50, 90, maxPower);
+        double timeoutSeconds = 10;
+        // Go in a triangle.  Do NOT change this code when you are submitting your homework
+        chassis.goToPosition(
+                new Pose2D(DistanceUnit.CM, 10, 0, AngleUnit.DEGREES, 90),
+                maxPower, timeoutSeconds);
+        chassis.goToPosition(
+                new Pose2D(DistanceUnit.CM, 10, 10, AngleUnit.DEGREES, 0),
+                maxPower, timeoutSeconds);
+        chassis.goToPosition(
+                new Pose2D(DistanceUnit.CM, 0, 0, AngleUnit.DEGREES, -45),
+                maxPower, timeoutSeconds);
     }
 }
