@@ -13,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Helper.GoBildaPinpointDriver;
 
-@TeleOp(name = "FieldCentricChris", group = "TeleOp")
+@TeleOp(name = "FieldCentricSam", group = "TeleOp")
 
 public class FieldCentric extends LinearOpMode {
 
