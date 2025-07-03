@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Helper.GoBildaPinpointDriver;
 
-@TeleOp(name = "FieldCentricSam", group = "TeleOp")
+@TeleOp(name = "RobotCentricSam", group = "TeleOp")
 
-public class FieldCentric extends LinearOpMode {
+public class RobotCentric extends LinearOpMode {
 
     // The Motor objects
     private DcMotor FLMotor;
@@ -31,7 +31,7 @@ public class FieldCentric extends LinearOpMode {
         FRMotor = hardwareMap.get(DcMotor.class, "frontRightDrive");
         BRMotor = hardwareMap.get(DcMotor.class, "backRightDrive");
 
-        odo = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
+        odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
 
         // ########################################################################################
         // !!! IMPORTANT Drive Information. Test your motor directions. !!!!!
@@ -60,8 +60,6 @@ public class FieldCentric extends LinearOpMode {
                 odo.resetPosAndIMU();
             }
             setPowerFwdBwd();
-
-            telemetry.addData("Encoder Position", BRMotor.getCurrentPosition());
             telemetry.update();
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             // Note: pushing stick forward gives negative value
@@ -77,7 +75,7 @@ public class FieldCentric extends LinearOpMode {
     }
 
     private void setPowerFwdBwd() {
-        double power = gamepad1.right_stick_y;
+        double power = -gamepad1.right_stick_y;
         FLMotor.setPower(power);
 
         BLMotor.setPower(power);
