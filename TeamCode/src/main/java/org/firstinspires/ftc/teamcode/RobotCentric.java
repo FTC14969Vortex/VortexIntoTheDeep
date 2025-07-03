@@ -59,7 +59,16 @@ public class RobotCentric extends LinearOpMode {
             if (gamepad1.a) {
                 odo.resetPosAndIMU();
             }
-            setPowerFwdBwd();
+            double[] powerSetFB = calcPowerFB();
+            double[] powerSetLR = calcPowerLR();
+            FLMotor.setPower(powerSetFB[0] + powerSetLR[0]);
+            telemetry.addData("Encoder Position FLMotor", FLMotor.getCurrentPosition());
+            BLMotor.setPower(powerSetFB[1] + powerSetLR[1]);
+            telemetry.addData("Encoder Position BLMotor", BLMotor.getCurrentPosition());
+            FRMotor.setPower(powerSetFB[2] + powerSetLR[2]);
+            telemetry.addData("Encoder Position FRMotor", FRMotor.getCurrentPosition());
+            BRMotor.setPower(powerSetFB[3] + powerSetLR[3]);
+            telemetry.addData("Encoder Position BRMotor", BRMotor.getCurrentPosition());
             telemetry.update();
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             // Note: pushing stick forward gives negative value
@@ -74,15 +83,15 @@ public class RobotCentric extends LinearOpMode {
         }
     }
 
-    private void setPowerFwdBwd() {
+    private double[] calcPowerFB() {
         double power = -gamepad1.right_stick_y;
-        FLMotor.setPower(power);
-
-        BLMotor.setPower(power);
-
-        FRMotor.setPower(power);
-
-        BRMotor.setPower(power);
+        double[] powerset = {power, power, power, power};
+        return powerset;
     }
 
+    private double[] calcPowerLR() {
+        double power = gamepad1.right_stick_x;
+        double[] powerset = {power, -power, -power, power};
+        return powerset;
+    }
 }
