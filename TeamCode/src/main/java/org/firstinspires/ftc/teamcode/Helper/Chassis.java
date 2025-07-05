@@ -27,10 +27,10 @@ public class Chassis {
 
     public void init(OpMode opMode) {
         this.opMode = opMode;
-        frontLeftDrive = opMode.hardwareMap.get(DcMotor.class, "frontLeft");
-        frontRightDrive = opMode.hardwareMap.get(DcMotor.class, "frontRight");
-        backLeftDrive = opMode.hardwareMap.get(DcMotor.class, "backLeft");
-        backRightDrive = opMode.hardwareMap.get(DcMotor.class, "backRight");
+        frontLeftDrive = opMode.hardwareMap.get(DcMotor.class, "frontLeftDrive");
+        frontRightDrive = opMode.hardwareMap.get(DcMotor.class, "frontRightDrive");
+        backLeftDrive = opMode.hardwareMap.get(DcMotor.class, "backLeftDrive");
+        backRightDrive = opMode.hardwareMap.get(DcMotor.class, "backRightDrive");
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         odo = opMode.hardwareMap.get(GoBildaPinpointDriver.class,"odo");
