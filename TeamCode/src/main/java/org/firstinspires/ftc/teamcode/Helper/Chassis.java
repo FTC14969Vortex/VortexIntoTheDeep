@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class Chassis {
     public enum DriveMode {
         ROBOT_CENTRIC,
@@ -40,7 +40,7 @@ public class Chassis {
     }
 
     public void setDriveMode(DriveMode mode) {
-        this.driveMode = driveMode;
+        this.driveMode = mode;
     }
 
     public void resetIMU() {
@@ -48,9 +48,14 @@ public class Chassis {
     }
 
     public void updateTelemetry() {
-//        opMode.telemetry.addData("Front left/Right", JavaUtil.formatNumber(leftFrontPower, 4, 2) + ", " + JavaUtil.formatNumber(rightFrontPower, 4, 2));
-//        opMode.telemetry.addData("Back  left/Right", JavaUtil.formatNumber(leftBackPower, 4, 2) + ", " + JavaUtil.formatNumber(rightBackPower, 4, 2));
-//        opMode.telemetry.update();
+        opMode.telemetry.addData("Drive Mode", driveMode);
+      opMode.telemetry.addData("Front left/Right", JavaUtil.formatNumber(frontLeftPower, 4, 2) + ", " + JavaUtil.formatNumber(frontrightPower, 4, 2));
+      opMode.telemetry.addData("Back  left/Right", JavaUtil.formatNumber(backLeftPower, 4, 2) + ", " + JavaUtil.formatNumber(backRightPower, 4, 2));
+      opMode.telemetry.addData("botHeading", JavaUtil.formatNumber(odo.getHeading(AngleUnit.DEGREES), 4, 2));
+      opMode.telemetry.addData("botX", JavaUtil.formatNumber(odo.getPosX(DistanceUnit.CM), 4, 2));
+      opMode.telemetry.addData("botY", JavaUtil.formatNumber(odo.getPosY(DistanceUnit.CM), 4, 2));
+      opMode.telemetry.update();
+
     }
 
     public void drive(double axial, double lateral, double yaw) {
