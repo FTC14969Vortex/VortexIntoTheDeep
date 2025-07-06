@@ -103,7 +103,7 @@ public class Chassis extends LinearOpMode {
 
     }
 
-    private double @NonNull [] calcFieldCentricPower(double lateral, double axial, double yaw) {
+    private double[] calcFieldCentricPower(double lateral, double axial, double yaw) {
         odo.update();
         double botHeading = -odo.getHeading(AngleUnit.RADIANS); // Get the robot's heading in radians
         telemetry.addLine("botHeading " + botHeading);
@@ -121,7 +121,7 @@ public class Chassis extends LinearOpMode {
         return powerset;
     }
 
-    private double @NonNull [] calcRobotCentricPower(double lateral, double axial, double yaw) {
+    private double[] calcRobotCentricPower(double lateral, double axial, double yaw) {
         // Combine the joystick requests for each axis-motion to determine each wheel's power.
         // Set up a variable for each drive wheel to save the power level for telemetry.
         double leftFrontPower = axial + lateral + yaw;
