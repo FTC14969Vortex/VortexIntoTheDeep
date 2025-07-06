@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Helper.GoBildaPinpointDriver;
 
 @TeleOp(name = "RobotCentricSam", group = "TeleOp")
@@ -18,6 +19,8 @@ public class RobotCentric extends LinearOpMode {
     private DcMotor BRMotor;
     // The IMU sensor object
     GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
+    double coefficient = 0.1;
+
 
     @Override
 
@@ -53,34 +56,50 @@ public class RobotCentric extends LinearOpMode {
         FRMotor.setDirection(DcMotor.Direction.FORWARD);
         BRMotor.setDirection(DcMotor.Direction.FORWARD);
 
+
         waitForStart();
+
 
         while (opModeIsActive()) {
             if (gamepad1.a) {
+
                 odo.resetPosAndIMU();
             }
+            odo.update();
+            double botHeading = -odo.getHeading(AngleUnit.RADIANS); // Get the robot's heading in radians
+            telemetry.addLine("botHeading " + botHeading);
             double[] powerSetFB = calcPowerFB();
             double[] powerSetLR = calcPowerLR();
-            FLMotor.setPower(powerSetFB[0] + powerSetLR[0]);
+            double[] powerSetRot = calcPowerRot();
+
+            FLMotor.setPower(powerSetFB[0] + powerSetLR[0] + powerSetRot[0]);
             telemetry.addData("Encoder Position FLMotor", FLMotor.getCurrentPosition());
-            BLMotor.setPower(powerSetFB[1] + powerSetLR[1]);
+            BLMotor.setPower(powerSetFB[1] + powerSetLR[1] + powerSetRot[1]);
             telemetry.addData("Encoder Position BLMotor", BLMotor.getCurrentPosition());
-            FRMotor.setPower(powerSetFB[2] + powerSetLR[2]);
+            FRMotor.setPower(powerSetFB[2] + powerSetLR[2] + powerSetRot[2]);
             telemetry.addData("Encoder Position FRMotor", FRMotor.getCurrentPosition());
-            BRMotor.setPower(powerSetFB[3] + powerSetLR[3]);
+            BRMotor.setPower(powerSetFB[3] + powerSetLR[3] + powerSetRot[3]);
             telemetry.addData("Encoder Position BRMotor", BRMotor.getCurrentPosition());
             telemetry.update();
-            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            // Note: pushing stick forward gives negative value
-            // stick Y direction: up is -, down is +
-            // stick X direction: left is -, right is +
-            axial = -gamepad1.left_stick_y; // Forward/Backward (inverted joystick for push forward = positive)
-            lateral = gamepad1.left_stick_x; // Strafe left/right (positive is right, negation is left)
-            yaw = gamepad1.right_stick_x; // Turn left/rigth (positive is clockwise, negative is counter-clockwise)
-
             telemetry.addData("Encoder Position", BLMotor.getCurrentPosition());
             telemetry.update();
+
         }
+    }
+
+    private double[] calcPowerRot() {
+
+        boolean ccRotation = gamepad1.dpad_left;
+        boolean cRotation = gamepad1.dpad_right;
+        odo.update();
+        double botHeading = -odo.getHeading(AngleUnit.RADIANS); // Get the robot's heading in radians
+        telemetry.addLine("botHeading " + botHeading);
+        double yaw = ccRotation ? 1 : 0;
+        yaw = yaw == 0 & cRotation ? -1 : 0;
+        double power = yaw * coefficient;
+        double[] powerset = {-power, power, -power, power};
+        return powerset;
+
     }
 
     private double[] calcPowerFB() {
