@@ -23,10 +23,6 @@ public class Chassis extends LinearOpMode {
     // The IMU sensor object
     GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
 
-    double leftFrontPower;
-    double leftBackPower;
-    double rightFrontPower;
-    double rightBackPower;
     double speed = 1.7;
     double rotationScalingFactor = 1.1;
 
@@ -90,8 +86,7 @@ public class Chassis extends LinearOpMode {
             lateral = gamepad1.left_stick_x; // Strafe left/right (positive is right, negation is left)
             yaw = gamepad1.right_stick_x; // Turn left/rigth (positive is clockwise, negative is counter-clockwise)
 
-            double[] powerset = calcFieldCentricPower(lateral, axial, yaw);
-
+            double[] powerset = driveMode == DriveMode.ROBOT_CENTRIC ? calcRobotCentricPower(lateral, axial, yaw) : calcFieldCentricPower(lateral, axial, yaw);
             // Send calculated power to wheels.
             FLMotor.setPower(powerset[0]);
             FRMotor.setPower(powerset[1]);
@@ -100,8 +95,8 @@ public class Chassis extends LinearOpMode {
 
             // Show the elapsed game time and wheel power.
             //telemetry.addData("Status", "Run Time: " + runtime);
-            telemetry.addData("Front left/Right", JavaUtil.formatNumber(leftFrontPower, 4, 2) + ", " + JavaUtil.formatNumber(rightFrontPower, 4, 2));
-            telemetry.addData("Back  left/Right", JavaUtil.formatNumber(leftBackPower, 4, 2) + ", " + JavaUtil.formatNumber(rightBackPower, 4, 2));
+            telemetry.addData("Front left/Right", JavaUtil.formatNumber(powerset[0], 4, 2) + ", " + JavaUtil.formatNumber(powerset[1], 4, 2));
+            telemetry.addData("Back  left/Right", JavaUtil.formatNumber(powerset[2], 4, 2) + ", " + JavaUtil.formatNumber(powerset[3], 4, 2));
             telemetry.update();
 
         }
@@ -123,6 +118,26 @@ public class Chassis extends LinearOpMode {
         // but only if at least one is out of the range [-1, 1]
         double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(yaw), 1) * speed; //Multiply by 1.7 to reduce speed
         double[] powerset = {(rotY + rotX + yaw) / denominator, (rotY - rotX - yaw) / denominator, (rotY - rotX + yaw) / denominator, (rotY + rotX - yaw) / denominator};
+        return powerset;
+    }
+
+    private double @NonNull [] calcRobotCentricPower(double lateral, double axial, double yaw) {
+        // Combine the joystick requests for each axis-motion to determine each wheel's power.
+        // Set up a variable for each drive wheel to save the power level for telemetry.
+        double leftFrontPower = axial + lateral + yaw;
+        double rightFrontPower = (axial - lateral) - yaw;
+        double leftBackPower = (axial - lateral) + yaw;
+        double rightBackPower = (axial + lateral) - yaw;
+        // Normalize the values so no wheel power exceeds 100%
+        // This ensures that the robot maintains the desired motion.
+        double max = JavaUtil.maxOfList(JavaUtil.createListWith(Math.abs(leftFrontPower), Math.abs(rightFrontPower), Math.abs(leftBackPower), Math.abs(rightBackPower)));
+        if (max > 1) {
+            leftFrontPower = leftFrontPower / max;
+            rightFrontPower = rightFrontPower / max;
+            leftBackPower = leftBackPower / max;
+            rightBackPower = rightBackPower / max;
+        }
+        double[] powerset = {leftFrontPower, rightFrontPower, leftBackPower, rightBackPower};
         return powerset;
     }
 
