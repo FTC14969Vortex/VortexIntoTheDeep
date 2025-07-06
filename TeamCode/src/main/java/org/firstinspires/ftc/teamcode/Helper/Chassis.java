@@ -7,7 +7,6 @@ import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.robotcore.internal.camera.delegating.DelegatingCaptureSequence;
 
 public class Chassis {
     double leftFrontPower;
@@ -165,14 +164,16 @@ public class Chassis {
             double dy = yTargetCM - currentY_CM;
 //            double distance = Math.hypot(dx, dy);
 //
-//            double headingError = AngleUnit.normalizeRadians(headingTargetRad - currentHeading_Rad);
+            double headingErrorDeg = Math.toDegrees(AngleUnit.normalizeRadians(headingTargetRad - currentHeading_Rad));
 //
 //            // Step 4d: Check if the robot is "close enough" to the target.
 //            // If the `distance` is less than `POSITION_TOLERANCE_CM` AND the absolute `headingError`
 //            // is less than `ANGLE_TOLERANCE_RAD`, then exit the loop.
-            if (Math.abs(dy) < 3 && Math.abs(dx) < 3) {
+            if (Math.abs(dy) < 3 && Math.abs(dx) < 3 && Math.abs(headingErrorDeg) < 3) {
                 break;
             }
+
+
 //
 
 
@@ -212,6 +213,12 @@ public class Chassis {
             }
 
             double headingPower = 0;
+            if (headingErrorDeg > 3) {
+                headingPower = -0.25;
+            }
+            else if (headingErrorDeg < -3) {
+                headingPower = 0.25;
+            }
 
 
             drive(yPower, xPower, headingPower);
