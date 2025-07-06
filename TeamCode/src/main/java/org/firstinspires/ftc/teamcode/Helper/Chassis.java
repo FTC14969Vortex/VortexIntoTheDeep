@@ -40,6 +40,7 @@ public class Chassis {
         odo = opMode.hardwareMap.get(GoBildaPinpointDriver.class,"odo");
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setOffsets(-66.675, -95.25, DistanceUnit.MM);
+        // TODO: Change Encoder Directions depending on your robot.
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
