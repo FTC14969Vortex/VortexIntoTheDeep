@@ -38,6 +38,9 @@ public class Chassis {
         frontRightDrive = opMode.hardwareMap.get(DcMotor.class, "frontRightDrive");
         backRightDrive = opMode.hardwareMap.get(DcMotor.class, "backRightDrive");
         odo = opMode.hardwareMap.get(GoBildaPinpointDriver.class,"odo");
+        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        odo.setOffsets(-66.675, -95.25, DistanceUnit.MM);
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -117,49 +120,102 @@ public class Chassis {
      * @param timeoutSeconds The timeout in seconds.
      */
     public void goToPosition(Pose2D targetPose, double maxPower, double timeoutSeconds) {
-        // Step 1: Get the target pose
+//        // Step 1: Get the target pose
+//
         double xTargetCM = targetPose.getX(DistanceUnit.CM);
         double yTargetCM = targetPose.getY(DistanceUnit.CM);
         double headingTargetRad = targetPose.getHeading(AngleUnit.RADIANS);
+//
+//        // Step 2: Define your "tolerances" – how close is close enough to stop.
+//        // Use the values from the example:
+//        final double POSITION_TOLERANCE_CM = 2.0;
+//        final double ANGLE_TOLERANCE_RAD = Math.toRadians(2);
+//
+//        final double P_DRIVE_GAIN = 0.05;
+//        final double P_HEADING_GAIN = 0.8;
+//
+//
+//        // Step 3: Set up a timer to make sure your robot doesn't get stuck forever.
+//        // Initialize an ElapsedTime object and reset it.
+        ElapsedTime timeout = new ElapsedTime();
+        timeout.reset();
+//
+//        setDriveMode(DriveMode.FIELD_CENTRIC);
+//
+//        // Step 4: Create the main control loop. The robot will keep doing these steps
+//        // until the OpMode is stopped or it reaches the target.
+//        // The loop should continue as long as the OpMode is active.
+        while (opMode.opModeIsActive() && timeout.seconds() < timeoutSeconds) {
+//
+//            // Step 4a: Update the odometry readings to get the robot's latest position.
+//            odo.update();
+//            // Step 4b: Get the robot's current X, Y, and Heading.
+//            // Remember that `odo.getPosX` and `odo.getPosY` can get values in CM.
+//            // Get the current heading in Radians.
+            double currentX_CM = odo.getPosX(DistanceUnit.CM);
+            double currentY_CM = odo.getPosY(DistanceUnit.CM);
+            double currentHeading_Rad = odo.getHeading(AngleUnit.RADIANS);
+//
+//            // Step 4c: Calculate the "error" (how far off you are) for X, Y, and Heading.
+//            //   - Calculate `dx` (difference in X between target and current).
+//            //   - Calculate `dy` (difference in Y between target and current).
+//            //   - Calculate `distance` (straight-line distance to target using dx and dy).
+//            //   - Calculate `headingError` (difference in heading, remember to use `angleWrap`!).
+            double dx = xTargetCM - currentX_CM;
+            double dy = yTargetCM - currentY_CM;
+//            double distance = Math.hypot(dx, dy);
+//
+//            double headingError = AngleUnit.normalizeRadians(headingTargetRad - currentHeading_Rad);
+//
+//            // Step 4d: Check if the robot is "close enough" to the target.
+//            // If the `distance` is less than `POSITION_TOLERANCE_CM` AND the absolute `headingError`
+//            // is less than `ANGLE_TOLERANCE_RAD`, then exit the loop.
+            if (Math.abs(dy) < 3 && Math.abs(dx) < 3) {
+                break;
+            }
+//
 
-        // Step 2: Define your "tolerances" – how close is close enough to stop.
-        // Use the values from the example:
-        final double POSITION_TOLERANCE_CM = 3.0;             // Stop if within 2cm
-        final double ANGLE_TOLERANCE_RAD = Math.toRadians(3); // ~3 degrees
 
-        // Step 3: Set up a timer to make sure your robot doesn't get stuck forever.
-        // Initialize an ElapsedTime object and reset it.
-
-        // Step 4: Create the main control loop. The robot will keep doing these steps
-        // until the OpMode is stopped or it reaches the target.
-        // The loop should continue as long as the OpMode is active.
-        while (opMode.opModeIsActive()) {
-            // Step 4a: Update the odometry readings to get the robot's latest position.
-
-            // Step 4b: Get the robot's current X, Y, and Heading.
-            // Remember that `odo.getPosX` and `odo.getPosY` can get values in CM.
-            // Get the current heading in Radians.
-
-            // Step 4c: Calculate the "error" (how far off you are) for X, Y, and Heading.
-            //   - Calculate `dx` (difference in X between target and current).
-            //   - Calculate `dy` (difference in Y between target and current).
-            //   - Calculate `distance` (straight-line distance to target using dx and dy).
-            //   - Calculate `headingError` (difference in heading, remember to use `angleWrap`!).
-
-            // Step 4d: Check if the robot is "close enough" to the target.
-            // If the `distance` is less than `POSITION_TOLERANCE_CM` AND the absolute `headingError`
-            // is less than `ANGLE_TOLERANCE_RAD`, then exit the loop.
-
-            // Step 4e: Determine the motor powers using "Bang-Bang" control!
-            // You'll set a fixed power (like 0.2 or -0.2) based on the sign of the error.
-            //   - For `xPower`: If `dx` is positive, set `xPower` to 0.2 (move right); otherwise, set to -0.2 (move left).
-            //   - For `yPower`: If `dy` is positive, set `yPower` to 0.2 (move forward); otherwise, set to -0.2 (move backward).
-            //   - For `headingPower`: If `headingError` is positive, set `headingPower` to 0.2 (turn counter-clockwise);
-            //     otherwise, set to -0.2 (turn clockwise).
+//            if (distance < POSITION_TOLERANCE_CM && Math.abs(headingError) < ANGLE_TOLERANCE_RAD) {
+//                break;
+//            }
+//            // Step 4e: Determine the motor powers using "Bang-Bang" control!
+//            // You'll set a fixed power (like 0.2 or -0.2) based on the sign of the error.
+//            //   - For `xPower`: If `dx` is positive, set `xPower` to 0.2 (move right); otherwise, set to -0.2 (move left).
+//            //   - For `yPower`: If `dy` is positive, set `yPower` to 0.2 (move forward); otherwise, set to -0.2 (move backward).
+//            //   - For `headingPower`: If `headingError` is positive, set `headingPower` to 0.2 (turn counter-clockwise);
+//            //     otherwise, set to -0.2 (turn clockwise).
+//            double yPower = dy * P_DRIVE_GAIN;
+//            double xPower = dx * P_DRIVE_GAIN;
+//            double headingPower = headingError * P_HEADING_GAIN;
+//
+//            yPower = Math.max(-maxPower, Math.min(yPower, maxPower));
+//            xPower = Math.max(-maxPower, Math.min(xPower, maxPower));
+//            headingPower = Math.max(-maxPower, Math.min(headingPower, maxPower));
 
             // Step 4f: Send these calculated powers to the robot's drive system.
-            // Call the `drive` method, passing `yPower` as axial, `xPower` as lateral, and `headingPower` as yaw.
+            double yPower = 0;
+            if (dy > 3){
+                yPower = 0.25;
+            }
+            else if (dy < -3){
+                yPower = -0.25;
+            }
 
+            double xPower = 0;
+            if (dx > 3) {
+                xPower = 0.25;
+
+            }
+            else if (dx < -3) {
+                xPower = -0.25;
+            }
+
+            double headingPower = 0;
+
+
+            drive(yPower, xPower, headingPower);
+            // Call the `drive` method, passing `yPower` as axial, `xPower` as lateral, and `headingPower` as yaw.
             // Step 4g: Display helpful information on the Driver Station (telemetry).
             // Use `opMode.telemetry.addData` to show:
             //   - Target X and Y.
@@ -167,9 +223,15 @@ public class Chassis {
             //   - Current distance error.
             //   - Current heading error (converted back to degrees for readability).
             // Call `opMode.telemetry.update()` to send the data.
+            opMode.telemetry.addData("Target", "X: %.2f, Y: %.2f, H: %.1f°", xTargetCM, yTargetCM, Math.toDegrees(headingTargetRad));
+            opMode.telemetry.addData("Current", "X: %.2f, Y: %.2f, H: %.1f°", currentX_CM, currentY_CM, Math.toDegrees(currentHeading_Rad));
+//            opMode.telemetry.addData("Error", "Dist: %.2f, H: %.1f°", distance, Math.toDegrees(headingError));
+            opMode.telemetry.addData("Power", "X: %.2f, Y: %.2f, H: %.2f", xPower, yPower, headingPower);
+            opMode.telemetry.addData("Timeout", "%.1f / %.1f sec", timeout.seconds(), timeoutSeconds);
+            opMode.telemetry.update();
         }
-
         // Step 5: Once the loop finishes (either target reached or OpMode stopped),
         // stop the robot completely by calling the `drive` method with zero power for all directions.
+        drive(0, 0, 0);
     }
 }
