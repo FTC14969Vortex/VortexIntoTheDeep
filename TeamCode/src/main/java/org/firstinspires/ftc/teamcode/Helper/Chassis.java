@@ -38,6 +38,9 @@ public class Chassis {
         frontRightDrive = opMode.hardwareMap.get(DcMotor.class, "frontRightDrive");
         backRightDrive = opMode.hardwareMap.get(DcMotor.class, "backRightDrive");
         odo = opMode.hardwareMap.get(GoBildaPinpointDriver.class,"odo");
+        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        odo.setOffsets(-66.675, -95.25, DistanceUnit.MM);
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
