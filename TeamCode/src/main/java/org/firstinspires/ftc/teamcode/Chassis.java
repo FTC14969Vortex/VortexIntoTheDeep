@@ -73,6 +73,11 @@ public class Chassis extends LinearOpMode {
 
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+            if (gamepad1.x) {
+                driveMode = DriveMode.FIELD_CENTRIC;
+            } else if (gamepad1.y) {
+                driveMode = DriveMode.ROBOT_CENTRIC;
+            }
 
             if (gamepad1.a) {
                 odo.resetPosAndIMU();
