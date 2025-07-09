@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.teamcode.Helper.Chassis;
 
-@TeleOp(name = "ChrisChassis", group = "TeleOp")
+@TeleOp(name = "SophiaChassis", group = "TeleOp")
 
 public class Teleop extends LinearOpMode {
 
