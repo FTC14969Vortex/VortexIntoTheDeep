@@ -128,7 +128,7 @@ public class Chassis {
 
         // Step 2: Define your "tolerances" – how close is close enough to stop.
         // Use the values from the example:
-        final double POSITION_TOLERANCE_CM = 3.0;             // Stop if within 2cm
+        final double POSITION_TOLERANCE_CM = 2.0;             // Stop if within 2cm
         final double ANGLE_TOLERANCE_RAD = Math.toRadians(3); // ~3 degrees
 
         // Step 3: Set up a timer to make sure your robot doesn't get stuck forever.
