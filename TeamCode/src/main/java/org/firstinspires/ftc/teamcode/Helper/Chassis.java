@@ -120,6 +120,7 @@ public class Chassis {
      * @param maxPower The maximum power to use.
      * @param timeoutSeconds The timeout in seconds.
      */
+
     public void goToPosition(Pose2D targetPose, double maxPower, double timeoutSeconds) {
         // Step 1: Get the target pose
         double xTargetCM = targetPose.getX(DistanceUnit.CM);
@@ -158,7 +159,7 @@ public class Chassis {
             double dx = xTargetCM - xCurrentCM;
             double dy = yTargetCM - yCurrentCM;
             double distance = Math.sqrt(dx * dx + dy * dy);
-            double headingError = JavaUtil.angleWrap(headingCurrentRad - headingTargetRad);
+            double headingError = normalizeAngle(headingCurrentRad - headingTargetRad);
 
 
             // Step 4d: Check if the robot is "close enough" to the target.
@@ -218,5 +219,15 @@ public class Chassis {
         opMode.telemetry.addData("Path", "Complete");
         opMode.telemetry.update();
 
+    }
+
+    public static double normalizeAngle(double angle) {
+        while (angle > Math.PI) {
+            angle -= 2 * Math.PI;
+        }
+        while (angle < -Math.PI) {
+            angle += 2 * Math.PI;
+        }
+        return angle;
     }
 }
