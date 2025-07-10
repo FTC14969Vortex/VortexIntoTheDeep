@@ -163,7 +163,20 @@ public class Chassis {
             // Step 4d: Check if the robot is "close enough" to the target.
             // If the `distance` is less than `POSITION_TOLERANCE_CM` AND the absolute `headingError`
             // is less than `ANGLE_TOLERANCE_RAD`, then exit the loop.
+            // Or
             if (distance < POSITION_TOLERANCE_CM && Math.abs(headingError) < ANGLE_TOLERANCE_RAD) {
+                // Call opMode.telemetry.addData to show the distance
+                // and heading error.
+                opMode.telemetry.addData("Distance Error", distance);
+                opMode.telemetry.addData("Heading Error", headingError);
+                opMode.telemetry.update();
+                break;
+            }
+            else if (timer.seconds() > timeoutSeconds) {
+                // Call opMode.telemetry.addData to show the timer
+                // has expired.
+                opMode.telemetry.addData("Timer Expired", timer.seconds());
+                opMode.telemetry.update();
                 break;
             }
 
@@ -202,6 +215,7 @@ public class Chassis {
             //   - Current X and Y.
             //   - Current distance error.
             //   - Current heading error (converted back to degrees for readability).
+            //   - The current timer value.
             // Call `opMode.telemetry.update()` to send the data.
             opMode.telemetry.addData("Target X", xTargetCM);
             opMode.telemetry.addData("Target Y", yTargetCM);
@@ -209,6 +223,7 @@ public class Chassis {
             opMode.telemetry.addData("Current Y", yCurrentCM);
             opMode.telemetry.addData("Distance Error", distance);
             opMode.telemetry.addData("Heading Error", headingError);
+            opMode.telemetry.addData("Timer", timer.seconds());
             opMode.telemetry.update();
         }
 
