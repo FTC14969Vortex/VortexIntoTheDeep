@@ -209,6 +209,19 @@ public class Chassis {
                 headingPower = -0.2;
             }
 
+            /*
+            // Constants for proportional control
+            // When the angle is Math.PI/2, drive at speed of 1.
+            double kP_angle = 2 / Math.PI;
+            // When the distnace is 25 mm, drive at speed of 1. Why??
+            // Still needs to change it to CM. Not clear how kp_distance is calculated.??
+            double kP_distance = 1.0/(6*25);
+            xPower = kP_distance * dx;
+            yPower = kP_distance * dy;
+            headingPower = kP_angle * headingError;
+             */
+
+
             // Step 4f: Send these calculated powers to the robot's drive system.
             // Call the `drive` method, passing `yPower` as axial, `xPower` as lateral, and `headingPower` as yaw.
             drive(yPower, xPower, headingPower);
