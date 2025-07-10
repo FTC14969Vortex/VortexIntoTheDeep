@@ -114,6 +114,17 @@ public class Chassis {
 
     }
 
+    // Wrap angle between -PI and +PI
+    public static double angleWrap(double angle) {
+        while (angle < -Math.PI) {
+            angle += 2 * Math.PI;
+        }
+        while (angle > Math.PI) {
+            angle -= 2 * Math.PI;
+        }
+        return angle;
+    }
+
     /**
      * Moves the robot to the target position.
      * @param targetPose The target position.
@@ -138,8 +149,8 @@ public class Chassis {
 
         // Step 4: Create the main control loop. The robot will keep doing these steps
         // until the OpMode is stopped or it reaches the target.
-        // The loop should continue as long as the OpMode is active.
-        while (opMode.opModeIsActive()) {
+        // The loop should continue as long as the OpMode is active and the timer is not expired.
+        while (opMode.opModeIsActive() && timer.seconds() < timeoutSeconds) {
             // Step 4a: Update the odometry readings to get the robot's latest position.
             odo.update();
 
@@ -148,7 +159,7 @@ public class Chassis {
             // Get the current heading in Radians.
             double xCurrentCM = odo.getPosX(DistanceUnit.CM);
             double yCurrentCM = odo.getPosY(DistanceUnit.CM);
-            double headingCurrentRad = odo.getHeading(AngleUnit.RADIANS);
+            double headingCurrentRad = odo.getHeading(AngleUnit.RADIANS); // Should this be negated like in Drive()??
 
             // Step 4c: Calculate the "error" (how far off you are) for X, Y, and Heading.
             //   - Calculate `dx` (difference in X between target and current).
@@ -158,7 +169,7 @@ public class Chassis {
             double dx = xTargetCM - xCurrentCM;
             double dy = yTargetCM - yCurrentCM;
             double distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-            double headingError = headingTargetRad - headingCurrentRad; //angleWrap??
+            double headingError = angleWrap(headingTargetRad - headingCurrentRad);
 
             // Step 4d: Check if the robot is "close enough" to the target.
             // If the `distance` is less than `POSITION_TOLERANCE_CM` AND the absolute `headingError`
@@ -169,13 +180,6 @@ public class Chassis {
                 // and heading error.
                 opMode.telemetry.addData("Distance Error", distance);
                 opMode.telemetry.addData("Heading Error", headingError);
-                opMode.telemetry.update();
-                break;
-            }
-            else if (timer.seconds() > timeoutSeconds) {
-                // Call opMode.telemetry.addData to show the timer
-                // has expired.
-                opMode.telemetry.addData("Timer Expired", timer.seconds());
                 opMode.telemetry.update();
                 break;
             }
@@ -225,6 +229,16 @@ public class Chassis {
             opMode.telemetry.addData("Heading Error", headingError);
             opMode.telemetry.addData("Timer", timer.seconds());
             opMode.telemetry.update();
+
+            /*
+            if (timer.seconds() > timeoutSeconds) {
+                // Call opMode.telemetry.addData to show the timer
+                // has expired.
+                opMode.telemetry.addData("Timer Expired", timer.seconds());
+                opMode.telemetry.update();
+                break;
+            }
+            */
         }
 
         // Step 5: Once the loop finishes (either target reached or OpMode stopped),
