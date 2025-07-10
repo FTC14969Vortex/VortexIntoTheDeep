@@ -158,7 +158,8 @@ public class Chassis {
             double dx = xTargetCM - xCurrentCM;
             double dy = yTargetCM - yCurrentCM;
             double distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-            double headingError = JavaUtil.angleWrap(headingTargetRad - headingCurrentRad);
+            double headingError = normalizeAngle(headingTargetRad - headingCurrentRad);
+            
 
 
             // Step 4d: Check if the robot is "close enough" to the target.
@@ -218,5 +219,16 @@ public class Chassis {
         drive(0, 0, 0);
         opMode.telemetry.addData("Path", "Complete");
         opMode.telemetry.update();
+
     }
+    public static double normalizeAngle(double angle) {
+        while (angle > Math.PI) {
+            angle -= 2 * Math.PI;
+        }
+        while (angle < -Math.PI) {
+            angle += 2 * Math.PI;
+        }
+        return angle;
+    }
+
 }
