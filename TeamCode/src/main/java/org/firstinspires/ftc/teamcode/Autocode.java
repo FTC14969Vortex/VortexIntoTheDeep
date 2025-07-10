@@ -9,8 +9,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 import org.firstinspires.ftc.teamcode.Helper.Chassis;
 
-@Autonomous(name = "SampleAuto_Mecanum", group = "Auto")
-public class SampleAuto extends LinearOpMode {
+@Autonomous(name = "Autocode_Mecanum", group = "Auto")
+public class Autocode extends LinearOpMode {
     @Override
     public void runOpMode() {
         Chassis chassis = new Chassis();
