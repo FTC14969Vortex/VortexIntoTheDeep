@@ -133,6 +133,9 @@ public class Chassis {
 
         // Step 3: Set up a timer to make sure your robot doesn't get stuck forever.
         // Initialize an ElapsedTime object and reset it.
+        ElapsedTime runtime = new ElapsedTime();
+        runtime.reset();
+    
 
         // Step 4: Create the main control loop. The robot will keep doing these steps
         // until the OpMode is stopped or it reaches the target.
