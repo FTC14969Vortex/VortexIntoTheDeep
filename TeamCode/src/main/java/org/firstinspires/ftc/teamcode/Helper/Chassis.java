@@ -142,6 +142,9 @@ public class Chassis {
         // Step 4: Create the main control loop. The robot will keep doing these steps
         // until the OpMode is stopped or it reaches the target.
         // The loop should continue as long as the OpMode is active.
+        opMode.telemetry.addData("New target X and Y", "(%f, %f)", xTargetCM, yTargetCM);
+        opMode.telemetry.update();
+
         while (opMode.opModeIsActive()) {
             // Step 4a: Update the odometry readings to get the robot's latest position.
             odo.update();
@@ -159,7 +162,7 @@ public class Chassis {
             double dx = xTargetCM - currXInCM;
             double dy = yTargetCM - currYInCM;
             double distance = Math.sqrt(dx * dx + dy * dy);
-            double headingError = headingTargetRad - currheadInRad;
+            double headingError = modAngle(headingTargetRad - currheadInRad);
             // Step 4d: Check if the robot is "close enough" to the target.
             // If the `distance` is less than `POSITION_TOLERANCE_CM` AND the absolute `headingError`
             // is less than `ANGLE_TOLERANCE_RAD`, then exit the loop.
@@ -204,5 +207,11 @@ public class Chassis {
         // Step 5: Once the loop finishes (either target reached or OpMode stopped),
         // stop the robot completely by calling the `drive` method with zero power for all directions.
         drive(0, 0, 0);
+    }
+
+    public static double modAngle(double angle) {
+        double twoPi = 2 * Math.PI;
+        angle = ((angle + Math.PI) % twoPi + twoPi) % twoPi; // normalize to [0, 2π)
+        return angle - Math.PI; // shift to (-π, π]
     }
 }
