@@ -165,6 +165,7 @@ public class Chassis {
             // is less than `ANGLE_TOLERANCE_RAD`, then exit the loop.
             if (distance < POSITION_TOLERANCE_CM && headingError < ANGLE_TOLERANCE_RAD) {
                 opMode.telemetry.addData("yibbbeee targesttt reeagged", "position error %f, heading error %f", distance, headingError);
+                opMode.telemetry.update();
                 break;
             }
             // Step 4e: Determine the motor powers using "Bang-Bang" control!
@@ -173,9 +174,9 @@ public class Chassis {
             //   - For `yPower`: If `dy` is positive, set `yPower` to 0.2 (move forward); otherwise, set to -0.2 (move backward).
             //   - For `headingPower`: If `headingError` is positive, set `headingPower` to 0.2 (turn counter-clockwise);
             //     otherwise, set to -0.2 (turn clockwise).
-            double axial = dy > 0 ? 0.2 : -0.2;
-            double lateral = dx > 0 ? 0.2 : -0.2;
-            double yaw = headingError > 0 ? 0.2 : -0.2;
+            double axial = dy < 0 ? 0.2 : -0.2;
+            double lateral = dx < 0 ? 0.2 : -0.2;
+            double yaw = headingError < 0 ? 0.2 : -0.2;
 
             // Step 4f: Send these calculated powers to the robot's drive system.
             // Call the `drive` method, passing `yPower` as axial, `xPower` as lateral, and `headingPower` as yaw.
@@ -191,9 +192,11 @@ public class Chassis {
             opMode.telemetry.addData("Current X and Y", "(%f, %f)", currXInCM, currYInCM);
             opMode.telemetry.addData("Current distance error", distance);
             opMode.telemetry.addData("Current heading error", Math.toDegrees(headingError));
+            opMode.telemetry.update();
             //Step 4h: Checking Timeout.
             if (timer.seconds() > timeoutSeconds) {
                 opMode.telemetry.addData("timed out", timer.seconds());
+                opMode.telemetry.update();
                 break;
             }
         }
