@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -9,8 +8,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 import org.firstinspires.ftc.teamcode.Helper.Chassis;
 
-@Autonomous(name = "SampleAuto_Mecanum", group = "Auto")
-public class SampleAuto extends LinearOpMode {
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous_Mecanum", group = "Auto")
+public class Autonomous extends LinearOpMode {
     @Override
     public void runOpMode() {
         Chassis chassis = new Chassis();
