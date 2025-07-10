@@ -158,6 +158,7 @@ public class Chassis {
             double dx = xTargetCM - xCurrentCM;
             double dy = yTargetCM - yCurrentCM;
             double distance = Math.sqrt(dx * dx + dy * dy);
+            double headingError = JavaUtil.angleWrap(headingCurrentRad - headingTargetRad);
 
 
             // Step 4d: Check if the robot is "close enough" to the target.
