@@ -135,11 +135,17 @@ public class Chassis {
         // Initialize an ElapsedTime object and reset it.
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
+        timer.startTime();
 
         // Step 4: Create the main control loop. The robot will keep doing these steps
         // until the OpMode is stopped or it reaches the target.
         // The loop should continue as long as the OpMode is active.
         while (opMode.opModeIsActive()) {
+            if (timer.seconds() > timeoutSeconds) {
+                opMode.telemetry.addData("Path", "Timed out");
+                opMode.telemetry.update();
+                break;
+            }
             // Step 4a: Update the odometry readings to get the robot's latest position.
             odo.update();
 
@@ -159,7 +165,7 @@ public class Chassis {
             double dy = yTargetCM - yCurrentCM;
             double distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
             double headingError = normalizeAngle(headingTargetRad - headingCurrentRad);
-            
+
 
 
             // Step 4d: Check if the robot is "close enough" to the target.
