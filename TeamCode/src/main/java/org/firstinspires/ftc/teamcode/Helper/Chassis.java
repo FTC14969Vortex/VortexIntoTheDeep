@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.Helper;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -7,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.internal.camera.delegating.DelegatingCaptureSequence;
 
 public class Chassis {
@@ -37,7 +39,7 @@ public class Chassis {
         backLeftDrive = opMode.hardwareMap.get(DcMotor.class, "backLeftDrive");
         frontRightDrive = opMode.hardwareMap.get(DcMotor.class, "frontRightDrive");
         backRightDrive = opMode.hardwareMap.get(DcMotor.class, "backRightDrive");
-        odo = opMode.hardwareMap.get(GoBildaPinpointDriver.class,"odo");
+        odo = opMode.hardwareMap.get(GoBildaPinpointDriver.class, "odo");
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setOffsets(-66.675, -95.25, DistanceUnit.MM);
         // TODO: Change Encoder Directions depending on your robot.
@@ -51,12 +53,14 @@ public class Chassis {
         odo.recalibrateIMU();
         odo.resetPosAndIMU();
     }
+
     public void setDriveMode(DriveMode driveMode) {
         // save driveMode to use in drive()
         this.driveMode = driveMode;
 
     }
-    public void resetIMU(){
+
+    public void resetIMU() {
         odo.resetPosAndIMU();
     }
 
@@ -73,19 +77,19 @@ public class Chassis {
 
     }
     // TeleOp Mode Methods
+
     /**
      * @param axial   The forward/backward power from left joystick Y direction (-1.0 to 1.0).
      * @param lateral The strafing (left/right) power from left joystick X direction (-1.0 to 1.0).
      * @param yaw     The turning/rotational power from right joystick X direction (-1.0 to 1.0).
      */
-    public void drive(double axial, double lateral, double yaw){
+    public void drive(double axial, double lateral, double yaw) {
         // If in field centric mode read botHeading from odo otherwise set botHeading equal to zero
         double botHeading;
         if (driveMode == DriveMode.FIELD_CENTRIC) {
             odo.update();
             botHeading = -odo.getHeading(AngleUnit.RADIANS); // Get the robot's heading in radians
-        }
-        else {
+        } else {
             botHeading = 0;
         }
 
@@ -116,8 +120,9 @@ public class Chassis {
 
     /**
      * Moves the robot to the target position.
-     * @param targetPose The target position.
-     * @param maxPower The maximum power to use.
+     *
+     * @param targetPose     The target position.
+     * @param maxPower       The maximum power to use.
      * @param timeoutSeconds The timeout in seconds.
      */
     public void goToPosition(Pose2D targetPose, double maxPower, double timeoutSeconds) {
@@ -133,37 +138,48 @@ public class Chassis {
 
         // Step 3: Set up a timer to make sure your robot doesn't get stuck forever.
         // Initialize an ElapsedTime object and reset it.
-
+        ElapsedTime timer = new ElapsedTime();
         // Step 4: Create the main control loop. The robot will keep doing these steps
         // until the OpMode is stopped or it reaches the target.
         // The loop should continue as long as the OpMode is active.
         while (opMode.opModeIsActive()) {
             // Step 4a: Update the odometry readings to get the robot's latest position.
-
+            odo.update();
             // Step 4b: Get the robot's current X, Y, and Heading.
             // Remember that `odo.getPosX` and `odo.getPosY` can get values in CM.
             // Get the current heading in Radians.
-
+            double currXInCM = odo.getPosX(DistanceUnit.CM);
+            double currYInCM = odo.getPosY(DistanceUnit.CM);
+            double currheadInRad = odo.getHeading(AngleUnit.RADIANS);
             // Step 4c: Calculate the "error" (how far off you are) for X, Y, and Heading.
             //   - Calculate `dx` (difference in X between target and current).
             //   - Calculate `dy` (difference in Y between target and current).
             //   - Calculate `distance` (straight-line distance to target using dx and dy).
             //   - Calculate `headingError` (difference in heading, remember to use `angleWrap`!).
-
+            double dx = xTargetCM - currXInCM;
+            double dy = yTargetCM - currYInCM;
+            double distance = Math.sqrt(dx * dx + dy * dy);
+            double headingError = headingTargetRad - currheadInRad;
             // Step 4d: Check if the robot is "close enough" to the target.
             // If the `distance` is less than `POSITION_TOLERANCE_CM` AND the absolute `headingError`
             // is less than `ANGLE_TOLERANCE_RAD`, then exit the loop.
-
+            if (distance < POSITION_TOLERANCE_CM && headingError < ANGLE_TOLERANCE_RAD) {
+                opMode.telemetry.addData("yibbbeee targesttt reeagged", "position error %f, heading error %f", distance, headingError);
+                break;
+            }
             // Step 4e: Determine the motor powers using "Bang-Bang" control!
             // You'll set a fixed power (like 0.2 or -0.2) based on the sign of the error.
             //   - For `xPower`: If `dx` is positive, set `xPower` to 0.2 (move right); otherwise, set to -0.2 (move left).
             //   - For `yPower`: If `dy` is positive, set `yPower` to 0.2 (move forward); otherwise, set to -0.2 (move backward).
             //   - For `headingPower`: If `headingError` is positive, set `headingPower` to 0.2 (turn counter-clockwise);
             //     otherwise, set to -0.2 (turn clockwise).
+            double axial = dy > 0 ? 0.2 : -0.2;
+            double lateral = dx > 0 ? 0.2 : -0.2;
+            double yaw = headingError > 0 ? 0.2 : -0.2;
 
             // Step 4f: Send these calculated powers to the robot's drive system.
             // Call the `drive` method, passing `yPower` as axial, `xPower` as lateral, and `headingPower` as yaw.
-
+            drive(axial, lateral, yaw);
             // Step 4g: Display helpful information on the Driver Station (telemetry).
             // Use `opMode.telemetry.addData` to show:
             //   - Target X and Y.
@@ -171,9 +187,19 @@ public class Chassis {
             //   - Current distance error.
             //   - Current heading error (converted back to degrees for readability).
             // Call `opMode.telemetry.update()` to send the data.
+            opMode.telemetry.addData("Target X and Y", "(%f, %f)", xTargetCM, yTargetCM);
+            opMode.telemetry.addData("Current X and Y", "(%f, %f)", currXInCM, currYInCM);
+            opMode.telemetry.addData("Current distance error", distance);
+            opMode.telemetry.addData("Current heading error", Math.toDegrees(headingError));
+            //Step 4h: Checking Timeout.
+            if (timer.seconds() > timeoutSeconds) {
+                opMode.telemetry.addData("timed out", timer.seconds());
+                break;
+            }
         }
 
         // Step 5: Once the loop finishes (either target reached or OpMode stopped),
         // stop the robot completely by calling the `drive` method with zero power for all directions.
+        drive(0, 0, 0);
     }
 }
