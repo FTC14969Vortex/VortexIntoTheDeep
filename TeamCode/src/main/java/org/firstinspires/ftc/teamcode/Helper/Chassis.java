@@ -160,6 +160,7 @@ public class Chassis {
             double distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
             double headingError = JavaUtil.angleWrap(headingTargetRad - headingCurrentRad);
 
+
             // Step 4d: Check if the robot is "close enough" to the target.
             // If the `distance` is less than `POSITION_TOLERANCE_CM` AND the absolute `headingError`
             // is less than `ANGLE_TOLERANCE_RAD`, then exit the loop.
