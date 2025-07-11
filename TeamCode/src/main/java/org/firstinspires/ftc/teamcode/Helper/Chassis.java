@@ -124,9 +124,10 @@ public class Chassis {
         // Step 1: Get the target pose
         double xTargetCM = targetPose.getX(DistanceUnit.CM);
         double yTargetCM = targetPose.getY(DistanceUnit.CM);
-        double headingTargetRad = targetPose.getHeading(AngleUnit.DEGREES);
+        double headingTargetRad = targetPose.getHeading(AngleUnit.RADIANS);
         //convert from degrees to radians
-        headingTargetRad = Math.toRadians(headingTargetRad);
+        //headingTargetRad = Math.toRadians(headingTargetRad);
+        //odo.resetPosAndIMU();
 
         // Step 2: Define your "tolerances" – how close is close enough to stop.
         // Use the values from the example:
@@ -150,7 +151,7 @@ public class Chassis {
             // Step 4b: Get the robot's current X, Y, and Heading.
             // Remember that `odo.getPosX` and `odo.getPosY` can get values in CM.
             // Get the current heading in Radians.
-            double currentHeading = odo.getHeading(AngleUnit.RADIANS);
+            double currentHeading = -odo.getHeading(AngleUnit.RADIANS);
 
             // Step 4c: Calculate the "error" (how far off you are) for X, Y, and Heading.
             //   - Calculate `dx` (difference in X between target and current).
@@ -179,18 +180,24 @@ public class Chassis {
             //     otherwise, set to -0.2 (turn clockwise).
             double xPower = 0.2;
             double yPower = 0.2;
-            double headingPower = 0.0;
+            double headingPower = 0.2;
 
             if (dx < 0) {
-                xPower = 0.2;
+                xPower = -0.2;
             }
             if (dy < 0) {
-                yPower = 0.2;
+                yPower = -0.2;
             }
             if (headingError < 0) {
-                headingPower = 0.2;
-            } else if (headingError > 0) {
                 headingPower = -0.2;
+            }
+
+            if (distance < POSITION_TOLERANCE_CM) {
+                xPower = 0;
+                yPower = 0;
+            }
+            if (Math.abs(headingError) < ANGLE_TOLERANCE_RAD) {
+                headingPower = 0;
             }
            
             // Step 4f: Send these calculated powers to the robot's drive system.
@@ -209,6 +216,7 @@ public class Chassis {
             opMode.telemetry.addData("Current Y", JavaUtil.formatNumber(odo.getPosY(DistanceUnit.CM), 4, 2));
             opMode.telemetry.addData("Distance Error", JavaUtil.formatNumber(distance, 4, 2));
             opMode.telemetry.addData("Heading Error (Degrees)", JavaUtil.formatNumber(Math.toDegrees(headingError), 4, 2));
+            opMode.telemetry.addData("Timer", runtime.seconds());
             // Call `opMode.telemetry.update()` to send the data.
             opMode.telemetry.update();
             if (runtime.seconds() > timeoutSeconds) {
