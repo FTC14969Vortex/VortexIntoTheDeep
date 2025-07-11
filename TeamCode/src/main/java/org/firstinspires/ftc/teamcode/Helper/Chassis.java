@@ -135,6 +135,7 @@ public class Chassis {
         // Initialize an ElapsedTime object and reset it.
         ElapsedTime runtime = new ElapsedTime();
         runtime.reset();
+        runtime.startTime();
     
 
         // Step 4: Create the main control loop. The robot will keep doing these steps
