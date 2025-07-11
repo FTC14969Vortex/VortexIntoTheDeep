@@ -158,7 +158,7 @@ public class Chassis {
             // Get the current heading in Radians.
             double xCurrentCM = odo.getPosX(DistanceUnit.CM);
             double yCurrentCM = odo.getPosY(DistanceUnit.CM);
-            double headingCurrentRad = odo.getHeading(AngleUnit.RADIANS);
+            double headingCurrentRad = -odo.getHeading(AngleUnit.RADIANS);
 
             // Step 4c: Calculate the "error" (how far off you are) for X, Y, and Heading.
             //   - Calculate `dx` (difference in X between target and current).
@@ -168,7 +168,7 @@ public class Chassis {
             double dx = xTargetCM - xCurrentCM;
             double dy = yTargetCM - yCurrentCM;
             double distance = Math.sqrt(dx * dx + dy * dy);
-            double headingError = normalizeAngle(headingCurrentRad - headingTargetRad);
+            double headingError = normalizeAngle(headingTargetRad - headingCurrentRad);
 
 
             // Step 4d: Check if the robot is "close enough" to the target.
