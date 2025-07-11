@@ -22,7 +22,7 @@ public class Autonomous extends LinearOpMode {
 
         // Move chassis autonomously
         double maxPower = 0.5;
-        double timeoutSeconds = 10;
+        double timeoutSeconds = 30;
         // Go in a triangle.  Do NOT change this code when you are submitting your homework
         chassis.goToPosition(
                 new Pose2D(DistanceUnit.CM, 50, 0, AngleUnit.DEGREES, 90),
