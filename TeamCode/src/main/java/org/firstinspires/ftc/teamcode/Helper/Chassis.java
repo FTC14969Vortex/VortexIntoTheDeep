@@ -41,7 +41,7 @@ public class Chassis {
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setOffsets(-66.675, -95.25, DistanceUnit.MM);
         // TODO: Change Encoder Directions depending on your robot.
-        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -124,11 +124,13 @@ public class Chassis {
         // Step 1: Get the target pose
         double xTargetCM = targetPose.getX(DistanceUnit.CM);
         double yTargetCM = targetPose.getY(DistanceUnit.CM);
-        double headingTargetRad = targetPose.getHeading(AngleUnit.RADIANS);
+        double headingTargetRad = targetPose.getHeading(AngleUnit.DEGREES);
+        //convert from degrees to radians
+        headingTargetRad = Math.toRadians(headingTargetRad);
 
         // Step 2: Define your "tolerances" – how close is close enough to stop.
         // Use the values from the example:
-        final double POSITION_TOLERANCE_CM = 3.0;             // Stop if within 2cm
+        final double POSITION_TOLERANCE_CM = 2.0;             // Stop if within 2cm
         final double ANGLE_TOLERANCE_RAD = Math.toRadians(3); // ~3 degrees
 
         // Step 3: Set up a timer to make sure your robot doesn't get stuck forever.
@@ -154,12 +156,14 @@ public class Chassis {
             //   - Calculate `dx` (difference in X between target and current).
             //   - Calculate `dy` (difference in Y between target and current).
             //   - Calculate `distance` (straight-line distance to target using dx and dy).
-            //   - Calculate `headingError` (difference in heading, remember to use `angleWrapEfficient`!).
+            //   - Calculate `headingError` (difference in heading, remember to use `angleWrap`!).
             double dx = xTargetCM - odo.getPosX(DistanceUnit.CM);
             double dy = yTargetCM - odo.getPosY(DistanceUnit.CM);
             double distance = Math.sqrt(dx * dx + dy * dy);
-            double headingError = angleWrapEfficient(headingTargetRad - currentHeading);
-            
+
+            double headingError = angleWrap(headingTargetRad - currentHeading);
+
+
             // Step 4d: Check if the robot is "close enough" to the target.
             // If the `distance` is less than `POSITION_TOLERANCE_CM` AND the absolute `headingError`
             // is less than `ANGLE_TOLERANCE_RAD`, then exit the loop.
@@ -175,17 +179,19 @@ public class Chassis {
             //     otherwise, set to -0.2 (turn clockwise).
             double xPower = 0.2;
             double yPower = 0.2;
-            double headingPower = 0.2;
+            double headingPower = 0.0;
 
             if (dx < 0) {
-                xPower = -0.2;
+                xPower = 0.2;
             }
             if (dy < 0) {
-                yPower = -0.2;
+                yPower = 0.2;
             }
             if (headingError < 0) {
+                headingPower = 0.2;
+            } else if (headingError > 0) {
                 headingPower = -0.2;
-            }   
+            }
            
             // Step 4f: Send these calculated powers to the robot's drive system.
             // Call the `drive` method, passing `yPower` as axial, `xPower` as lateral, and `headingPower` as yaw.
@@ -215,7 +221,8 @@ public class Chassis {
         drive(0, 0, 0);
     }
 
-    public double angleWrapEfficient(double angle) {
+
+    public double angleWrap(double angle) {
         angle %= (2 * Math.PI); // Puts angle in range (-2π, 2π)
         if (angle > Math.PI) {
             angle -= (2 * Math.PI);
