@@ -227,7 +227,7 @@ public class Chassis {
             opMode.telemetry.addData("Current X", xCurrentCM);
             opMode.telemetry.addData("Current Y", yCurrentCM);
             opMode.telemetry.addData("Distance Error", distance);
-            opMode.telemetry.addData("Heading Error", Math.toDegrees(headingCurrentRad - headingTargetRad));
+            opMode.telemetry.addData("Heading Error", headingError);
             opMode.telemetry.addData("Target Heading", headingTargetRad);
             opMode.telemetry.addData("Current Heading", headingCurrentRad);
             opMode.telemetry.update();
