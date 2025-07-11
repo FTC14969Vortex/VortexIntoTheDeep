@@ -41,7 +41,7 @@ public class Chassis {
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setOffsets(-66.675, -95.25, DistanceUnit.MM);
         // TODO: Change Encoder Directions depending on your robot.
-        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -136,11 +136,14 @@ public class Chassis {
         double xTargetCM = targetPose.getX(DistanceUnit.CM);
         double yTargetCM = targetPose.getY(DistanceUnit.CM);
         double headingTargetRad = targetPose.getHeading(AngleUnit.RADIANS);
+        /*
         // call opMode.telemetry.addData to show the target X and Y and heading.
         opMode.telemetry.addData("Target X", xTargetCM);
         opMode.telemetry.addData("Target Y", yTargetCM);
         opMode.telemetry.addData("Target Heading", headingTargetRad);
         opMode.telemetry.update();
+
+         */
 
         // Step 2: Define your "tolerances" – how close is close enough to stop.
         // Use the values from the example:
@@ -155,7 +158,7 @@ public class Chassis {
         // Step 4: Create the main control loop. The robot will keep doing these steps
         // until the OpMode is stopped or it reaches the target.
         // The loop should continue as long as the OpMode is active and the timer is not expired.
-//        while (opMode.opModeIsActive() && timer.seconds() < timeoutSeconds) {
+        //while (opMode.opModeIsActive() && timer.seconds() < timeoutSeconds) {
         while (opMode.opModeIsActive()) {
             if (timer.seconds() > timeoutSeconds) {
                 // Call opMode.telemetry.addData to show the timer
@@ -172,12 +175,15 @@ public class Chassis {
             // Get the current heading in Radians.
             double xCurrentCM = odo.getPosX(DistanceUnit.CM);
             double yCurrentCM = odo.getPosY(DistanceUnit.CM);
-            double headingCurrentRad = odo.getHeading(AngleUnit.RADIANS); // Should this be negated like in Drive()??
+            double headingCurrentRad = -odo.getHeading(AngleUnit.RADIANS); // Should this be negated like in Drive()??
+            /*
             // call opMode.telemetry.addData to show the current X and Y and headingCurrentRad.
             opMode.telemetry.addData("Current X", xCurrentCM);
             opMode.telemetry.addData("Current Y", yCurrentCM);
             opMode.telemetry.addData("Current Heading", headingCurrentRad);
             opMode.telemetry.update();
+
+             */
 
             // Step 4c: Calculate the "error" (how far off you are) for X, Y, and Heading.
             //   - Calculate `dx` (difference in X between target and current).
@@ -188,6 +194,7 @@ public class Chassis {
             double dy = yTargetCM - yCurrentCM;
             double distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
             double headingError = angleWrap(headingTargetRad - headingCurrentRad);
+            /*
             // call opMode.telemetry.addData to show dx, dy, distance, and headingError.
             opMode.telemetry.addData("dx", dx);
             opMode.telemetry.addData("dy", dy);
@@ -195,16 +202,21 @@ public class Chassis {
             opMode.telemetry.addData("headingError", headingError);
             opMode.telemetry.update();
 
+             */
+
             // Step 4d: Check if the robot is "close enough" to the target.
             // If the `distance` is less than `POSITION_TOLERANCE_CM` AND the absolute `headingError`
             // is less than `ANGLE_TOLERANCE_RAD`, then exit the loop.
             // Or
             if (distance < POSITION_TOLERANCE_CM && Math.abs(headingError) < ANGLE_TOLERANCE_RAD) {
+                /*
                 // Call opMode.telemetry.addData to show the distance
                 // and heading error.
                 opMode.telemetry.addData("Distance Error", distance);
                 opMode.telemetry.addData("Heading Error", headingError);
                 opMode.telemetry.update();
+
+                 */
                 break;
             }
 
@@ -245,12 +257,21 @@ public class Chassis {
             headingPower = kP_angle * headingError;
              */
 
+            /*
             // call opMode.telemetry.addData to show the calculated powers.
             opMode.telemetry.addData("xPower", xPower);
             opMode.telemetry.addData("yPower", yPower);
             opMode.telemetry.addData("headingPower", headingPower);
             opMode.telemetry.update();
+             */
 
+            if (distance < POSITION_TOLERANCE_CM) {
+                xPower = 0;
+                yPower = 0;
+            }
+            if (Math.abs(headingError) < ANGLE_TOLERANCE_RAD) {
+                headingPower = 0;
+            }
             // Step 4f: Send these calculated powers to the robot's drive system.
             // Call the `drive` method, passing `yPower` as axial, `xPower` as lateral, and `headingPower` as yaw.
             drive(yPower, xPower, headingPower);
@@ -268,7 +289,11 @@ public class Chassis {
             opMode.telemetry.addData("Current X", xCurrentCM);
             opMode.telemetry.addData("Current Y", yCurrentCM);
             opMode.telemetry.addData("Distance Error", distance);
+            opMode.telemetry.addData("POSITION_TOLERANCE_CM", POSITION_TOLERANCE_CM);
+            opMode.telemetry.addData("headingTargetRad", headingTargetRad);
+            opMode.telemetry.addData("headingCurrentRad", headingCurrentRad);
             opMode.telemetry.addData("Heading Error", headingError);
+            opMode.telemetry.addData("ANGLE_TOLERANCE_RAD", ANGLE_TOLERANCE_RAD);
             opMode.telemetry.addData("Timer", timer.seconds());
             opMode.telemetry.update();
 
@@ -286,5 +311,7 @@ public class Chassis {
         // Step 5: Once the loop finishes (either target reached or OpMode stopped),
         // stop the robot completely by calling the `drive` method with zero power for all directions.
         drive(0, 0, 0);
+        opMode.telemetry.addData("Path ", "Completed");
+        opMode.telemetry.update();
     }
 }
