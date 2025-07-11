@@ -41,7 +41,7 @@ public class Chassis {
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setOffsets(-66.675, -95.25, DistanceUnit.MM);
         // TODO: Change Encoder Directions depending on your robot.
-        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -154,7 +154,7 @@ public class Chassis {
             // Get the current heading in Radians.
             double xCurrentCM = odo.getPosX(DistanceUnit.CM);
             double yCurrentCM = odo.getPosY(DistanceUnit.CM);
-            double headingCurrentRad = odo.getHeading(AngleUnit.RADIANS);
+            double headingCurrentRad = -odo.getHeading(AngleUnit.RADIANS);
 
             // Step 4c: Calculate the "error" (how far off you are) for X, Y, and Heading.
             //   - Calculate `dx` (difference in X between target and current).
@@ -169,9 +169,26 @@ public class Chassis {
 
 
             // Step 4d: Check if the robot is "close enough" to the target.
-            // If the `distance` is less than `POSITION_TOLERANCE_CM` AND the absolute `headingError`
-            // is less than `ANGLE_TOLERANCE_RAD`, then exit the loop.
-            if (distance < POSITION_TOLERANCE_CM && Math.abs(headingError) < ANGLE_TOLERANCE_RAD) {
+            // If the `distance` is less than `POSITION_TOLERANCE_CM`, then set xPower and yPower to 0
+            // If the absolute `headingError`
+            // is less than `ANGLE_TOLERANCE_RAD`, then set headingPower to 0;
+            // If both conditions are met, then exit the loop.
+            double xPower = 0;
+            double yPower = 0;
+            double headingPower = 0;
+           int distanceMet =0, headingMet = 0;
+
+            if (distance < POSITION_TOLERANCE_CM) {
+                xPower = 0;
+                yPower = 0;
+                distanceMet =1;
+            }
+            if (Math.abs(headingError) < ANGLE_TOLERANCE_RAD) {
+                headingPower = 0;
+                headingMet = 1;
+            }
+            // if xPower, yPower, headingPower are all zero, then exit the loop.
+            if (distanceMet ==1 && headingMet ==1 ) {
                 break;
             }
 
@@ -181,28 +198,31 @@ public class Chassis {
             //   - For `yPower`: If `dy` is positive, set `yPower` to 0.2 (move forward); otherwise, set to -0.2 (move backward).
             //   - For `headingPower`: If `headingError` is positive, set `headingPower` to 0.2 (turn counter-clockwise);
             //     otherwise, set to -0.2 (turn clockwise).
-            double xPower = 0;
-            double yPower = 0;
-            double headingPower = 0;
-            if (dx > 0) {
-                xPower = maxPower;
-            } else {
-                xPower = -maxPower;
+            if (distanceMet ==0) {
+                if (dx > 0) {
+                    xPower = 0.2;
+                } else {
+                    xPower = -0.2;
+                }
+                if (dy > 0) {
+                    yPower = 0.2;
+                } else {
+                    yPower = -0.2;
+                }
             }
-            if (dy > 0) {
-                yPower = maxPower;
-            } else {
-                yPower = -maxPower;
-            }
-            if (headingError > 0) {
-                headingPower = maxPower;
-            } else {
-                headingPower = -maxPower;
+            if (headingMet ==0) {
+                if (headingError > 0) {
+                    headingPower = 0.2;
+                } else {
+                    headingPower = -0.2;
+                }
             }
 
             // Step 4f: Send these calculated powers to the robot's drive system.
             // Call the `drive` method, passing `yPower` as axial, `xPower` as lateral, and `headingPower` as yaw.
+
             drive(yPower, xPower, headingPower);
+
 
             // Step 4g: Display helpful information on the Driver Station (telemetry).
             // Use `opMode.telemetry.addData` to show:
@@ -216,15 +236,20 @@ public class Chassis {
             opMode.telemetry.addData("Current X", xCurrentCM);
             opMode.telemetry.addData("Current Y", yCurrentCM);
             opMode.telemetry.addData("Distance Error", distance);
-            opMode.telemetry.addData("Heading Error", Math.toDegrees(headingError));
+            opMode.telemetry.addData("Distance tolerance", POSITION_TOLERANCE_CM);
+            opMode.telemetry.addData("Heading Error", headingError);
+            opMode.telemetry.addData("ANGLE_TOLERANCE_RAD", ANGLE_TOLERANCE_RAD);
+
             opMode.telemetry.update();
         }
 
         // Step 5: Once the loop finishes (either target reached or OpMode stopped),
         // stop the robot completely by calling the `drive` method with zero power for all directions.
         drive(0, 0, 0);
+        opMode.telemetry.addData("Stop:", " Stopped");
         opMode.telemetry.addData("Path", "Complete");
         opMode.telemetry.update();
+
 
     }
     public static double normalizeAngle(double angle) {
