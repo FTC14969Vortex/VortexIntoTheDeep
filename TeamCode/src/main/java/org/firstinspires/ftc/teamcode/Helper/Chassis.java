@@ -144,7 +144,7 @@ public class Chassis {
         // The loop should continue as long as the OpMode is active.
         opMode.telemetry.addData("New target X and Y", "(%f, %f)", xTargetCM, yTargetCM);
         opMode.telemetry.update();
-
+        double power_distance = .2, power_yaw = .2;
         while (opMode.opModeIsActive()) {
             // Step 4a: Update the odometry readings to get the robot's latest position.
             odo.update();
@@ -171,15 +171,27 @@ public class Chassis {
                 opMode.telemetry.update();
                 break;
             }
+            if (distance < POSITION_TOLERANCE_CM) {
+                //power_distance *= Math.abs(distance) / POSITION_TOLERANCE_CM;
+                power_distance = 0;
+            }else {
+                power_distance = .2;
+            }
+            if (headingError < ANGLE_TOLERANCE_RAD) {
+//                power_yaw *=  Math.abs(headingError) / ANGLE_TOLERANCE_RAD;
+                power_yaw = 0;
+            }else {
+                power_yaw = 0.2;
+            }
             // Step 4e: Determine the motor powers using "Bang-Bang" control!
             // You'll set a fixed power (like 0.2 or -0.2) based on the sign of the error.
             //   - For `xPower`: If `dx` is positive, set `xPower` to 0.2 (move right); otherwise, set to -0.2 (move left).
             //   - For `yPower`: If `dy` is positive, set `yPower` to 0.2 (move forward); otherwise, set to -0.2 (move backward).
             //   - For `headingPower`: If `headingError` is positive, set `headingPower` to 0.2 (turn counter-clockwise);
             //     otherwise, set to -0.2 (turn clockwise).
-            double axial = dy < 0 ? 0.2 : -0.2;
-            double lateral = dx < 0 ? 0.2 : -0.2;
-            double yaw = headingError < 0 ? 0.2 : -0.2;
+            double axial = dy < 0 ? power_distance : -power_distance;
+            double lateral = dx < 0 ? power_distance : -power_distance;
+            double yaw = headingError < 0 ? power_yaw : -power_yaw;
 
             // Step 4f: Send these calculated powers to the robot's drive system.
             // Call the `drive` method, passing `yPower` as axial, `xPower` as lateral, and `headingPower` as yaw.
