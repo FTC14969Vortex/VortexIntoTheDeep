@@ -41,7 +41,7 @@ public class Chassis {
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setOffsets(-66.675, -95.25, DistanceUnit.MM);
         // TODO: Change Encoder Directions depending on your robot.
-        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -129,18 +129,27 @@ public class Chassis {
 
         // Step 2: Define your "tolerances" – how close is close enough to stop.
         // Use the values from the example:
-        final double POSITION_TOLERANCE_CM = 3.0;             // Stop if within 2cm
+        final double POSITION_TOLERANCE_CM = 2.0;             // Stop if within 2cm
         final double ANGLE_TOLERANCE_RAD = Math.toRadians(3); // ~3 degrees
 
         // Step 3: Set up a timer to make sure your robot doesn't get stuck forever.
         // Initialize an ElapsedTime object and reset it.
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
+        timer.startTime();
+
+
+
 
         // Step 4: Create the main control loop. The robot will keep doing these steps
         // until the OpMode is stopped or it reaches the target.
         // The loop should continue as long as the OpMode is active.
         while (opMode.opModeIsActive()) {
+            if (timer.seconds() > timeoutSeconds) {
+                 opMode.telemetry.addData("Seconds:" + timer.seconds() , "Timed out");
+                 opMode.telemetry.update();
+                 break;
+            }
             // Step 4a: Update the odometry readings to get the robot's latest position.
             odo.update();
 
@@ -149,7 +158,7 @@ public class Chassis {
             // Get the current heading in Radians.
             double xCurrentCM = odo.getPosX(DistanceUnit.CM);
             double yCurrentCM = odo.getPosY(DistanceUnit.CM);
-            double headingCurrentRad = odo.getHeading(AngleUnit.RADIANS);
+            double headingCurrentRad = -odo.getHeading(AngleUnit.RADIANS);
 
             // Step 4c: Calculate the "error" (how far off you are) for X, Y, and Heading.
             //   - Calculate `dx` (difference in X between target and current).
@@ -165,9 +174,10 @@ public class Chassis {
             // Step 4d: Check if the robot is "close enough" to the target.
             // If the `distance` is less than `POSITION_TOLERANCE_CM` AND the absolute `headingError`
             // is less than `ANGLE_TOLERANCE_RAD`, then exit the loop.
-            if (distance < POSITION_TOLERANCE_CM && Math.abs(headingCurrentRad - headingTargetRad) < ANGLE_TOLERANCE_RAD) {
+            if (distance < POSITION_TOLERANCE_CM && Math.abs(headingError) < ANGLE_TOLERANCE_RAD) {
                 break;
             }
+
 
             // Step 4e: Determine the motor powers using "Bang-Bang" control!
             // You'll set a fixed power (like 0.2 or -0.2) based on the sign of the error.
@@ -188,10 +198,18 @@ public class Chassis {
             } else {
                 yPower = -0.2;
             }
-            if (headingCurrentRad - headingTargetRad > 0) {
+            if (headingError > 0) {
                 headingPower = 0.2;
             } else {
                 headingPower = -0.2;
+            }
+
+            if (Math.abs(headingError) < ANGLE_TOLERANCE_RAD) {
+                headingPower = 0;
+            }
+            if (distance < POSITION_TOLERANCE_CM) {
+                xPower = 0;
+                yPower = 0;
             }
             // Step 4f: Send these calculated powers to the robot's drive system.
             // Call the `drive` method, passing `yPower` as axial, `xPower` as lateral, and `headingPower` as yaw.
@@ -210,6 +228,8 @@ public class Chassis {
             opMode.telemetry.addData("Current Y", yCurrentCM);
             opMode.telemetry.addData("Distance Error", distance);
             opMode.telemetry.addData("Heading Error", Math.toDegrees(headingCurrentRad - headingTargetRad));
+            opMode.telemetry.addData("Target Heading", headingTargetRad);
+            opMode.telemetry.addData("Current Heading", headingCurrentRad);
             opMode.telemetry.update();
         }
 
