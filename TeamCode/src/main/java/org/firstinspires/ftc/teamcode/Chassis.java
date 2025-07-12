@@ -54,8 +54,7 @@ public class Chassis {
 
         if (currentMode == opsMode.FIELD_CENTRIC) {
             odo.update();
-            //botHeading = -odo.getHeading(AngleUnit.RADIANS); // Get the robot's heading in radians
-            botHeading = -odo.getHeading(); // Get the robot's heading in radians
+            botHeading = -odo.getHeading(AngleUnit.RADIANS); // Get the robot's heading in radians
             double rotX = lateral * Math.cos(botHeading) - axial * Math.sin(botHeading);
             double rotY = lateral * Math.sin(botHeading) + axial * Math.cos(botHeading);
             rotX = rotX * 1.1; //counteract imperfect strafing
