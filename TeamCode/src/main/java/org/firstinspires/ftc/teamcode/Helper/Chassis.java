@@ -166,12 +166,9 @@ public class Chassis {
             double distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
             double headingError = normalizeAngle(headingTargetRad - headingCurrentRad);
 
-
-
             // Step 4d: Check if the robot is "close enough" to the target.
             // If the `distance` is less than `POSITION_TOLERANCE_CM`, then set xPower and yPower to 0
-            // If the absolute `headingError`
-            // is less than `ANGLE_TOLERANCE_RAD`, then set headingPower to 0;
+            // If the absolute `headingError` is less than `ANGLE_TOLERANCE_RAD`, then set headingPower to 0;
             // If both conditions are met, then exit the loop.
             double xPower = 0;
             double yPower = 0;
