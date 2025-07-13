@@ -15,7 +15,7 @@ public class Chassis {
         ROBOT_CENTRIC,
         FIELD_CENTRIC
     }
-
+    final double SPEED = 1.7;
     opsMode currentMode = opsMode.ROBOT_CENTRIC;
 
     public Chassis(Teleop teleOp) {
