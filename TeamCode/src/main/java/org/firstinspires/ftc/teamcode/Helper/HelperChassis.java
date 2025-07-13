@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-public class Chassis {
+public class HelperChassis {
 
     // global location.
     public int robotX = 0;

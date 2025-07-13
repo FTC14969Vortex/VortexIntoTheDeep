@@ -35,7 +35,7 @@ public class Robot {
 //
 
 
-    public Chassis chassis = new Chassis();
+    public HelperChassis chassis = new HelperChassis();
     public Intake intake = new Intake();
     public Arm arm = new Arm();
     public Wrist wrist = new Wrist();
