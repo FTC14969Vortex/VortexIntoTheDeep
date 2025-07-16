@@ -25,23 +25,23 @@ public class ZigZagAuto extends LinearOpMode {
         double timeoutSeconds = 10;
         // Go in a triangle.  Do NOT change this code when you are submitting your homework
         chassis.goToPosition(
-                new Pose2D(DistanceUnit.INCH, 0, 22, AngleUnit.DEGREES, 90),
+                new Pose2D(DistanceUnit.INCH, 0, 22, AngleUnit.DEGREES, 0),
                 maxPower, timeoutSeconds);
         chassis.goToPosition(
-                new Pose2D(DistanceUnit.INCH, 22, 22, AngleUnit.DEGREES, 0),
+                new Pose2D(DistanceUnit.INCH, -22, 22, AngleUnit.DEGREES, 0),
                 maxPower, timeoutSeconds);
 
         chassis.goToPosition(
-                new Pose2D(DistanceUnit.INCH, 22, 44, AngleUnit.DEGREES, -45),
+                new Pose2D(DistanceUnit.INCH, -22, 72, AngleUnit.DEGREES, 0),
                 maxPower, timeoutSeconds);
         chassis.goToPosition(
-                new Pose2D(DistanceUnit.INCH, 44, 44, AngleUnit.DEGREES, -45),
+                new Pose2D(DistanceUnit.INCH, -72, 72, AngleUnit.DEGREES, 0),
                 maxPower, timeoutSeconds);
         chassis.goToPosition(
-                new Pose2D(DistanceUnit.INCH, 44, 88, AngleUnit.DEGREES, -45),
+                new Pose2D(DistanceUnit.INCH, -72, 96, AngleUnit.DEGREES, 0),
                 maxPower, timeoutSeconds);
         chassis.goToPosition(
-                new Pose2D(DistanceUnit.INCH, 88, 88, AngleUnit.DEGREES, -45),
+                new Pose2D(DistanceUnit.INCH, -96, 96, AngleUnit.DEGREES, 0),
                 maxPower, timeoutSeconds);
             }
 }
