@@ -28,19 +28,19 @@ public class Autonomous extends LinearOpMode {
                 new Pose2D(DistanceUnit.CM, 0, 60.96, AngleUnit.DEGREES, 0),
                 maxPower, timeoutSeconds);
         chassis.goToPosition(
-                new Pose2D(DistanceUnit.CM, 60.96, 60.96, AngleUnit.DEGREES, -90),
+                new Pose2D(DistanceUnit.CM, -60.96, 60.96, AngleUnit.DEGREES, -90),
                 maxPower, timeoutSeconds);
         chassis.goToPosition(
-                new Pose2D(DistanceUnit.CM, 60.96, 121.92, AngleUnit.DEGREES, 90),
+                new Pose2D(DistanceUnit.CM, -60.96, 121.92, AngleUnit.DEGREES, 90),
                 maxPower, timeoutSeconds);
         chassis.goToPosition(
-                new Pose2D(DistanceUnit.CM, 121.92, 121.92, AngleUnit.DEGREES, -90),
+                new Pose2D(DistanceUnit.CM, -121.92, 121.92, AngleUnit.DEGREES, -90),
                 maxPower, timeoutSeconds);
         chassis.goToPosition(
-                new Pose2D(DistanceUnit.CM, 121.92, 182.88, AngleUnit.DEGREES, 90),
+                new Pose2D(DistanceUnit.CM, -121.92, 182.88, AngleUnit.DEGREES, 90),
                 maxPower, timeoutSeconds);
         chassis.goToPosition(
-                new Pose2D(DistanceUnit.CM, 182.88, 182.88, AngleUnit.DEGREES, -90),
+                new Pose2D(DistanceUnit.CM, -182.88, 182.88, AngleUnit.DEGREES, -90),
                 maxPower, timeoutSeconds);
     }
 }
