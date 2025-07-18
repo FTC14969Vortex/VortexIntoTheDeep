@@ -191,7 +191,6 @@ public class Chassis {
             if (headingError < 0) {
                 headingPower = -0.2;
             }
-
             if (distance < POSITION_TOLERANCE_CM) {
                 xPower = 0;
                 yPower = 0;
