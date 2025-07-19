@@ -24,19 +24,19 @@ public class SampleAuto extends LinearOpMode {
         // Move chassis autonomously
         double maxPower = 0.5;
         double timeoutSeconds = 30;
-        double feetToCM = 30.48;
+        double twoFeetToCM = 2*30.48;
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 3; i++) {
 
             
             // Go to (0, 24) with 0 degrees rotation
             chassis.goToPosition(
-                    new Pose2D(DistanceUnit.CM, i * -feetToCM, (i+1) * feetToCM, AngleUnit.DEGREES, 0),
+                    new Pose2D(DistanceUnit.CM, i * -twoFeetToCM, (i+1) * twoFeetToCM, AngleUnit.DEGREES, 0),
                     maxPower, timeoutSeconds);
 
             // Go to (24, 24) with -90 degrees rotation
             chassis.goToPosition(
-                    new Pose2D(DistanceUnit.CM, (i+1)* -feetToCM, (i+1) *feetToCM, AngleUnit.DEGREES, -90),
+                    new Pose2D(DistanceUnit.CM, (i+1)* -twoFeetToCM, (i+1) *twoFeetToCM, AngleUnit.DEGREES, -90),
                     maxPower, timeoutSeconds);
 
         }
