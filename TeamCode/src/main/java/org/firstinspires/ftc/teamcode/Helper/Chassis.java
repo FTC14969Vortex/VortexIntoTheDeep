@@ -133,26 +133,38 @@ public class Chassis {
 
         // Step 3: Set up a timer to make sure your robot doesn't get stuck forever.
         // Initialize an ElapsedTime object and reset it.
+        ElapsedTime timer = new ElapsedTime();
+        timer.reset();
 
         // Step 4: Create the main control loop. The robot will keep doing these steps
         // until the OpMode is stopped or it reaches the target.
         // The loop should continue as long as the OpMode is active.
         while (opMode.opModeIsActive()) {
             // Step 4a: Update the odometry readings to get the robot's latest position.
-
+            odo.update();
             // Step 4b: Get the robot's current X, Y, and Heading.
             // Remember that `odo.getPosX` and `odo.getPosY` can get values in CM.
             // Get the current heading in Radians.
+            double currentX = odo.getPosX(DistanceUnit.CM);
+            double currentY = odo.getPosY(DistanceUnit.CM);
+            double currentHeading = odo.getHeading(AngleUnit.RADIANS);
 
             // Step 4c: Calculate the "error" (how far off you are) for X, Y, and Heading.
             //   - Calculate `dx` (difference in X between target and current).
             //   - Calculate `dy` (difference in Y between target and current).
             //   - Calculate `distance` (straight-line distance to target using dx and dy).
             //   - Calculate `headingError` (difference in heading, remember to use `angleWrap`!).
+            double dx = xTargetCM - currentX;
+            double dy = yTargetCM - currentY;
+            double distance = Math.hypot(dx, dy);
+            double headingError = angleWrap(headingTargetRad - currentHeading);
 
             // Step 4d: Check if the robot is "close enough" to the target.
             // If the `distance` is less than `POSITION_TOLERANCE_CM` AND the absolute `headingError`
             // is less than `ANGLE_TOLERANCE_RAD`, then exit the loop.
+            if (distance < POSITION_TOLERANCE_CM && Math.abs(headingError) < ANGLE_TOLERANCE_RAD) {
+                break;
+            }
 
             // Step 4e: Determine the motor powers using "Bang-Bang" control!
             // You'll set a fixed power (like 0.2 or -0.2) based on the sign of the error.
@@ -160,9 +172,18 @@ public class Chassis {
             //   - For `yPower`: If `dy` is positive, set `yPower` to 0.2 (move forward); otherwise, set to -0.2 (move backward).
             //   - For `headingPower`: If `headingError` is positive, set `headingPower` to 0.2 (turn counter-clockwise);
             //     otherwise, set to -0.2 (turn clockwise).
+            double targetAngle = Math.atan2(dy, dx);
+            double rotatedX = dx * Math.cos(-currentHeading) - dy * Math.sin(-currentHeading);
+            double rotatedY = dx * Math.sin(-currentHeading) + dy * Math.cos(-currentHeading);
+            double xPower = rotatedX / (Math.abs(rotatedX) + Math.abs(rotatedY));
+            double yPower = rotatedY / (Math.abs(rotatedX) + Math.abs(rotatedY));
+            xPower *= maxPower;
+            yPower *= maxPower;
 
             // Step 4f: Send these calculated powers to the robot's drive system.
             // Call the `drive` method, passing `yPower` as axial, `xPower` as lateral, and `headingPower` as yaw.
+            drive(yPower, xPower, headingPower);
+
 
             // Step 4g: Display helpful information on the Driver Station (telemetry).
             // Use `opMode.telemetry.addData` to show:
