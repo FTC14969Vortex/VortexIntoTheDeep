@@ -187,6 +187,9 @@ public class Chassis {
             // is less than `ANGLE_TOLERANCE_RAD`, then exit the loop.
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -246,8 +249,12 @@ public class Chassis {
             drive(yPower, xPower, headingPower);
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
 =======
+=======
+
+>>>>>>> Stashed changes
 
 >>>>>>> Stashed changes
 
