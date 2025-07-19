@@ -185,6 +185,9 @@ public class Chassis {
             // Step 4d: Check if the robot is "close enough" to the target.
             // If the `distance` is less than `POSITION_TOLERANCE_CM` AND the absolute `headingError`
             // is less than `ANGLE_TOLERANCE_RAD`, then exit the loop.
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
             if (distance < POSITION_TOLERANCE_CM && Math.abs(headingError) < ANGLE_TOLERANCE_RAD) {
                 break;
@@ -238,6 +241,10 @@ public class Chassis {
             // Step 4f: Send these calculated powers to the robot's drive system.
             // Call the `drive` method, passing `yPower` as axial, `xPower` as lateral, and `headingPower` as yaw.
             drive(yPower, xPower, headingPower);
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 
 >>>>>>> Stashed changes
 
