@@ -186,6 +186,9 @@ public class Chassis {
             // If the `distance` is less than `POSITION_TOLERANCE_CM` AND the absolute `headingError`
             // is less than `ANGLE_TOLERANCE_RAD`, then exit the loop.
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -242,7 +245,11 @@ public class Chassis {
             // Call the `drive` method, passing `yPower` as axial, `xPower` as lateral, and `headingPower` as yaw.
             drive(yPower, xPower, headingPower);
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+
+>>>>>>> Stashed changes
 
 >>>>>>> Stashed changes
 
