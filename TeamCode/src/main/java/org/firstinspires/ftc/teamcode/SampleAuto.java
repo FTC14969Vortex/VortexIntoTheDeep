@@ -26,19 +26,30 @@ public class SampleAuto extends LinearOpMode {
         double timeoutSeconds = 30;
         double feetToCM = 30.48;
 
-        for (int i = 0; i < 4; i++) {
+         {
+             //Go straight
+            Pose2D pose2D0 = new Pose2D(DistanceUnit.CM, 0,  1 * feetToCM, AngleUnit.DEGREES, 0);
+            chassis.goToPosition( pose2D0 , maxPower , timeoutSeconds );
 
-            
-            // Go to (0, 24) with 0 degrees rotation
-            chassis.goToPosition(
-                    new Pose2D(DistanceUnit.CM, i * -feetToCM, (i+1) * feetToCM, AngleUnit.DEGREES, 0),
-                    maxPower, timeoutSeconds);
+            // Go left
+             Pose2D pose2D1 = new Pose2D(DistanceUnit.CM, 1 * -feetToCM,1 * feetToCM, AngleUnit.DEGREES, -90);
+             chassis.goToPosition( pose2D1, maxPower , timeoutSeconds );
 
-            // Go to (24, 24) with -90 degrees rotation
-            chassis.goToPosition(
-                    new Pose2D(DistanceUnit.CM, (i+1)* -feetToCM, (i+1) *feetToCM, AngleUnit.DEGREES, -90),
-                    maxPower, timeoutSeconds);
+             //Go straight
+             Pose2D pose2D2 = new Pose2D(DistanceUnit.CM, 1 * -feetToCM,  2 * feetToCM, AngleUnit.DEGREES, 0);
+             chassis.goToPosition( pose2D2 , maxPower , timeoutSeconds );
 
-        }
+             // Go left
+             Pose2D pose2D3 = new Pose2D(DistanceUnit.CM, 2 * -feetToCM,  2 * feetToCM, AngleUnit.DEGREES, -90);
+             chassis.goToPosition( pose2D3 , maxPower , timeoutSeconds );
+
+             //Go straight
+             Pose2D pose2D4 = new Pose2D(DistanceUnit.CM, 2 * -feetToCM,  3 * feetToCM, AngleUnit.DEGREES, 0);
+             chassis.goToPosition( pose2D4 , maxPower , timeoutSeconds );
+
+             // Go left
+             Pose2D pose2D5 = new Pose2D(DistanceUnit.CM, 3 * -feetToCM,  3 * feetToCM, AngleUnit.DEGREES, -90);
+             chassis.goToPosition( pose2D5 , maxPower , timeoutSeconds );
+         }
     }
 }
