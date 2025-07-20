@@ -20,9 +20,12 @@ public class AutonomousDrive extends LinearOpMode {
         // Move chassis autonomously
         double maxPower = 0.5;
         double timeoutSeconds = 10;
-        // Triangle
-        myChassis.goToPosition(10, 0, 90, maxPower, timeoutSeconds);
-        myChassis.goToPosition(10, 10, 0, maxPower, timeoutSeconds);
-        myChassis.goToPosition(0, 0, -45, maxPower, timeoutSeconds);
+        // Move up to the left corner
+        myChassis.goToPosition( 0, 60.96, 0, maxPower, timeoutSeconds);
+        myChassis.goToPosition(-60.96, 60.96, -90, maxPower, timeoutSeconds);
+        myChassis.goToPosition(-60.96, 121.96, 0, maxPower, timeoutSeconds);
+        myChassis.goToPosition( -121.92, 121.92, -90, maxPower, timeoutSeconds);
+        myChassis.goToPosition(-121.92, 182.88, 0, maxPower, timeoutSeconds);
+        myChassis.goToPosition(-182.88, 182.88, -90, maxPower, timeoutSeconds);
     }
 }
