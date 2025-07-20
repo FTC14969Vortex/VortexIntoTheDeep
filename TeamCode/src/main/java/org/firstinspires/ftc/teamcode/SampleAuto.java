@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 import org.firstinspires.ftc.teamcode.Helper.Chassis;
 
-@Autonomous(name = "SampleAuto_Mecanum_Armaan", group = "Auto")
+@Autonomous(name = "SampleAuto_Mecanum_Alaqmar", group = "Auto")
 public class SampleAuto extends LinearOpMode {
     @Override
     public void runOpMode() {
