@@ -25,30 +25,33 @@ public class SampleAuto extends LinearOpMode {
         double maxPower = 0.5;
         double timeoutSeconds = 30;
         double feetToCM = 30.48;
+        // 2 feet because the mat dimensions are 2x2 and we have to move a whole mat at a time.
+        double twoFeetToCM = 60.96;
+
 
          {
              //Go straight
-            Pose2D pose2D0 = new Pose2D(DistanceUnit.CM, 0,  1 * feetToCM, AngleUnit.DEGREES, 0);
+            Pose2D pose2D0 = new Pose2D(DistanceUnit.CM, 0,  1 * twoFeetToCM, AngleUnit.DEGREES, 0);
             chassis.goToPosition( pose2D0 , maxPower , timeoutSeconds );
 
             // Go left
-             Pose2D pose2D1 = new Pose2D(DistanceUnit.CM, 1 * -feetToCM,1 * feetToCM, AngleUnit.DEGREES, -90);
+             Pose2D pose2D1 = new Pose2D(DistanceUnit.CM, 1 * -twoFeetToCM,1 * twoFeetToCM, AngleUnit.DEGREES, -90);
              chassis.goToPosition( pose2D1, maxPower , timeoutSeconds );
 
              //Go straight
-             Pose2D pose2D2 = new Pose2D(DistanceUnit.CM, 1 * -feetToCM,  2 * feetToCM, AngleUnit.DEGREES, 0);
+             Pose2D pose2D2 = new Pose2D(DistanceUnit.CM, 1 * -twoFeetToCM,  2 * twoFeetToCM, AngleUnit.DEGREES, 0);
              chassis.goToPosition( pose2D2 , maxPower , timeoutSeconds );
 
              // Go left
-             Pose2D pose2D3 = new Pose2D(DistanceUnit.CM, 2 * -feetToCM,  2 * feetToCM, AngleUnit.DEGREES, -90);
+             Pose2D pose2D3 = new Pose2D(DistanceUnit.CM, 2 * -twoFeetToCM,  2 * twoFeetToCM, AngleUnit.DEGREES, -90);
              chassis.goToPosition( pose2D3 , maxPower , timeoutSeconds );
 
              //Go straight
-             Pose2D pose2D4 = new Pose2D(DistanceUnit.CM, 2 * -feetToCM,  3 * feetToCM, AngleUnit.DEGREES, 0);
+             Pose2D pose2D4 = new Pose2D(DistanceUnit.CM, 2 * -twoFeetToCM,  3 * twoFeetToCM, AngleUnit.DEGREES, 0);
              chassis.goToPosition( pose2D4 , maxPower , timeoutSeconds );
 
              // Go left
-             Pose2D pose2D5 = new Pose2D(DistanceUnit.CM, 3 * -feetToCM,  3 * feetToCM, AngleUnit.DEGREES, -90);
+             Pose2D pose2D5 = new Pose2D(DistanceUnit.CM, 3 * -twoFeetToCM,  3 * twoFeetToCM, AngleUnit.DEGREES, -90);
              chassis.goToPosition( pose2D5 , maxPower , timeoutSeconds );
          }
     }
