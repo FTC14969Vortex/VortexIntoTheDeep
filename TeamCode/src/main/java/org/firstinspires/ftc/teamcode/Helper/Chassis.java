@@ -154,7 +154,7 @@ public class Chassis {
 
             double x_position = odo.getPosX(DistanceUnit.CM);
             double y_position = odo.getPosY(DistanceUnit.CM);
-            double Heading = -odo.getHeading(AngleUnit.RADIANS);
+            double Heading = odo.getHeading(AngleUnit.RADIANS);
 
             // Remember that `odo.getPosX` and `odo.getPosY` can get values in CM.
             // Get the current heading in Radians.
@@ -165,7 +165,7 @@ public class Chassis {
             //   - Calculate `distance` (straight-line distance to target using dx and dy).
             //   - Calculate `headingError` (difference in heading, remember to use `angleWrap`!).
 
-            double dx = x_position - xTargetCM;
+            double dx = xTargetCM - x_position;
             double dy = yTargetCM - y_position;
             double distance = Math.sqrt(dx*dx+dy*dy);
             double headingErrorDeg = (angleWrap(headingTargetRad - Heading));
