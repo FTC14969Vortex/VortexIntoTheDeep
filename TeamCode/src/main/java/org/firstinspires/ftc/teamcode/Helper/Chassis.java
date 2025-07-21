@@ -122,12 +122,7 @@ public class Chassis {
      * @param timeoutSeconds The timeout in seconds.
      */
 
-    public double angleWrap(double angleRadians) {
-        while (angleRadians > Math.PI) {
-            angleRadians += 2 * Math.PI;
-        }
-        return angleRadians;
-    }
+
     public void goToPosition(Pose2D targetPose, double maxPower, double timeoutSeconds) {
         // Step 1: Get the target pose
         double xTargetCM = targetPose.getX(DistanceUnit.CM);
@@ -159,7 +154,7 @@ public class Chassis {
 
             double x_position = odo.getPosX(DistanceUnit.CM);
             double y_position = odo.getPosY(DistanceUnit.CM);
-            double Heading = odo.getHeading(AngleUnit.RADIANS);
+            double Heading = -odo.getHeading(AngleUnit.RADIANS);
 
             // Remember that `odo.getPosX` and `odo.getPosY` can get values in CM.
             // Get the current heading in Radians.
@@ -173,7 +168,7 @@ public class Chassis {
             double dx = x_position - xTargetCM;
             double dy = yTargetCM - y_position;
             double distance = Math.sqrt(dx*dx+dy*dy);
-            double headingErrorDeg = Math.toDegrees(AngleUnit.normalizeRadians(headingTargetRad - Heading));
+            double headingErrorDeg = (angleWrap(headingTargetRad - Heading));
 
             // Step 4d: Check if the robot is "close enough" to the target.
             // If the `distance` is less than `POSITION_TOLERANCE_CM` AND the absolute `headingError`
@@ -236,5 +231,14 @@ public class Chassis {
         // Step 5: Once the loop finishes (either target reached or OpMode stopped),
         // stop the robot completely by calling the `drive` method with zero power for all directions.
         drive(0, 0, 0);
+    }
+    public double angleWrap(double angleRadians) {
+        while (angleRadians > Math.PI) {
+            angleRadians += 2 * Math.PI;
+        }
+        while (angleRadians < -Math.PI) {
+            angleRadians += 2 * Math.PI;
+        }
+        return angleRadians;
     }
 }
