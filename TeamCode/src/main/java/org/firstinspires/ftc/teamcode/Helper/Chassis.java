@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Helper;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
@@ -120,6 +121,13 @@ public class Chassis {
      * @param maxPower The maximum power to use.
      * @param timeoutSeconds The timeout in seconds.
      */
+
+    public double angleWrap(double angleRadians) {
+        while (angleRadians > Math.PI) {
+            angleRadians += 2 * Math.PI;
+        }
+        return angleRadians;
+    }
     public void goToPosition(Pose2D targetPose, double maxPower, double timeoutSeconds) {
         // Step 1: Get the target pose
         double xTargetCM = targetPose.getX(DistanceUnit.CM);
@@ -129,28 +137,29 @@ public class Chassis {
         // Step 2: Define your "tolerances" – how close is close enough to stop.
         // Use the values from the example:
         final double POSITION_TOLERANCE_CM = 2.0;             // Stop if within 2cm
-        final double ANGLE_TOLERANCE_RAD = Math.toRadians(3); // ~3 degrees
+        final double ANGLE_TOLERANCE_RAD = Math.toDegrees(3); // ~3 degrees
 
         // Step 3: Set up a timer to make sure your robot doesn't get stuck forever.
         // Initialize an ElapsedTime object and reset it.
 
-        ElapsedTime watchdog = ElapsedTime();
+        ElapsedTime watchdog = new ElapsedTime();
         watchdog.reset();
 
         // Step 4: Create the main control loop. The robot will keep doing these steps
         // until the OpMode is stopped or it reaches the target.
         // The loop should continue as long as the OpMode is active.
-        while (opMode.opModeIsActive() && watchdog < timeoutSeconds) {
+        while (opMode.opModeIsActive() && watchdog.seconds() < timeoutSeconds) {
 
             // Step 4a: Update the odometry readings to get the robot's latest position.
 
             updateTelemetry();
+            odo.update();
 
             // Step 4b: Get the robot's current X, Y, and Heading.
 
             double x_position = odo.getPosX(DistanceUnit.CM);
             double y_position = odo.getPosY(DistanceUnit.CM);
-            double Heading = -odo.getHeading(AngleUnit.RADIANS);
+            double Heading = odo.getHeading(AngleUnit.RADIANS);
 
             // Remember that `odo.getPosX` and `odo.getPosY` can get values in CM.
             // Get the current heading in Radians.
@@ -161,16 +170,16 @@ public class Chassis {
             //   - Calculate `distance` (straight-line distance to target using dx and dy).
             //   - Calculate `headingError` (difference in heading, remember to use `angleWrap`!).
 
-            double dx = xTargetCM-x_position;
-            double dy = yTargetCM-y_position;
-            double distance = (dx^2+dy^2)^0.5;
-            double headingError = Heading - headingTargetRad;
+            double dx = x_position - xTargetCM;
+            double dy = yTargetCM - y_position;
+            double distance = Math.sqrt(dx*dx+dy*dy);
+            double headingErrorDeg = Math.toDegrees(AngleUnit.normalizeRadians(headingTargetRad - Heading));
 
             // Step 4d: Check if the robot is "close enough" to the target.
             // If the `distance` is less than `POSITION_TOLERANCE_CM` AND the absolute `headingError`
             // is less than `ANGLE_TOLERANCE_RAD`, then exit the loop.
 
-            if (distance < POSITION_TOLERANCE_CM && Math.abs(headingError) < ANGLE_TOLERANCE_RAD) {
+            if (distance < POSITION_TOLERANCE_CM && Math.abs(headingErrorDeg) < ANGLE_TOLERANCE_RAD) {
                 break;
             }
 
@@ -182,21 +191,27 @@ public class Chassis {
             //     otherwise, set to -0.2 (turn clockwise).
 
             double axial = 0;
-            double heading = 0
+            double heading = 0;
+            double lateral = 0;
 
-            if (dy > -POSITION_TOLERANCE_CM) {
+            if (dy > POSITION_TOLERANCE_CM) {
                 axial = 0.2;
             }
-            else if (dy < POSITION_TOLERANCE_CM) {
+            else if (dy < -POSITION_TOLERANCE_CM) {
                 axial = -0.2;
             }
-            if (Heading > -ANGLE_TOLERANCE_RAD) {
-                heading = 0.2;
+            if (dx > POSITION_TOLERANCE_CM) {
+                lateral = -0.2;
             }
-            else if (Heading < ANGLE_TOLERANCE_RAD) {
+            else if (dx < -POSITION_TOLERANCE_CM) {
+                lateral = 0.2;
+            }
+            if (headingErrorDeg > ANGLE_TOLERANCE_RAD) {
+                heading = 0.2;
+            } else if (headingErrorDeg < -ANGLE_TOLERANCE_RAD) {
                 heading = -0.2;
             }
-            drive(axial, 0, heading);
+            drive(axial, lateral, heading);
 
             // Step 4f: Send these calculated powers to the robot's drive system.
             // Call the `drive` method, passing `yPower` as axial, `xPower` as lateral, and `headingPower` as yaw.
@@ -214,7 +229,7 @@ public class Chassis {
             opMode.telemetry.addData("Target X: ", xTargetCM);
             opMode.telemetry.addData("Target Y: ", yTargetCM);
             opMode.telemetry.addData("Current distance error: ", distance);
-            opMode.telemetry.addData("Current heading error: ", headingError);
+            opMode.telemetry.addData("Current heading error: ", headingErrorDeg);
             opMode.telemetry.update();
         }
 
