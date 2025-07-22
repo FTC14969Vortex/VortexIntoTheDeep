@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 public class Chassis {
     double leftFrontPower;
-    double leftBackPower;  
+    double leftBackPower;
     double rightFrontPower;
     double rightBackPower;
     private GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
@@ -147,7 +147,6 @@ public class Chassis {
         // Initialize an ElapsedTime object and reset it.
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
-        timer.startTime();
 
         // Step 4: Create the main control loop. The robot will keep doing these steps
         // until the OpMode is stopped or it reaches the target.
@@ -193,14 +192,14 @@ public class Chassis {
             double yPower = 0;
             double headingPower = 0;
 
-                if (dx > 0 && dx > POSITION_TOLERANCE_CM) {
+                if (dx > POSITION_TOLERANCE_CM) {
                     xPower = 0.2;
-                } else if (dx < 0 && dx < -POSITION_TOLERANCE_CM) {
+                } else if (dx < -POSITION_TOLERANCE_CM) {
                     xPower = -0.2; //move left
                 }
-                if (dy > 0 && dy > POSITION_TOLERANCE_CM) {
+                if (dy > POSITION_TOLERANCE_CM) {
                     yPower = 0.2;
-                } else if (dy < 0 && dy < -POSITION_TOLERANCE_CM) {
+                } else if (dy < -POSITION_TOLERANCE_CM) {
                     yPower = -0.2;
                 }
                 if (headingError > 0 && headingError > ANGLE_TOLERANCE_RAD) {
