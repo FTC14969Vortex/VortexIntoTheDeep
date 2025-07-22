@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 public class Chassis {
     double leftFrontPower;
-    double leftBackPower;
+    double leftBackPower;  
     double rightFrontPower;
     double rightBackPower;
     private GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
@@ -117,10 +117,10 @@ public class Chassis {
 
     public double angleWrap(double angleRadians) {
         while (angleRadians > Math.PI) {
-            angleRadians -= 2 * Math.PI;
+            angleRadians -= Math.PI;
         }
         while (angleRadians < -Math.PI) {
-            angleRadians += 2 * Math.PI;
+            angleRadians += Math.PI;
         }
         return angleRadians;
     }
@@ -192,25 +192,6 @@ public class Chassis {
             double xPower = 0;
             double yPower = 0;
             double headingPower = 0;
-//            if (dy > 3){
-//                yPower = 0.25;
-//            }
-//            else if (dy < -3){
-//                yPower = -0.25;
-//            }
-//            if (dx > 3) {
-//                xPower = 0.25;
-//
-//            }
-//            else if (dx < -3) {
-//                xPower = -0.25;
-//            }
-//            if (headingError > 3) {
-//                headingPower = -0.25;
-//            }
-//            else if (headingError < -3) {
-//                headingPower = 0.25;
-//            }
 
                 if (dx > 0 && dx > POSITION_TOLERANCE_CM) {
                     xPower = 0.2;
