@@ -24,15 +24,42 @@ public class SampleAuto extends LinearOpMode {
         // Move chassis autonomously
         double maxPower = 0.5;
         double timeoutSeconds = 10;
-        // Go in a triangle.  Do NOT change this code when you are submitting your homework
+
+        double x = 0;
+        double y = 0;
+        /* for (int i = 0; i >= 2; i++); {
+            y += 25;
+            chassis.goToPosition(
+                    new Pose2D(DistanceUnit.CM, x, y, AngleUnit.DEGREES, 0),
+                    maxPower, timeoutSeconds);
+            x -= 25;
+            chassis.goToPosition(
+                    new Pose2D(DistanceUnit.CM, x, y, AngleUnit.DEGREES, 0),
+                    maxPower, timeoutSeconds);
+        }*/
+        y += 60.96;
         chassis.goToPosition(
-                new Pose2D(DistanceUnit.CM, 100, 0, AngleUnit.DEGREES, 90),
+                new Pose2D(DistanceUnit.CM, x, y, AngleUnit.DEGREES, 0),
                 maxPower, timeoutSeconds);
+        x -= 60.96;
         chassis.goToPosition(
-                new Pose2D(DistanceUnit.CM, 100, 100, AngleUnit.DEGREES, 0),
+                new Pose2D(DistanceUnit.CM, x, y, AngleUnit.DEGREES, 0),
                 maxPower, timeoutSeconds);
+        y += 60.96;
         chassis.goToPosition(
-                new Pose2D(DistanceUnit.CM, 0, 0, AngleUnit.DEGREES, -45),
+                new Pose2D(DistanceUnit.CM, x, y, AngleUnit.DEGREES, 0),
+                maxPower, timeoutSeconds);
+        x -= 60.96;
+        chassis.goToPosition(
+                new Pose2D(DistanceUnit.CM, x, y, AngleUnit.DEGREES, 0),
+                maxPower, timeoutSeconds);
+        y += 60.96;
+        chassis.goToPosition(
+                new Pose2D(DistanceUnit.CM, x, y, AngleUnit.DEGREES, 0),
+                maxPower, timeoutSeconds);
+        x -= 60.96;
+        chassis.goToPosition(
+                new Pose2D(DistanceUnit.CM, x, y, AngleUnit.DEGREES, 0),
                 maxPower, timeoutSeconds);
     }
 }
