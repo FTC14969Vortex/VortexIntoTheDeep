@@ -42,7 +42,7 @@ public class Chassis {
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setOffsets(-66.675, -95.25, DistanceUnit.MM);
         // TODO: Change Encoder Directions depending on your robot.
-        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -67,10 +67,10 @@ public class Chassis {
         opMode.telemetry.addData("Front left/Right", JavaUtil.formatNumber(leftFrontPower, 4, 2) + ", " + JavaUtil.formatNumber(rightFrontPower, 4, 2));
         opMode.telemetry.addData("Back  left/Right", JavaUtil.formatNumber(leftBackPower, 4, 2) + ", " + JavaUtil.formatNumber(rightBackPower, 4, 2));
         odo.update();
-        opMode.telemetry.addData("botHeading", JavaUtil.formatNumber(odo.getHeading(AngleUnit.RADIANS), 4, 2));
-        opMode.telemetry.addData("botX", JavaUtil.formatNumber(odo.getPosX(DistanceUnit.CM), 4, 2));
-        opMode.telemetry.addData("botY", JavaUtil.formatNumber(odo.getPosY(DistanceUnit.CM), 4, 2));
-        opMode.telemetry.update();
+//        opMode.telemetry.addData("botHeading", JavaUtil.formatNumber(odo.getHeading(AngleUnit.RADIANS), 4, 2));
+//        opMode.telemetry.addData("botX", JavaUtil.formatNumber(odo.getPosX(DistanceUnit.CM), 4, 2));
+//        opMode.telemetry.addData("botY", JavaUtil.formatNumber(odo.getPosY(DistanceUnit.CM), 4, 2));
+//        opMode.telemetry.update();
 
     }
     // TeleOp Mode Methods
@@ -131,8 +131,8 @@ public class Chassis {
 
         // Step 2: Define your "tolerances" – how close is close enough to stop.
         // Use the values from the example:
-        final double POSITION_TOLERANCE_CM = 2.0;             // Stop if within 2cm
-        final double ANGLE_TOLERANCE_RAD = Math.toDegrees(3); // ~3 degrees
+        final double POSITION_TOLERANCE_CM = 6.0;             // Stop if within 2cm
+        final double ANGLE_TOLERANCE_DEG = 6; // ~3 degrees
 
         // Step 3: Set up a timer to make sure your robot doesn't get stuck forever.
         // Initialize an ElapsedTime object and reset it.
@@ -154,7 +154,7 @@ public class Chassis {
 
             double x_position = odo.getPosX(DistanceUnit.CM);
             double y_position = odo.getPosY(DistanceUnit.CM);
-            double Heading = odo.getHeading(AngleUnit.RADIANS);
+            double Heading = -odo.getHeading(AngleUnit.RADIANS);
 
             // Remember that `odo.getPosX` and `odo.getPosY` can get values in CM.
             // Get the current heading in Radians.
@@ -172,9 +172,9 @@ public class Chassis {
 
             // Step 4d: Check if the robot is "close enough" to the target.
             // If the `distance` is less than `POSITION_TOLERANCE_CM` AND the absolute `headingError`
-            // is less than `ANGLE_TOLERANCE_RAD`, then exit the loop.
+            // is less than `ANGLE_TOLERANCE_DEG`, then exit the loop.
 
-            if (distance < POSITION_TOLERANCE_CM && Math.abs(headingErrorDeg) < ANGLE_TOLERANCE_RAD) {
+            if (distance < POSITION_TOLERANCE_CM && Math.abs(headingErrorDeg) < ANGLE_TOLERANCE_DEG) {
                 break;
             }
 
@@ -190,21 +190,34 @@ public class Chassis {
             double lateral = 0;
 
             if (dy > POSITION_TOLERANCE_CM) {
-                axial = 0.2;
+                axial = 0.3;
             }
             else if (dy < -POSITION_TOLERANCE_CM) {
-                axial = -0.2;
+                axial = -0.3;
+            }
+            else {
+                axial = 0;
             }
             if (dx > POSITION_TOLERANCE_CM) {
-                lateral = -0.2;
+                lateral = 0.3;
             }
             else if (dx < -POSITION_TOLERANCE_CM) {
-                lateral = 0.2;
+                lateral = -0.3;
             }
-            if (headingErrorDeg > ANGLE_TOLERANCE_RAD) {
+            else {
+                lateral = 0;
+            }
+            if (headingErrorDeg > ANGLE_TOLERANCE_DEG) {
                 heading = 0.2;
-            } else if (headingErrorDeg < -ANGLE_TOLERANCE_RAD) {
+            }
+            else if (headingErrorDeg < -ANGLE_TOLERANCE_DEG) {
                 heading = -0.2;
+            }
+            else {
+                heading = 0;
+            }
+            if (axial == 0 && lateral == 0 && heading == 0) {
+                return;
             }
             drive(axial, lateral, heading);
 
@@ -223,8 +236,12 @@ public class Chassis {
             opMode.telemetry.addData("Current Y: ", y_position);
             opMode.telemetry.addData("Target X: ", xTargetCM);
             opMode.telemetry.addData("Target Y: ", yTargetCM);
+            opMode.telemetry.addData("Heading Radians: ", Heading);
             opMode.telemetry.addData("Current distance error: ", distance);
             opMode.telemetry.addData("Current heading error: ", headingErrorDeg);
+            opMode.telemetry.addData("heading: ", heading);
+            opMode.telemetry.addData("axial: ", axial);
+            opMode.telemetry.addData("lateral: ", lateral);
             opMode.telemetry.update();
         }
 
@@ -233,12 +250,13 @@ public class Chassis {
         drive(0, 0, 0);
     }
     public double angleWrap(double angleRadians) {
-        while (angleRadians > Math.PI) {
-            angleRadians += 2 * Math.PI;
-        }
+        //while (angleRadians > Math.PI) {
+        //    angleRadians += 2 * Math.PI;
+        //}
         while (angleRadians < -Math.PI) {
             angleRadians += 2 * Math.PI;
         }
-        return angleRadians;
+        double angledegrees = Math.toDegrees(angleRadians);
+        return angledegrees;
     }
 }
