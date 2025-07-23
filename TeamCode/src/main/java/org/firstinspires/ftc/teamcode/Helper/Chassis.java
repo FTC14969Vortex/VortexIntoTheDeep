@@ -141,7 +141,7 @@ public class Chassis {
         // Step 2: Define your "tolerances" – how close is close enough to stop.
         // Use the values from the example:
         final double POSITION_TOLERANCE_CM = 2.0;             // Stop if within 2cm
-        final double ANGLE_TOLERANCE_RAD = Math.toDegrees(3); // ~3 degrees
+        final double ANGLE_TOLERANCE_RAD = Math.toRadians(3); // ~3 degrees
 
         // Step 3: Set up a timer to make sure your robot doesn't get stuck forever.
         // Initialize an ElapsedTime object and reset it.
@@ -169,12 +169,12 @@ public class Chassis {
             double dx = xTargetCM - currentX_CM;
             double dy = yTargetCM - currentY_CM;
             double distance = Math.sqrt(dx * dx + dy * dy);
-
-            double headingError = angleWrap(headingTargetRad - currentHeadingRad);
+            double headingError = AngleUnit.normalizeRadians(headingTargetRad - currentHeadingRad);
+            //double headingError = angleWrap(headingTargetRad - currentHeadingRad);
             // Step 4d: Check if the robot is "close enough" to the target.
             // If the `distance` is less than `POSITION_TOLERANCE_CM` AND the absolute `headingError`
             // is less than `ANGLE_TOLERANCE_RAD`, then exit the loop.
-            if (distance < POSITION_TOLERANCE_CM && Math.abs(headingError) < ANGLE_TOLERANCE_RAD) {
+            if (distance < POSITION_TOLERANCE_CM && headingError < ANGLE_TOLERANCE_RAD) {
                 break;
             }
 //            if (Math.abs(dy) < 3 && Math.abs(dx) < 3 && Math.abs(headingError)<3){
@@ -188,9 +188,9 @@ public class Chassis {
                 //   - For `yPower`: If `dy` is positive, set `yPower` to 0.2 (move forward); otherwise, set to -0.2 (move backward).
                 //   - For `headingPower`: If `headingError` is positive, set `headingPower` to 0.2 (turn counter-clockwise);
                 //     otherwise, set to -0.2 (turn clockwise).
-            double xPower = 0;
-            double yPower = 0;
-            double headingPower = 0;
+                double xPower = 0;
+                double yPower = 0;
+                double headingPower = 0;
 
                 if (dx > POSITION_TOLERANCE_CM) {
                     xPower = 0.2;
@@ -202,10 +202,10 @@ public class Chassis {
                 } else if (dy < -POSITION_TOLERANCE_CM) {
                     yPower = -0.2;
                 }
-                if (headingError > 0 && headingError > ANGLE_TOLERANCE_RAD) {
-                    headingPower = -0.2;
-                } else if (headingError < 0 && headingError < -ANGLE_TOLERANCE_RAD) {
+                if (headingError > 0) {
                     headingPower = 0.2;
+                } else if (headingError < 0) {
+                    headingPower = -0.2;
                 }
 
                 // Step 4f: Send these calculated powers to the robot's drive system.
@@ -222,9 +222,12 @@ public class Chassis {
                 opMode.telemetry.addData("TargetY: ", yTargetCM);
                 opMode.telemetry.addData("CurrentX: ", currentX_CM);
                 opMode.telemetry.addData("CurrentY: ", currentY_CM);
-                opMode.telemetry.addData("currentDistanceError: ", distance);
+                opMode.telemetry.addData("Distance: ", distance);
+                opMode.telemetry.addData("TargetHeading ", headingTargetRad);
+                opMode.telemetry.addData("CurrentHeading ", currentHeadingRad);
+                opMode.telemetry.addData("HeadingError ", headingError);
                 double headingDeg = Math.toDegrees(headingError);
-                opMode.telemetry.addData("currentHeadingErrorDeg ", headingDeg);
+                opMode.telemetry.addData("HeadingError (Deg) ", headingDeg);
                 opMode.telemetry.update();
             }
 
