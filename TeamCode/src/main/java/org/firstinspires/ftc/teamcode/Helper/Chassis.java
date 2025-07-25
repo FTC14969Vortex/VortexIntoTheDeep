@@ -115,15 +115,6 @@ public class Chassis {
 
     }
 
-    public double angleWrap(double angleRadians) {
-        while (angleRadians > Math.PI) {
-            angleRadians -= Math.PI;
-        }
-        while (angleRadians < -Math.PI) {
-            angleRadians += Math.PI;
-        }
-        return angleRadians;
-    }
 
     /**
      * Moves the robot to the target position.
