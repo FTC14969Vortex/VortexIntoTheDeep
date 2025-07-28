@@ -42,17 +42,21 @@ public class Teleop extends LinearOpMode {
             // STEP 1: Set the arm and slider motors to RUN_WITHOUT_ENCODER mode.
             // This tells the motors to respond directly to power input without trying to go to a position.
             // Use the setMode() method and the DcMotor.RunMode.RUN_WITHOUT_ENCODER constant.
+            //To access the arm motor, use robot.arm.motor
 
-            // STEP 2: Read the vertical joystick values from gamepad2.
-            // Use gamepad2.left_stick_y for the ARM and gamepad2.right_stick_y for the SLIDER.
-            // Save these values in two variables: arm_power and slider_power.
+            // STEP 2: Use the left joystick on gamepad2 to control the ARM.
+            // Get the vertical value of the left stick (Y-axis). Up should be positive, down negative.
+            // Save this value in a variable called `arm_power`.
 
-            // STEP 3: Apply power to the motors.
-            // Use setPower() on robot.arm.motor and robot.slider.motor using the values you just stored.
+            // STEP 3: Use the right joystick on gamepad2 to control the SLIDER.
+            // Get the vertical value of the right stick (Y-axis). Up should be positive, down negative.
+            // Save this value in a variable called `slider_power`.
 
-            // STEP 4: Display both arm_power and slider_power in the telemetry.
-            // This is required so you can monitor how much power is being sent to each motor.
-            // Use telemetry.addData("arm power", arm_power); and telemetry.addData("slider power", slider_power);
+
+            // STEP 5: Display the values of `arm_power` and `slider_power`
+            // on the telemetry so you can see them on the driver station.
+            // Use telemetry.addData("label", value);
+
 
             // ------------------------------ STUDENT SECTION END ------------------------------
 
