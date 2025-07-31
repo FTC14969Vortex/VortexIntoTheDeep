@@ -60,9 +60,9 @@ public class Teleop extends LinearOpMode {
             // STEP 5: Display the values of `arm_power` and `slider_power`
             // on the telemetry so you can see them on the driver station.
             // Use telemetry.addData("label", value);
-            opMode.telemetry.addData("arm_power: ", arm_power);
-            opMode.telemtry.addData("slider_power: ", slider_power)
-
+            this.telemetry.addData("arm_power: ", arm_power);
+            this.telemetry.addData("slider_power: ", slider_power)
+            this.telemetry.update();
             // ------------------------------ STUDENT SECTION END ------------------------------
 
             robot.chassis.setDriveMode(Chassis.DriveMode.FIELD_CENTRIC);
