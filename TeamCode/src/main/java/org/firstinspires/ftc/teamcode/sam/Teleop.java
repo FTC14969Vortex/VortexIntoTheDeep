@@ -1,8 +1,10 @@
 //imports
 package org.firstinspires.ftc.teamcode.sam;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
@@ -17,6 +19,9 @@ public class Teleop extends LinearOpMode {
     private DcMotor frontRightDrive;
     private DcMotor backRightDrive;
 
+    private DcMotor armTilt;
+    private DcMotor armExtend;
+
     double leftFrontPower;
     double leftBackPower;
     double rightFrontPower;
@@ -26,16 +31,16 @@ public class Teleop extends LinearOpMode {
      * This OpMode illustrates driving a 4-motor Omni-Directional (or Holonomic) robot.
      * This code will work with either a Mecanum-Drive or an X-Drive train.
      * Note that a Mecanum drive must display an X roller-pattern when viewed from above.
-     *
+     * <p>
      * Also note that it is critical to set the correct rotation direction for each motor. See details below.
-     *
+     * <p>
      * Holonomic drives provide the ability for the robot to move in three axes (directions) simultaneously.
      * Each motion axis is controlled by one Joystick axis.
-     *
+     * <p>
      * 1) Axial -- Driving forward and backward -- Left-joystick Forward/Backward
      * 2) Lateral -- Strafing right and left -- Left-joystick Right and Left
      * 3) Yaw -- Rotating Clockwise and counter clockwise -- Right-joystick Right and Left
-     *
+     * <p>
      * This code is written assuming that the right-side motors need to be reversed for the robot to drive forward.
      * When you first test your robot, if it moves backward when you push the left stick forward, then you must flip
      * the direction of all 4 motors (see code below).
@@ -52,6 +57,9 @@ public class Teleop extends LinearOpMode {
         backLeftDrive = hardwareMap.get(DcMotor.class, "backLeftDrive");
         frontRightDrive = hardwareMap.get(DcMotor.class, "frontRightDrive");
         backRightDrive = hardwareMap.get(DcMotor.class, "backRightDrive");
+
+        armExtend = hardwareMap.get(DcMotor.class, "armExtend");
+        armTilt = hardwareMap.get(DcMotor.class, "armTilt");
 
         runtime = new ElapsedTime();
         // ########################################################################################
@@ -73,6 +81,10 @@ public class Teleop extends LinearOpMode {
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
+
+        armTilt.setDirection(DcMotorSimple.Direction.FORWARD);
+        armExtend.setDirection(DcMotorSimple.Direction.FORWARD);
+
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -105,7 +117,12 @@ public class Teleop extends LinearOpMode {
             frontRightDrive.setPower(rightFrontPower);
             backLeftDrive.setPower(leftBackPower);
             backRightDrive.setPower(rightBackPower);
-            // Show the elapsed game time and wheel power.
+            double armExtensionPower = gamepad2.left_stick_y;
+            double armTiltPower = gamepad2.right_stick_y;
+            armExtend.setPower(armExtensionPower);
+            armTilt.setPower(armTiltPower);
+            // Show t he elapsed game time and wheel power.
+            telemetry.addData("the arm extention and arm tilt power are", "%f,%f", armExtensionPower, armTiltPower);
             telemetry.addData("Status", "Run Time: " + runtime);
             telemetry.addData("Front left/Right", JavaUtil.formatNumber(leftFrontPower, 4, 2) + ", " + JavaUtil.formatNumber(rightFrontPower, 4, 2));
             telemetry.addData("Back  left/Right", JavaUtil.formatNumber(leftBackPower, 4, 2) + ", " + JavaUtil.formatNumber(rightBackPower, 4, 2));
@@ -115,14 +132,14 @@ public class Teleop extends LinearOpMode {
 
     /**
      * This function is used to test your motor directions.
-     *
+     * <p>
      * Each button should make the corresponding motor run FORWARD.
-     *
-     *   1) First get all the motors to take to correct positions on the robot
-     *      by adjusting your Robot Configuration if necessary.
-     *
-     *   2) Then make sure they run in the correct direction by modifying the
-     *      the setDirection() calls above.
+     * <p>
+     * 1) First get all the motors to take to correct positions on the robot
+     * by adjusting your Robot Configuration if necessary.
+     * <p>
+     * 2) Then make sure they run in the correct direction by modifying the
+     * the setDirection() calls above.
      */
     private void testMotorDirections() {
         leftFrontPower = gamepad1.x ? 1 : 0;
