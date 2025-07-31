@@ -8,7 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Helper.Chassis;
 
-@Autonomous(name = "SamSampleZigZagz", group = "Auto")
+@Autonomous(name = "SamZigZagzAuto", group = "Auto")
 public class ZigZagAuto extends LinearOpMode {
     @Override
     public void runOpMode() {
@@ -23,25 +23,17 @@ public class ZigZagAuto extends LinearOpMode {
         // Move chassis autonomously
         double maxPower = 0.5;
         double timeoutSeconds = 10;
-        // Go in a triangle.  Do NOT change this code when you are submitting your homework
-        chassis.goToPosition(
-                new Pose2D(DistanceUnit.INCH, 0, 22, AngleUnit.DEGREES, 0),
-                maxPower, timeoutSeconds);
-        chassis.goToPosition(
-                new Pose2D(DistanceUnit.INCH, -22, 22, AngleUnit.DEGREES, 0),
-                maxPower, timeoutSeconds);
-
-        chassis.goToPosition(
-                new Pose2D(DistanceUnit.INCH, -22, 72, AngleUnit.DEGREES, 0),
-                maxPower, timeoutSeconds);
-        chassis.goToPosition(
-                new Pose2D(DistanceUnit.INCH, -72, 72, AngleUnit.DEGREES, 0),
-                maxPower, timeoutSeconds);
-        chassis.goToPosition(
-                new Pose2D(DistanceUnit.INCH, -72, 96, AngleUnit.DEGREES, 0),
-                maxPower, timeoutSeconds);
-        chassis.goToPosition(
-                new Pose2D(DistanceUnit.INCH, -96, 96, AngleUnit.DEGREES, 0),
-                maxPower, timeoutSeconds);
-            }
+        double[][] vertices = {
+                {0, 24, 0},
+                {-24, 24, 0},
+                {-24, 48, 0},
+                {-48, 48, 0},
+                {-48, 72, 0},
+                {-72, 72, 0}};
+        for (double[] vertex : vertices) {
+            chassis.goToPosition(
+                    new Pose2D(DistanceUnit.INCH, vertex[0], vertex[1], AngleUnit.DEGREES, vertex[2]),
+                    maxPower, timeoutSeconds);
+        }
+    }
 }
