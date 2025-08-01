@@ -44,8 +44,8 @@ public class Teleop extends LinearOpMode {
             // This tells the motors to respond directly to power input without trying to go to a position.
             // Use the setMode() method and the DcMotor.RunMode.RUN_WITHOUT_ENCODER constant.
             //To access the arm motor, use robot.arm.motor
-            setMode(robot.arm.motor, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            setMode(robot.slider.motor, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.arm.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.slider.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
             // STEP 2: Use the left joystick on gamepad2 to control the ARM.
             // Get the vertical value of the left stick (Y-axis). Up should be positive, down negative.
