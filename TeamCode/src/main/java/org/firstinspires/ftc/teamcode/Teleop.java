@@ -39,23 +39,36 @@ public class Teleop extends LinearOpMode {
 
             // ----------------------------- STUDENT SECTION START -----------------------------
 
-            // STEP 1: Set arm and slider motors to RUN_WITHOUT_ENCODER
-            robot.arm.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            robot.slider.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            // STEP 1: Set motors to RUN_WITHOUT_ENCODER mode
+            // This allows direct power control without targeting a specific position
+                    robot.arm.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    robot.slider.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-// STEP 2: Get vertical value of left stick for arm control
-            double arm_power = -gamepad2.left_stick_y; // Up is positive
+            // STEP 2: Read joystick input from gamepad2
+            // Negative sign ensures pushing up gives positive power
+                    double rawArmInput = -gamepad2.left_stick_y;     // Left stick controls arm
+                    double rawSliderInput = -gamepad2.right_stick_y; // Right stick controls slider
 
-// STEP 3: Get vertical value of right stick for slider control
-            double slider_power = -gamepad2.right_stick_y; // Up is positive
+            // STEP 3: Apply deadzone to prevent small joystick movements from activating motors
+            // This avoids twitching when the stick is near center
+                    double deadzone = 0.05;
+                    double arm_power = Math.abs(rawArmInput) > deadzone ? rawArmInput : 0;
+                    double slider_power = Math.abs(rawSliderInput) > deadzone ? rawSliderInput : 0;
 
-// STEP 4: Apply power to arm and slider motors
-            robot.arm.motor.setPower(arm_power);
-            robot.slider.motor.setPower(slider_power);
+            // STEP 4: Scale power to limit speed and protect hardware
+            // You can adjust these values based on how strong or fragile your mechanism is
+                    double armScale = 0.4;    // Limits arm to 40% power
+                    double sliderScale = 0.4; // Limits slider to 40% power
+                    arm_power *= armScale;
+                    slider_power *= sliderScale;
 
-// STEP 5: Display power values on telemetry
-            telemetry.addData("Arm Power", arm_power);
-            telemetry.addData("Slider Power", slider_power);
+            // STEP 5: Send scaled power to motors
+                    robot.arm.motor.setPower(arm_power);
+                    robot.slider.motor.setPower(slider_power);
+
+            // STEP 6: Display power values on telemetry for debugging
+                    telemetry.addData("Arm Power", arm_power);
+                    telemetry.addData("Slider Power", slider_power);
 
 
             // ------------------------------ STUDENT SECTION END ------------------------------
