@@ -39,23 +39,23 @@ public class Teleop extends LinearOpMode {
 
             // ----------------------------- STUDENT SECTION START -----------------------------
 
-            // STEP 1: Set the arm and slider motors to RUN_WITHOUT_ENCODER mode.
-            // This tells the motors to respond directly to power input without trying to go to a position.
-            // Use the setMode() method and the DcMotor.RunMode.RUN_WITHOUT_ENCODER constant.
-            //To access the arm motor, use robot.arm.motor
+            // STEP 1: Set arm and slider motors to RUN_WITHOUT_ENCODER
+            robot.arm.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.slider.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-            // STEP 2: Use the left joystick on gamepad2 to control the ARM.
-            // Get the vertical value of the left stick (Y-axis). Up should be positive, down negative.
-            // Save this value in a variable called `arm_power`.
+// STEP 2: Get vertical value of left stick for arm control
+            double arm_power = -gamepad2.left_stick_y; // Up is positive
 
-            // STEP 3: Use the right joystick on gamepad2 to control the SLIDER.
-            // Get the vertical value of the right stick (Y-axis). Up should be positive, down negative.
-            // Save this value in a variable called `slider_power`.
+// STEP 3: Get vertical value of right stick for slider control
+            double slider_power = -gamepad2.right_stick_y; // Up is positive
 
+// STEP 4: Apply power to arm and slider motors
+            robot.arm.motor.setPower(arm_power);
+            robot.slider.motor.setPower(slider_power);
 
-            // STEP 5: Display the values of `arm_power` and `slider_power`
-            // on the telemetry so you can see them on the driver station.
-            // Use telemetry.addData("label", value);
+// STEP 5: Display power values on telemetry
+            telemetry.addData("Arm Power", arm_power);
+            telemetry.addData("Slider Power", slider_power);
 
 
             // ------------------------------ STUDENT SECTION END ------------------------------
