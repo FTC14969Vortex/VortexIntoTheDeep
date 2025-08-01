@@ -40,6 +40,7 @@ public class Teleop extends LinearOpMode {
             // ----------------------------- STUDENT SECTION START -----------------------------
 
             // STEP 1: Set the arm and slider motors to RUN_WITHOUT_ENCODER mode.
+
             // This tells the motors to respond directly to power input without trying to go to a position.
             // Use the setMode() method and the DcMotor.RunMode.RUN_WITHOUT_ENCODER constant.
             //To access the arm motor, use robot.arm.motor
