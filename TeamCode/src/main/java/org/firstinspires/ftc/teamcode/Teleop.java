@@ -50,13 +50,13 @@ public class Teleop extends LinearOpMode {
             // STEP 2: Use the left joystick on gamepad2 to control the ARM.
             // Get the vertical value of the left stick (Y-axis). Up should be positive, down negative.
             // Save this value in a variable called `arm_power`.
-            double arm_power = gamepad2.left_stick_y;
+            double arm_power = -gamepad2.left_stick_y;
             robot.arm.motor.setPower(arm_power);
 
             // STEP 3: Use the right joystick on gamepad2 to control the SLIDER.
             // Get the vertical value of the right stick (Y-axis). Up should be positive, down negative.
             // Save this value in a variable called `slider_power`.
-            double slider_power = gamepad2.right_stick_y;
+            double slider_power = -gamepad2.right_stick_y;
             robot.slider.motor.setPower(slider_power);
 
 
