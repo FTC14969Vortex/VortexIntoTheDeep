@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Helper.Arm;
 import org.firstinspires.ftc.teamcode.Helper.Chassis;
 import org.firstinspires.ftc.teamcode.Helper.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.Helper.Robot;
@@ -39,39 +40,28 @@ public class Teleop extends LinearOpMode {
 
             // ----------------------------- STUDENT SECTION START -----------------------------
 
-            // STEP 1: Set motors to RUN_WITHOUT_ENCODER mode
-            // This allows direct power control without targeting a specific position
-                    robot.arm.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                    robot.slider.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            // Set arm motor to RUN_USING_ENCODER for active holding
+            robot.arm.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.slider.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // Slider stays manual
 
-            // STEP 2: Read joystick input from gamepad2
-            // Negative sign ensures pushing up gives positive power
-                    double rawArmInput = -gamepad2.left_stick_y;     // Left stick controls arm
-                    double rawSliderInput = -gamepad2.right_stick_y; // Right stick controls slider
+            // Read joystick input
+            double rawArmInput = -gamepad2.left_stick_y;
+            double rawSliderInput = -gamepad2.right_stick_y;
 
-            // STEP 3: Apply deadzone to prevent small joystick movements from activating motors
-            // This avoids twitching when the stick is near center
-                    double deadzone = 0.05;
-                    double arm_power = Math.abs(rawArmInput) > deadzone ? rawArmInput : 0;
-                    double slider_power = Math.abs(rawSliderInput) > deadzone ? rawSliderInput : 0;
+            // Deadzone to prevent twitching
+            double armDeadzone = 0.05;
+            double sliderDeadzone = 0.1;
+            double arm_power = Math.abs(rawArmInput) > armDeadzone ? rawArmInput * 0.3 : 0.001;
+            double slider_power = Math.abs(rawSliderInput) > sliderDeadzone ? rawSliderInput : 0;
 
-            // STEP 4: Scale power to limit speed and protect hardware
-            // You can adjust these values based on how strong or fragile your mechanism is
-                    double armScale = 0.4;    // Limits arm to 40% power
-                    double sliderScale = 0.4; // Limits slider to 40% power
-                    arm_power *= armScale;
-                    slider_power *= sliderScale;
+            // Apply power
+            robot.arm.motor.setPower(arm_power);
+            robot.slider.motor.setPower(slider_power);
 
-            // STEP 5: Send scaled power to motors
-                    robot.arm.motor.setPower(arm_power);
-                    robot.slider.motor.setPower(slider_power);
-
-            // STEP 6: Display power values on telemetry for debugging
-                    telemetry.addData("Arm Power", arm_power);
-                    telemetry.addData("Slider Power", slider_power);
-
-
-            // ------------------------------ STUDENT SECTION END ------------------------------
+            // Telemetry for debugging
+            telemetry.addData("Arm Power", arm_power);
+            telemetry.addData("Slider Power", slider_power);
+// ------------------------------ STUDENT SECTION END ------------------------------
 
             robot.chassis.setDriveMode(Chassis.DriveMode.FIELD_CENTRIC);
 
