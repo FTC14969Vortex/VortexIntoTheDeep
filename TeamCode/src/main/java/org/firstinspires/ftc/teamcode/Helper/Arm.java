@@ -26,7 +26,6 @@ public class  Arm {
         //Init motors and servos
         motor = myOpMode.hardwareMap.get(DcMotor.class, "Arm");
         motor.setDirection(DcMotor.Direction.FORWARD);
-        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
     }

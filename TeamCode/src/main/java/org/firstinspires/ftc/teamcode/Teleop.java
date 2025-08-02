@@ -15,7 +15,8 @@ import org.firstinspires.ftc.teamcode.Helper.Chassis;
 import org.firstinspires.ftc.teamcode.Helper.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.Helper.Robot;
 
-@TeleOp(name = "TeleOp", group = "TeleOp")
+@TeleOp(name = "Eric_TeleOp", group = "TeleOp")
+
 public class Teleop extends LinearOpMode {
 
     Robot robot = new Robot(this);
@@ -43,19 +44,28 @@ public class Teleop extends LinearOpMode {
             // This tells the motors to respond directly to power input without trying to go to a position.
             // Use the setMode() method and the DcMotor.RunMode.RUN_WITHOUT_ENCODER constant.
             //To access the arm motor, use robot.arm.motor
+            robot.arm.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.slider.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
             // STEP 2: Use the left joystick on gamepad2 to control the ARM.
             // Get the vertical value of the left stick (Y-axis). Up should be positive, down negative.
             // Save this value in a variable called `arm_power`.
+            double arm_power = -gamepad2.left_stick_y;
 
             // STEP 3: Use the right joystick on gamepad2 to control the SLIDER.
             // Get the vertical value of the right stick (Y-axis). Up should be positive, down negative.
             // Save this value in a variable called `slider_power`.
+            double slider_power = gamepad2.right_stick_y;
 
+            // STEP 4: Set power
+            robot.arm.motor.setPower(arm_power);
+            robot.slider.motor.setPower(slider_power);
 
             // STEP 5: Display the values of `arm_power` and `slider_power`
             // on the telemetry so you can see them on the driver station.
             // Use telemetry.addData("label", value);
+            telemetry.addData("arm power: ", arm_power);
+            telemetry.addData("slider power", slider_power);
 
 
             // ------------------------------ STUDENT SECTION END ------------------------------
