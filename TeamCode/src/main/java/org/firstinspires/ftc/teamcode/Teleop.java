@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import org.firstinspires.ftc.teamcode.SampleMechanism;
 @TeleOp(name = "TeleOp", group = "TeleOp")
 
@@ -20,6 +21,8 @@ public class Teleop extends LinearOpMode {
 
         motor.setDirection(DcMotor.Direction.FORWARD);
 =======
+=======
+>>>>>>> Stashed changes
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
@@ -69,6 +72,9 @@ public class Teleop extends LinearOpMode {
         backLeftDrive = hardwareMap.get(DcMotor.class, "backLeftDrive");
         frontRightDrive = hardwareMap.get(DcMotor.class, "frontRightDrive");
         backRightDrive = hardwareMap.get(DcMotor.class, "backRightDrive");
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
         runtime = new ElapsedTime();
@@ -96,6 +102,7 @@ public class Teleop extends LinearOpMode {
         telemetry.update();
         waitForStart();
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
             while (opModeIsActive()) {
 
@@ -110,6 +117,8 @@ public class Teleop extends LinearOpMode {
                 telemetry.update();
             }
 =======
+=======
+>>>>>>> Stashed changes
         runtime.reset();
         // Run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -145,6 +154,24 @@ public class Teleop extends LinearOpMode {
             telemetry.update();
         }
 >>>>>>> Stashed changes
+    }
+
+    /**
+     * This function is used to test your motor directions.
+     *
+     * Each button should make the corresponding motor run FORWARD.
+     *
+     *   1) First get all the motors to take to correct positions on the robot
+     *      by adjusting your Robot Configuration if necessary.
+     *
+     *   2) Then make sure they run in the correct direction by modifying the
+     *      the setDirection() calls above.
+     */
+    private void testMotorDirections() {
+        leftFrontPower = gamepad1.x ? 1 : 0;
+        leftBackPower = gamepad1.a ? 1 : 0;
+        rightFrontPower = gamepad1.y ? 1 : 0;
+        rightBackPower = gamepad1.b ? 1 : 0;
     }
 
     /**
