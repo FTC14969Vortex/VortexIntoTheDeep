@@ -1,22 +1,39 @@
 //imports
 package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 import org.firstinspires.ftc.teamcode.SampleMechanism;
 @TeleOp(name = "TeleOp", group = "TeleOp")
+=======
+>>>>>>> ce1e46cb9af3a3a02d6fdec6282ba25cfb9a7d2f
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Helper.Chassis;
+import org.firstinspires.ftc.teamcode.Helper.GoBildaPinpointDriver;
+import org.firstinspires.ftc.teamcode.Helper.Robot;
+
+@TeleOp(name = "TeleOp", group = "TeleOp")
 public class Teleop extends LinearOpMode {
-    public DcMotor motor = null;
-    public SampleMechanism mechanism = new SampleMechanism(hardwareMap);
+
+    Robot robot = new Robot(this);
 
     @Override
-    public void runOpMode() {
-        double power;
-        double mechanismPower;
+    public void runOpMode() throws InterruptedException {
+        double axial;
+        double lateral;
+        double yaw;
 
+<<<<<<< HEAD
         motor = hardwareMap.get(DcMotor.class, "backLeftDrive");
 
         motor.setDirection(DcMotor.Direction.FORWARD);
@@ -24,6 +41,9 @@ public class Teleop extends LinearOpMode {
 =======
 >>>>>>> Stashed changes
 import com.qualcomm.robotcore.util.ElapsedTime;
+=======
+        robot.init(); // This initializes all hardware (chassis, arm, slider, etc.)
+>>>>>>> ce1e46cb9af3a3a02d6fdec6282ba25cfb9a7d2f
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 
@@ -104,18 +124,13 @@ public class Teleop extends LinearOpMode {
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 
-            while (opModeIsActive()) {
+        // Run until the end of the match (driver presses STOP)
+        while (opModeIsActive()) {
 
-                power = gamepad1.right_stick_x;
-                mechanismPower = gamepad1.left_stick_x;
-                motor.setPower(power);
-                mechanism.motor.setPower(mechanismPower);
-
-                telemetry.addData("Encoder Position", motor.getCurrentPosition());
-                telemetry.addData("Mechanism Position", mechanism.motor.getCurrentPosition());
-
-                telemetry.update();
+            if (gamepad1.a) {
+                robot.chassis.odo.resetPosAndIMU(); // Resets the robot’s position and heading if A is pressed
             }
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> Stashed changes
@@ -190,5 +205,41 @@ public class Teleop extends LinearOpMode {
         leftBackPower = gamepad1.a ? 1 : 0;
         rightFrontPower = gamepad1.y ? 1 : 0;
         rightBackPower = gamepad1.b ? 1 : 0;
+=======
+
+            // ----------------------------- STUDENT SECTION START -----------------------------
+
+            // STEP 1: Set the arm and slider motors to RUN_WITHOUT_ENCODER mode.
+            // This tells the motors to respond directly to power input without trying to go to a position.
+            // Use the setMode() method and the DcMotor.RunMode.RUN_WITHOUT_ENCODER constant.
+            //To access the arm motor, use robot.arm.motor
+
+            // STEP 2: Use the left joystick on gamepad2 to control the ARM.
+            // Get the vertical value of the left stick (Y-axis). Up should be positive, down negative.
+            // Save this value in a variable called `arm_power`.
+
+            // STEP 3: Use the right joystick on gamepad2 to control the SLIDER.
+            // Get the vertical value of the right stick (Y-axis). Up should be positive, down negative.
+            // Save this value in a variable called `slider_power`.
+
+
+            // STEP 5: Display the values of `arm_power` and `slider_power`
+            // on the telemetry so you can see them on the driver station.
+            // Use telemetry.addData("label", value);
+
+
+            // ------------------------------ STUDENT SECTION END ------------------------------
+
+            robot.chassis.setDriveMode(Chassis.DriveMode.FIELD_CENTRIC);
+
+            axial = -gamepad1.left_stick_y; // Forward/Backward
+            lateral = gamepad1.left_stick_x; // Left/Right
+            yaw = gamepad1.right_stick_x; // Rotation
+
+            robot.chassis.drive(axial, lateral, yaw);
+
+            telemetry.update(); // Don't forget: telemetry won't show anything unless you call update()!
+        }
+>>>>>>> ce1e46cb9af3a3a02d6fdec6282ba25cfb9a7d2f
     }
 }
