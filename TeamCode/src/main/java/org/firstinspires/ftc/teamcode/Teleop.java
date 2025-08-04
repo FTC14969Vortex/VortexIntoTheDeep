@@ -1,4 +1,3 @@
-//imports
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -8,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Helper.Chassis;
@@ -37,28 +35,40 @@ public class Teleop extends LinearOpMode {
                 robot.chassis.odo.resetPosAndIMU(); // Resets the robot’s position and heading if A is pressed
             }
 
-            // ----------------------------- STUDENT SECTION START -----------------------------
+            // ----------------------------- ARM & SLIDER CODE -----------------------------
 
-            // STEP 1: Set the arm and slider motors to RUN_WITHOUT_ENCODER mode.
-            // This tells the motors to respond directly to power input without trying to go to a position.
-            // Use the setMode() method and the DcMotor.RunMode.RUN_WITHOUT_ENCODER constant.
-            //To access the arm motor, use robot.arm.motor
+            // Set motors to run without encoders
+            robot.arm.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.slider.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-            // STEP 2: Use the left joystick on gamepad2 to control the ARM.
-            // Get the vertical value of the left stick (Y-axis). Up should be positive, down negative.
-            // Save this value in a variable called `arm_power`.
+            // Read input from gamepad2
+            double arm_power = gamepad2.left_stick_y;
+            double slider_power = gamepad2.right_stick_y;
 
-            // STEP 3: Use the right joystick on gamepad2 to control the SLIDER.
-            // Get the vertical value of the right stick (Y-axis). Up should be positive, down negative.
-            // Save this value in a variable called `slider_power`.
+            // Set motor power
+            robot.arm.motor.setPower(arm_power);
+            robot.slider.motor.setPower(slider_power);
 
+            // Telemetry output
+            telemetry.addData("arm power", arm_power);
+            telemetry.addData("slider power", slider_power);
 
-            // STEP 5: Display the values of `arm_power` and `slider_power`
-            // on the telemetry so you can see them on the driver station.
-            // Use telemetry.addData("label", value);
+            // ----------------------------- WRIST & INTAKE -----------------------------
 
+            // WRIST CONTROL:
+            // Use right_stick_x on gamepad2 to rotate the wrist slightly left/right.
+            // 1. Get the current wrist position using robot.wrist.servo.getPosition()
+            // 2. Add the gamepad joystick value to that current position value. You may need to multiply by a small scale factor.
+            // 3. Call goToPosition on the wrist to move it to the gamepad + current value.
+            //
+            // BONUS: If gamepad2.a is pressed, reset the wrist to position 0.
 
-            // ------------------------------ STUDENT SECTION END ------------------------------
+            // INTAKE CONTROL:
+            // - gamepad2 left_bumper → reverse intake (power = -1)
+            // - gamepad2 right_bumper → forward intake (power = 1)
+            // - gamepad2 x → stop intake (power = 0)
+
+            // ----------------------------------------------------------------------------------
 
             robot.chassis.setDriveMode(Chassis.DriveMode.FIELD_CENTRIC);
 
@@ -68,7 +78,7 @@ public class Teleop extends LinearOpMode {
 
             robot.chassis.drive(axial, lateral, yaw);
 
-            telemetry.update(); // Don't forget: telemetry won't show anything unless you call update()!
+            telemetry.update(); // Required to display telemetry values
         }
     }
 }
