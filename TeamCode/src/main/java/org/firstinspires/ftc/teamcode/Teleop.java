@@ -60,13 +60,31 @@ public class Teleop extends LinearOpMode {
             // 1. Get the current wrist position using robot.wrist.servo.getPosition()
             // 2. Add the gamepad joystick value to that current position value. You may need to multiply by a small scale factor.
             // 3. Call goToPosition on the wrist to move it to the gamepad + current value.
-            //
+
             // BONUS: If gamepad2.a is pressed, reset the wrist to position 0.
+            double scalingFactor = 90.0;
+            double wrist_power = gamepad2.right_stick_x;
+//            double currentPosition = robot.wrist.servo.getPosition(); we don't use this for target position anymore :)
+            double targetPosition = scalingFactor * wrist_power;
+            robot.wrist.gotoPosition(targetPosition);
+            if (gamepad2.a) {
+                robot.wrist.gotoPosition(0.0);
+            }
+
 
             // INTAKE CONTROL:
             // - gamepad2 left_bumper → reverse intake (power = -1)
             // - gamepad2 right_bumper → forward intake (power = 1)
             // - gamepad2 x → stop intake (power = 0)
+            if (gamepad2.left_bumper) {
+                robot.intake.servo.setPower(-1.0);
+            }
+            if (gamepad2.right_bumper) {
+                robot.intake.servo.setPower(1.0);
+            }
+            if (gamepad2.x) {
+                robot.intake.servo.setPower(0.0);
+            }
 
             // ----------------------------------------------------------------------------------
 
