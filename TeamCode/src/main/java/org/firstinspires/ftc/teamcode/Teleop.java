@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Helper.Chassis;
 import org.firstinspires.ftc.teamcode.Helper.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.Helper.Robot;
 
-@TeleOp(name = "TeleOp", group = "TeleOp")
+@TeleOp(name = "TeleOp_Molly", group = "TeleOp")
 public class Teleop extends LinearOpMode {
 
     Robot robot = new Robot(this);
@@ -49,7 +49,12 @@ public class Teleop extends LinearOpMode {
             // Get the vertical value of the left stick (Y-axis). Up should be positive, down negative.
             // Save this value in a variable called `arm_power`.
             double arm_power = -gamepad2.left_stick_y;
-            robot.arm.motor.setPower(arm_power);
+
+            if (arm_power == 0) {
+                robot.arm.motor.setPower(0.1);
+            }else {
+                robot.arm.motor.setPower(arm_power);
+            }
 
             // STEP 3: Use the right joystick on gamepad2 to control the SLIDER.
             // Get the vertical value of the right stick (Y-axis). Up should be positive, down negative.
@@ -61,7 +66,7 @@ public class Teleop extends LinearOpMode {
             // on the telemetry so you can see them on the driver station.
             // Use telemetry.addData("label", value);
             this.telemetry.addData("arm_power: ", arm_power);
-            this.telemetry.addData("slider_power: ", slider_power)
+            this.telemetry.addData("slider_power: ", slider_power);
             this.telemetry.update();
             // ------------------------------ STUDENT SECTION END ------------------------------
 
