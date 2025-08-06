@@ -26,6 +26,8 @@ public class Teleop extends LinearOpMode {
 
         robot.init(); // This initializes all hardware (chassis, arm, slider, etc.)
 
+        robot.wrist.servo.scaleRange(0.14, 0.75);
+
         waitForStart();
 
         // Run until the end of the match (driver presses STOP)
@@ -63,10 +65,29 @@ public class Teleop extends LinearOpMode {
             //
             // BONUS: If gamepad2.a is pressed, reset the wrist to position 0.
 
+            double current_position = robot.wrist.servo.getPosition();
+            telemetry.addData("current_wrist_position", current_position);
+            double wrist_input = gamepad2.right_stick_x;
+            robot.wrist.gotoPosition(current_position + wrist_input * 0.02);
+
+            if (gamepad2.a) {
+                robot.wrist.gotoPosition(0);
+            }
+
             // INTAKE CONTROL:
             // - gamepad2 left_bumper → reverse intake (power = -1)
             // - gamepad2 right_bumper → forward intake (power = 1)
             // - gamepad2 x → stop intake (power = 0)
+
+            if (gamepad2.left_bumper) {
+                robot.intake.servo.setPower(-1);
+            }
+            if (gamepad2.right_bumper) {
+                robot.intake.servo.setPower(1);
+            }
+            if (gamepad2.x) {
+                robot.intake.servo.setPower(0);
+            }
 
             // ----------------------------------------------------------------------------------
 
