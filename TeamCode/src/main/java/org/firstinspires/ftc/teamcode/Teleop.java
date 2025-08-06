@@ -68,10 +68,18 @@ public class Teleop extends LinearOpMode {
                 goToPosition(0);
             }
             // INTAKE CONTROL:
-            // - gamepad2 left_bumper → reverse intake (power = -1)
-
-            // - gamepad2 right_bumper → forward intake (power = 1)
-            // - gamepad2 x → stop intake (power = 0)
+            // - if gamepad2 left_bumper → reverse intake (power = -1)
+            if (gamepad2.left_bumper) {
+                robot.intake.servo.setPower(-1);
+            }
+            // - if gamepad2 right_bumper → forward intake (power = 1)
+            if (gamepad2.right_bumper) {
+                robot.intake.servo.setPower(1);
+            }
+            // -  if gamepad2 x → stop intake (power = 0)
+            if (gamepad2.x) {
+                robot.intake.servo.setPower(0);
+            }
 
             // ----------------------------------------------------------------------------------
 

@@ -14,6 +14,9 @@ public class Chassis {
     double leftBackPower;
     double rightFrontPower;
     double rightBackPower;
+    double arm_power;
+    double slider_power;
+    double NewWristPosition;
     public GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
 
     private DcMotor frontLeftDrive;
