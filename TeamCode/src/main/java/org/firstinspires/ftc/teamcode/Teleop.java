@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Helper.Chassis;
 import org.firstinspires.ftc.teamcode.Helper.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.Helper.Robot;
 
-@TeleOp(name = "TeleOp", group = "TeleOp")
+@TeleOp(name = "ElenaTeleop", group = "ElenaTeleop")
 public class Teleop extends LinearOpMode {
 
     Robot robot = new Robot(this);
@@ -58,15 +58,27 @@ public class Teleop extends LinearOpMode {
             // WRIST CONTROL:
             // Use right_stick_x on gamepad2 to rotate the wrist slightly left/right.
             // 1. Get the current wrist position using robot.wrist.servo.getPosition()
+            double currentWristPos = robot.wrist.servo.getPosition();
             // 2. Add the gamepad joystick value to that current position value. You may need to multiply by a small scale factor.
+            double newWristPos = currentWristPos + gamepad2.right_stick_x * 0.02;
             // 3. Call goToPosition on the wrist to move it to the gamepad + current value.
-            //
+            robot.wrist.gotoPosition(newWristPos);
             // BONUS: If gamepad2.a is pressed, reset the wrist to position 0.
+            if (gamepad2.a) {
+                robot.wrist.gotoPosition(0);
+            }
 
             // INTAKE CONTROL:
             // - gamepad2 left_bumper → reverse intake (power = -1)
             // - gamepad2 right_bumper → forward intake (power = 1)
             // - gamepad2 x → stop intake (power = 0)
+            if (gamepad2.left_bumper) {
+                robot.intake.servo.setPower(-1);
+            } else if (gamepad2.right_bumper) {
+                robot.intake.servo.setPower(1);
+            } else if (gamepad2.x) {
+                robot.intake.servo.setPower(0);
+            }
 
             // ----------------------------------------------------------------------------------
 
