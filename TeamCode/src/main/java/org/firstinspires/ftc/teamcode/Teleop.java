@@ -73,13 +73,15 @@ public class Teleop extends LinearOpMode {
 
 // INTAKE CONTROL
             if (gamepad2.left_bumper) {
-                robot.intake.motor.setPower(-1.0); // Reverse intake
+                robot.intake.setPower(-1.0); // Reverse intake
             } else if (gamepad2.right_bumper) {
-                robot.intake.motor.setPower(1.0); // Forward intake
+                robot.intake.setPower(1.0); // Forward intake
             } else if (gamepad2.x) {
-                robot.intake.motor.setPower(0.0); // Stop intake
+                robot.intake.setPower(0.0); // Stop intake
             }
 
+// Telemetry output
+            telemetry.addData("Intake Power", robot.intake.getPower());
 // Telemetry output
             telemetry.addData("Wrist Target Pos", targetWristPos);
             telemetry.addData("Intake Power", robot.intake.motor.getPower());
