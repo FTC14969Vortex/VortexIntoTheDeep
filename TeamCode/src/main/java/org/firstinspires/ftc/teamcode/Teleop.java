@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Helper.Chassis;
 import org.firstinspires.ftc.teamcode.Helper.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.Helper.Robot;
 
-@TeleOp(name = "TeleOp", group = "TeleOp")
+@TeleOp(name = "SamArm", group = "TeleOp")
 public class Teleop extends LinearOpMode {
 
     Robot robot = new Robot(this);
