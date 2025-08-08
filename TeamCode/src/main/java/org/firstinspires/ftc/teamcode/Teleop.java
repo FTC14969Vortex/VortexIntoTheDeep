@@ -65,7 +65,7 @@ public class Teleop extends LinearOpMode {
             robot.wrist.gotoPosition(newWristPos);
             // BONUS: If gamepad2.a is pressed, reset the wrist to position 0.
             if (gamepad2.a) {
-                robot.wrist.gotoPosition(0);
+                robot.wrist.gotoPosition(0.5);
             }
 
             // INTAKE CONTROL:
