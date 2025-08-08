@@ -55,20 +55,34 @@ public class Teleop extends LinearOpMode {
 
             // ----------------------------- WRIST & INTAKE -----------------------------
 
-            // WRIST CONTROL:
-            // Use right_stick_x on gamepad2 to rotate the wrist slightly left/right.
-            // 1. Get the current wrist position using robot.wrist.servo.getPosition()
-            // 2. Add the gamepad joystick value to that current position value. You may need to multiply by a small scale factor.
-            // 3. Call goToPosition on the wrist to move it to the gamepad + current value.
-            //
-            // BONUS: If gamepad2.a is pressed, reset the wrist to position 0.
+// WRIST CONTROL
+            double wristScale = 0.01; // Small scale factor for fine control
+            double currentWristPos = robot.wrist.servo.getPosition();
+            double wristInput = gamepad2.right_stick_x;
+            double targetWristPos = currentWristPos + (wristInput * wristScale);
 
-            // INTAKE CONTROL:
-            // - gamepad2 left_bumper → reverse intake (power = -1)
-            // - gamepad2 right_bumper → forward intake (power = 1)
-            // - gamepad2 x → stop intake (power = 0)
+// Clamp the target position between 0 and 1
+            targetWristPos = Math.max(0.0, Math.min(1.0, targetWristPos));
 
-            // ----------------------------------------------------------------------------------
+// Reset wrist to position 0 if button A is pressed
+            if (gamepad2.a) {
+                targetWristPos = 0.0;
+            }
+
+            robot.wrist.goToPosition(targetWristPos);
+
+// INTAKE CONTROL
+            if (gamepad2.left_bumper) {
+                robot.intake.motor.setPower(-1.0); // Reverse intake
+            } else if (gamepad2.right_bumper) {
+                robot.intake.motor.setPower(1.0); // Forward intake
+            } else if (gamepad2.x) {
+                robot.intake.motor.setPower(0.0); // Stop intake
+            }
+
+// Telemetry output
+            telemetry.addData("Wrist Target Pos", targetWristPos);
+            telemetry.addData("Intake Power", robot.intake.motor.getPower());
 
             robot.chassis.setDriveMode(Chassis.DriveMode.FIELD_CENTRIC);
 
