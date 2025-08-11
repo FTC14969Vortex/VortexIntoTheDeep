@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Helper.Chassis;
 import org.firstinspires.ftc.teamcode.Helper.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.Helper.Robot;
 
-@TeleOp(name = "TeleOp", group = "TeleOp")
+@TeleOp(name = "TeleOp7", group = "TeleOp")
 public class Teleop extends LinearOpMode {
 
     Robot robot = new Robot(this);
@@ -26,7 +26,7 @@ public class Teleop extends LinearOpMode {
 
         robot.init(); // This initializes all hardware (chassis, arm, slider, etc.)
 
-        robot.wrist.servo.scaleRange(0.14, 0.75);
+        robot.wrist.servo.scaleRange(0.40, 0.55);
 
         waitForStart();
 
@@ -44,13 +44,13 @@ public class Teleop extends LinearOpMode {
             robot.slider.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
             // Read input from gamepad2
-            double arm_power = gamepad2.left_stick_y;
+            double arm_power = - gamepad2.left_stick_y;
             double slider_power = gamepad2.right_stick_y;
 
             // Set motor power
             robot.arm.motor.setPower(arm_power);
             robot.slider.motor.setPower(slider_power);
-
+            
             // Telemetry output
             telemetry.addData("arm power", arm_power);
             telemetry.addData("slider power", slider_power);
@@ -71,7 +71,7 @@ public class Teleop extends LinearOpMode {
             robot.wrist.gotoPosition(current_position + wrist_input * 0.02);
 
             if (gamepad2.a) {
-                robot.wrist.gotoPosition(0);
+                robot.wrist.gotoPosition(0.48);
             }
 
             // INTAKE CONTROL:
@@ -91,11 +91,11 @@ public class Teleop extends LinearOpMode {
 
             // ----------------------------------------------------------------------------------
 
-            robot.chassis.setDriveMode(Chassis.DriveMode.FIELD_CENTRIC);
+            robot.chassis.setDriveMode(Chassis.DriveMode.ROBOT_CENTRIC);
 
-            axial = -gamepad1.left_stick_y; // Forward/Backward
-            lateral = gamepad1.left_stick_x; // Left/Right
-            yaw = gamepad1.right_stick_x; // Rotation
+            axial = 0.6 * -gamepad1.left_stick_y; // Forward/Backward
+            lateral = 0.6 * gamepad1.left_stick_x; // Left/Right
+            yaw = 0.7 * gamepad1.right_stick_x; // Rotation
 
             robot.chassis.drive(axial, lateral, yaw);
 
