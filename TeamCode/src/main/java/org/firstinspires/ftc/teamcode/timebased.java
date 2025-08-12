@@ -30,15 +30,15 @@ public class timebased extends LinearOpMode {
 
             // 1. Drive forward for 2 seconds
             driveForward(0.5);
-            sleep(0.3);
+            sleep(1000);
 
             // Stop for 0.5 seconds
             stopAllMotors();
-            sleep(500);
+            sleep(1000);
 
             // 2. Strafe right for 1.5 seconds
             strafeRight(0.5);
-            sleep(0.3);
+            sleep(1000);
 
             // Stop for 0.5 seconds
             stopAllMotors();
@@ -46,7 +46,7 @@ public class timebased extends LinearOpMode {
 
             // 3. Turn right for 1 second
             turnRight(0.5);
-            sleep(0.3);
+            sleep(1000);
 
             // Stop all motors
             stopAllMotors();
