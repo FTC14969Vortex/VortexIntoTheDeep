@@ -11,7 +11,7 @@ public class Odometry extends LinearOpMode {
     private DcMotor leftOdo, rightOdo;
 
     // Odometry constants (update these for your setup)
-    static final double TICKS_PER_REV = 8192; // Your encoder ticks per revolution
+    static final double TICKS_PER_REV = 28; // Your encoder ticks per revolution
     static final double WHEEL_DIAMETER_INCHES = 2.0;
     static final double TICKS_PER_INCH = TICKS_PER_REV / (Math.PI * WHEEL_DIAMETER_INCHES);
 
