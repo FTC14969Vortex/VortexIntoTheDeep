@@ -21,10 +21,10 @@ public class IMU_Encoder extends LinearOpMode {
     @Override
     public void runOpMode() {
         // Map motors
-        frontLeftDrive  = hardwareMap.get(DcMotor.class, "frontLeftDrive");
+        frontLeftDrive = hardwareMap.get(DcMotor.class, "frontLeftDrive");
         frontRightDrive = hardwareMap.get(DcMotor.class, "frontRightDrive");
-        backLeftDrive   = hardwareMap.get(DcMotor.class, "backLeftDrive");
-        backRightDrive  = hardwareMap.get(DcMotor.class, "backRightDrive");
+        backLeftDrive = hardwareMap.get(DcMotor.class, "backLeftDrive");
+        backRightDrive = hardwareMap.get(DcMotor.class, "backRightDrive");
 
         // Reverse left motors so forward is correct
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -50,4 +50,6 @@ public class IMU_Encoder extends LinearOpMode {
         telemetry.addLine("IMU Calibrating...");
         telemetry.update();
         while (!isStopRequested() && !imu.isGyroCalibrated()) {
+        }
 
+    }}
