@@ -12,7 +12,7 @@ public class IMU_Encoder extends LinearOpMode {
     private BNO055IMU imu;
 
     // Ticks per revolution * gear ratio / wheel circumference
-    static final double COUNTS_PER_MOTOR_REV = 537.6; // Example for goBILDA 5203
+    static final double COUNTS_PER_MOTOR_REV = 538; // Example for goBILDA 5203
     static final double DRIVE_GEAR_REDUCTION = 1.0;
     static final double WHEEL_DIAMETER_INCHES = 4.0;
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
