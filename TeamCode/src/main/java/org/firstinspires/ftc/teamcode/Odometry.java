@@ -1,113 +1,49 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.Helper.Chassis;
 
-@Autonomous(name = "TwoWheelOdometryAuto", group = "Examples")
+@Autonomous(name = "Odometry Auto (No IMU)", group = "Odometry")
 public class Odometry extends LinearOpMode {
 
-    private DcMotor frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive;
-    private DcMotor leftOdo, rightOdo;
-
-    // Odometry constants (update these for your setup)
-    static final double TICKS_PER_REV = 538; // Your encoder ticks per revolution
-    static final double WHEEL_DIAMETER_INCHES = 2.0;
-    static final double TICKS_PER_INCH = TICKS_PER_REV / (Math.PI * WHEEL_DIAMETER_INCHES);
-
-    // Distance between left and right odometry wheels in inches (track width)
-    static final double TRACK_WIDTH_INCHES = 14.0;
+    private Chassis chassis;
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
+        // Init chassis
+        chassis = new Chassis(this);
+        chassis.init();
 
-        // Map drive motors
-        frontLeftDrive  = hardwareMap.get(DcMotor.class, "frontLeftDrive");
-        frontRightDrive = hardwareMap.get(DcMotor.class, "frontRightDrive");
-        backLeftDrive   = hardwareMap.get(DcMotor.class, "backLeftDrive");
-        backRightDrive  = hardwareMap.get(DcMotor.class, "backRightDrive");
+        // Disable any IMU reset
+        // We will NOT call chassis.resetIMU();
 
-        // Map odometry wheels
-        leftOdo  = hardwareMap.get(DcMotor.class, "leftOdo");
-        rightOdo = hardwareMap.get(DcMotor.class, "rightOdo");
-
-        // Reverse left side drive motors
-        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-
-        // Reset odometry encoders
-        resetOdoEncoders();
+        telemetry.addLine("Odometry-only Initialized - Waiting for start");
+        telemetry.update();
 
         waitForStart();
 
         if (opModeIsActive()) {
-            // Drive forward 24 inches
-            driveForwardInches(24, 0.4);
+            // Start position will be whatever odometry reads at start
+            // Movement sequence example (coordinates in CM, heading in DEGREES from odometry only)
+            goTo(new Pose2D(DistanceUnit.CM, 50, 0, AngleUnit.DEGREES, 0), 0.4, 5);   // Forward 50 cm
+            goTo(new Pose2D(DistanceUnit.CM, 50, 50, AngleUnit.DEGREES, 90), 0.4, 5); // Right 50 cm, face 90°
+            goTo(new Pose2D(DistanceUnit.CM, 0, 50, AngleUnit.DEGREES, 180), 0.4, 5); // Back to X=0, rotate to 180°
+            goTo(new Pose2D(DistanceUnit.CM, 0, 0, AngleUnit.DEGREES, 0), 0.4, 5);    // Return to origin
 
-            // Turn right 90 degrees
-            turnDegrees(90, 0.3);
-
-            // Drive forward 12 inches
-            driveForwardInches(12, 0.4);
-        }
-    }
-
-    // Drive forward by monitoring average of both odo wheels
-    private void driveForwardInches(double inches, double power) {
-        resetOdoEncoders();
-        double targetTicks = inches * TICKS_PER_INCH;
-
-        while (opModeIsActive() &&
-                (Math.abs((leftOdo.getCurrentPosition() + rightOdo.getCurrentPosition()) / 2.0) < targetTicks)) {
-            setAllDrivePower(power);
-            telemetry.addData("Left Odo", leftOdo.getCurrentPosition());
-            telemetry.addData("Right Odo", rightOdo.getCurrentPosition());
+            telemetry.addLine("Path complete");
             telemetry.update();
+            sleep(2000);
         }
-        stopAllMotors();
     }
 
-    // Turn by monitoring difference in odo wheels
-    private void turnDegrees(double degrees, double power) {
-        resetOdoEncoders();
-
-        // Calculate target encoder ticks for turn
-        // Arc length per side = (degrees/360) * (2 * pi * radius)
-        // radius = track width / 2
-        double turnCircumference = Math.PI * TRACK_WIDTH_INCHES;
-        double distancePerSide = (degrees / 360.0) * turnCircumference;
-        double targetTicks = distancePerSide * TICKS_PER_INCH;
-
-        while (opModeIsActive() && Math.abs(leftOdo.getCurrentPosition()) < targetTicks) {
-            // Turn right: left wheels forward, right wheels backward
-            frontLeftDrive.setPower(power);
-            backLeftDrive.setPower(power);
-            frontRightDrive.setPower(-power);
-            backRightDrive.setPower(-power);
-
-            telemetry.addData("Left Odo", leftOdo.getCurrentPosition());
-            telemetry.addData("Right Odo", rightOdo.getCurrentPosition());
-            telemetry.update();
-        }
-        stopAllMotors();
-    }
-
-    private void resetOdoEncoders() {
-        leftOdo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightOdo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        leftOdo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightOdo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    }
-
-    private void setAllDrivePower(double power) {
-        frontLeftDrive.setPower(power);
-        frontRightDrive.setPower(power);
-        backLeftDrive.setPower(power);
-        backRightDrive.setPower(power);
-    }
-
-    private void stopAllMotors() {
-        setAllDrivePower(0);
+    /**
+     * Helper method for movement
+     */
+    private void goTo(Pose2D target, double maxPower, double timeout) {
+        chassis.goToPosition(target, maxPower, timeout);
     }
 }
