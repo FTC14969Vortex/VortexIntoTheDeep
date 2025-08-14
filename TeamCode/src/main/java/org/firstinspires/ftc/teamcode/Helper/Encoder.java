@@ -39,13 +39,25 @@ public class Encoder extends LinearOpMode {
 
         if (opModeIsActive()) {
             // Drive forward 24 inches
-            encoderDrive(0.5, 24, 24, 5.0);
+            encoderDrive(0.3, 24, 24, 5.0);
 
             // Turn right (one side forward, one side backward)
-            encoderDrive(0.5, 18, -18, 6.5);
+            encoderDrive(0.3, 19, -19, 6.5);
 
-            // Drive backward 12 inches
-            //encoderDrive(0.5, -12, -12, 4.0);
+            encoderDrive(0.3, 24, 24, 5.0);
+
+            encoderDrive(0.3, 19, -19, 6.5);
+
+            encoderDrive(0.3, 24, 24, 5.0);
+
+            encoderDrive(0.3, 19, -19, 6.5);
+
+            encoderDrive(0.3, 24, 24, 5.0);
+
+            encoderDrive(0.3, 24, 24, 5.0);
+
+            encoderDrive(0.3, 19, -19, 6.5);
+
         }
     }
 

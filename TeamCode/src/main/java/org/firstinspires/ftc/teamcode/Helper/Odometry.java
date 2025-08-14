@@ -28,10 +28,10 @@ public class Odometry extends LinearOpMode {
         if (opModeIsActive()) {
             // Start position will be whatever odometry reads at start
             // Movement sequence example (coordinates in CM, heading in DEGREES from odometry only)
-            goTo(new Pose2D(DistanceUnit.CM, 50, 0, AngleUnit.DEGREES, 0), 0.4, 5);   // Forward 50 cm
-            goTo(new Pose2D(DistanceUnit.CM, 50, 50, AngleUnit.DEGREES, 90), 0.4, 5); // Right 50 cm, face 90°
-            goTo(new Pose2D(DistanceUnit.CM, 0, 50, AngleUnit.DEGREES, 180), 0.4, 5); // Back to X=0, rotate to 180°
-            goTo(new Pose2D(DistanceUnit.CM, 0, 0, AngleUnit.DEGREES, 0), 0.4, 5);    // Return to origin
+            goTo(new Pose2D(DistanceUnit.CM, 50, 0, AngleUnit.DEGREES, 0), 0.3, 5);   // Forward 50 cm
+            goTo(new Pose2D(DistanceUnit.CM, 50, 50, AngleUnit.DEGREES, 90), 0.3, 5); // Right 50 cm, face 90°
+            goTo(new Pose2D(DistanceUnit.CM, 0, 50, AngleUnit.DEGREES, 180), 0.3, 5); // Back to X=0, rotate to 180°
+            goTo(new Pose2D(DistanceUnit.CM, 0, 0, AngleUnit.DEGREES, 0), 0.3, 5);    // Return to origin
 
             telemetry.addLine("Path complete");
             telemetry.update();

@@ -29,7 +29,7 @@ public class timebased extends LinearOpMode {
         if (opModeIsActive()) {
 
             // 1. Drive forward for 2 seconds
-            driveForward(0.5);
+            driveForward(0.3);
             sleep(1000);
 
             // Stop for 0.5 seconds
