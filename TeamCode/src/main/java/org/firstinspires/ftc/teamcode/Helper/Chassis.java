@@ -5,9 +5,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 import java.util.List;
@@ -46,6 +48,7 @@ public class Chassis {
         ROBOT_CENTRIC,
         FIELD_CENTRIC
     }
+
 
     // Initialize hardware and reset position tracking
     public void init(LinearOpMode opMode) {
@@ -244,5 +247,185 @@ public class Chassis {
         }
 
         stop();
+    }
+
+    public enum Direction {
+        FORWARD,
+        BACKWARD,
+        LEFT,
+        RIGHT
+    }
+
+    ElapsedTime elapsedTime = new ElapsedTime();
+
+    public void moveByTime(Direction direction, double power, double seconds){
+        if(!opMode.opModeIsActive()) return;
+
+
+        setMotorZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        setMotorWheelMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setMotorWheelMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        elapsedTime.reset();
+
+        switch (direction){
+            case FORWARD: setRobotPowerToWheels(power,power, power,power); break;
+            case BACKWARD: setRobotPowerToWheels(-power,-power,-power,-power); break;
+            case LEFT: setRobotPowerToWheels(-power, power, power, -power); break;
+            case RIGHT: setRobotPowerToWheels(power, -power, -power, power); break;
+        }
+
+        while (opMode.opModeIsActive() && elapsedTime.seconds() < seconds){
+
+        }
+
+        setRobotPowerToWheels(0,0,0,0);
+    }
+
+    public void setMotorWheelMode(DcMotor.RunMode runMode){
+        frontLeftDrive.setMode(runMode);
+        frontRightDrive.setMode(runMode);
+        backLeftDrive.setMode(runMode);
+        backRightDrive.setMode(runMode);
+    }
+
+    public void setRobotPowerToWheels(double fl, double fr, double bl, double br){
+        frontLeftDrive.setPower(fl);
+        frontRightDrive.setPower(fr);
+        backLeftDrive.setPower(bl);
+        backRightDrive.setPower(br);
+    }
+
+    public static double PI = 3.1415;
+
+    //Encoder
+    public static double COUNTS_PER_MOTOR_REV = 537.7;
+    public static double DRIVE_GEAR_REDUCTION = 1.0;
+    public static double WHEEL_DIAMETER_INCHES = 4.0;
+    public static double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION)/(WHEEL_DIAMETER_INCHES * PI);
+
+    public void moveWithEncoder(Direction direction, double power, double distanceInInches){
+        if(!opMode.opModeIsActive()) return;
+
+        setMotorZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        setMotorWheelMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        int targetTicks = (int) (distanceInInches * COUNTS_PER_INCH);
+
+        elapsedTime.reset();
+
+        switch (direction){
+            case FORWARD: setTargetPositionToWheels(targetTicks,targetTicks, targetTicks,targetTicks); break;
+            case BACKWARD: setTargetPositionToWheels(-targetTicks,-targetTicks,-targetTicks,-targetTicks); break;
+            case LEFT: setTargetPositionToWheels(-targetTicks, targetTicks, targetTicks, -targetTicks); break;
+            case RIGHT: setTargetPositionToWheels(targetTicks, -targetTicks, -targetTicks, targetTicks); break;
+        }
+
+        setMotorWheelMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        power = Math.abs(power);
+        setRobotPowerToWheels(power,power, power,power);
+
+        while (opMode.opModeIsActive() && isAnyWheelsBusy()){
+
+        }
+
+        setRobotPowerToWheels(0,0,0,0);
+        setMotorWheelMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public static double P_DRIVE_COEFF = 0.05;
+    public static final double minPower = 0.08;
+    public void moveWithProportionalDeceleration(Direction direction, double maxPower, double distanceInches) {
+        if (!opMode.opModeIsActive()) return;
+
+        int targetTicks = (int) (distanceInches * COUNTS_PER_INCH);
+
+        setMotorWheelMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setMotorWheelMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        while (opMode.opModeIsActive()) {
+
+            int remainingTicks = targetTicks - getAverageCurrentPositionAllWheels();
+            if (remainingTicks <= 0) break;
+
+            double progress = (double) remainingTicks / (double) targetTicks;
+            double drivePower = minPower + (maxPower - minPower) * Math.pow(progress, 0.5);
+            drivePower = Math.max(minPower, Math.min(drivePower, maxPower));
+
+
+            //double calculatedPower = remainingTicks * P_DRIVE_COEFF;
+            //double drivePower = Math.max(0.1, Math.min(Math.abs(calculatedPower), maxPower));
+
+
+            switch (direction) {
+                case FORWARD:
+                    setRobotPowerToWheels(drivePower, drivePower, drivePower, drivePower);
+                    break;
+                case BACKWARD:
+                    setRobotPowerToWheels(-drivePower, -drivePower, -drivePower, -drivePower);
+                    break;
+                case LEFT:
+                    setRobotPowerToWheels(-drivePower, drivePower, drivePower, -drivePower);
+                    break;
+                case RIGHT:
+                    setRobotPowerToWheels(drivePower, -drivePower, -drivePower, drivePower);
+                    break;
+            }
+        }
+        setRobotPowerToWheels(0,0,0,0);
+    }
+
+
+        //Gyroscope
+    public static double HEADING_THRESHOLD = 1.0;
+    public static double P_TURN_COEFF = 0.03;
+
+
+    public void setTargetPositionToWheels(int fl, int fr, int bl, int br){
+        frontLeftDrive.setTargetPosition(fl);
+        frontRightDrive.setTargetPosition(fr);
+        backLeftDrive.setTargetPosition(bl);
+        backRightDrive.setTargetPosition(br);
+    }
+
+    public boolean isAnyWheelsBusy(){
+        return frontLeftDrive.isBusy() ||
+                frontRightDrive.isBusy() ||
+                backLeftDrive.isBusy() ||
+                backRightDrive.isBusy();
+    }
+    public void setMotorZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior){
+        frontLeftDrive.setZeroPowerBehavior(behavior);
+        frontRightDrive.setZeroPowerBehavior(behavior);
+        backLeftDrive.setZeroPowerBehavior(behavior);
+        backRightDrive.setZeroPowerBehavior(behavior);
+    }
+
+    public int getAverageCurrentPositionAllWheels(){
+
+     int fl = Math.abs(frontLeftDrive.getCurrentPosition());
+     int bl = Math.abs(backLeftDrive.getCurrentPosition());
+     int fr = Math.abs(frontRightDrive.getCurrentPosition());
+     int br = Math.abs(backRightDrive.getCurrentPosition());
+
+     int averageCurrentPosition = (fl + bl + fr + br)/4;
+     return averageCurrentPosition;
+
+    }
+    private double wrap180(double deg) {
+        double x = (deg + 180.0) % 360.0;
+        if (x < 0) x += 360.0;
+        return x - 180.0;
+    }
+    private double getHeadingDeg() {
+        Orientation angles = imu.getAngularOrientation(
+                AxesReference.INTRINSIC, // angles relative to starting orientation
+                AxesOrder.ZYX,           // order Z (yaw), Y (pitch), X (roll)
+                AngleUnit.DEGREES);
+
+        // yaw is the "firstAngle" in this AxesOrder
+        double heading = angles.firstAngle;
+        return wrap180(heading);
     }
 }
