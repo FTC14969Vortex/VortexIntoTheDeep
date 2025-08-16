@@ -8,11 +8,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Helper.Chassis;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 
 import java.util.Arrays;
 import java.util.List;
 
-@Autonomous(name = "TestAutonomousMovements2;")
+@Autonomous(name = "TestAutonomousMovements3;")
 public class TestAutonomousMovements extends LinearOpMode {
 
     Chassis chassis = null;
@@ -22,6 +23,7 @@ public class TestAutonomousMovements extends LinearOpMode {
 
         chassis = new Chassis();
         chassis.init(this);
+
 
         waitForStart();
 
@@ -38,8 +40,10 @@ public class TestAutonomousMovements extends LinearOpMode {
                 //chassis.moveWithEncoder(Chassis.Direction.FORWARD, .5, 64);
                 //chassis.moveWithEncoder(Chassis.Direction.BACKWARD, .5, 64);
 
-                chassis.moveWithProportionalDeceleration(Chassis.Direction.FORWARD, .8, 60);
-                chassis.moveWithProportionalDeceleration(Chassis.Direction.BACKWARD, .8, 58);
+                //chassis.moveWithProportionalDeceleration(Chassis.Direction.FORWARD, .8, 60);
+               //chassis.moveWithProportionalDeceleration(Chassis.Direction.BACKWARD, .8, 58);
+
+                chassis.moveWithProportionalDecelerationAndHeading( Chassis.Direction.FORWARD, .8, 58, 0.1);
             }
 
             telemetry.addData("Run Time: ", getRuntime());

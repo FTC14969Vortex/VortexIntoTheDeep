@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -30,6 +31,7 @@ public class Chassis {
     private DcMotor backLeftDrive;
     private DcMotor frontRightDrive;
     private DcMotor backRightDrive;
+    private BNO055IMU imu;
 
     // Link to LinearOpMode and drive mode selection
     private LinearOpMode opMode;
@@ -73,6 +75,12 @@ public class Chassis {
         // Calibrate and zero the odometry system
         odo.recalibrateIMU();
         odo.resetPosAndIMU();
+
+        // Setup IMU
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        imu.initialize(parameters);
     }
 
     // Change the drive mode (field-centric or robot-centric)
@@ -429,4 +437,119 @@ public class Chassis {
         double heading = angles.firstAngle;
         return wrap180(heading);
     }
+    public void moveWithProportionalDecelerationAndHeading(
+            Direction direction, double maxPower, double distanceInches, Double holdHeadingDeg) {
+
+        double MIN_POWER       = 0.08;  // just above stall for your drivetrain
+         double KP_HEADING      = 0.012; // start here; tune on the field
+         double KI_HEADING      = 0.000; // optional (keep 0 to start)
+         double KD_HEADING      = 0.000; // optional (keep 0 to start)
+         double MAX_YAW_CORR    = 0.25;  // cap on turn correction (0..1)
+         int    STOP_TOL_TICKS  = 20;    // ~0.4 in @ 45 cpi
+
+
+        if (!opMode.opModeIsActive()) return;
+
+        // --- Prep encoders ---
+        int targetTicks = (int) Math.round(Math.abs(distanceInches) * COUNTS_PER_INCH);
+        setMotorWheelMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setMotorWheelMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // --- Prep IMU ---
+        // Assuming "imu" is com.qualcomm.hardware.bosch.BNO055IMU or the newer IMU interface and already initialized.
+        // Choose degrees for angle unit when you init IMU elsewhere.
+        double yaw0 = getHeadingDeg(); // your helper that reads yaw in degrees
+        double headingSetpoint = (holdHeadingDeg != null) ? holdHeadingDeg : yaw0;
+
+        // Heading PID state
+        double lastErr = 0, errI = 0;
+        long   lastT   = System.nanoTime();
+
+        while (opMode.opModeIsActive()) {
+
+            int remaining = targetTicks - getAverageCurrentPositionAllWheels();
+            if (remaining <= STOP_TOL_TICKS) break;
+
+            // Linear taper (1 -> 0)
+            double progress = Math.max(0.0, Math.min(1.0, (double) remaining / (double) targetTicks));
+            // Optional easing for earlier slowdown (gamma<1 decelerates earlier)
+            double gamma = 0.7;
+            double tapered = Math.pow(progress, gamma);
+
+            double drivePower = MIN_POWER + (maxPower - MIN_POWER) * tapered;
+            drivePower = Range.clip(drivePower, MIN_POWER, maxPower);
+
+            // --- Heading hold (PID) ---
+            double yaw = getHeadingDeg(); // current yaw in degrees
+            double err = wrap180(headingSetpoint - yaw);
+
+            long now = System.nanoTime();
+            double dt = Math.max(1e-6, (now - lastT) / 1e9); // seconds
+            lastT = now;
+
+            // PI(D)
+            errI += err * dt;
+            // simple anti-windup
+            errI = Range.clip(errI, -50.0, 50.0);
+
+            double errD = (err - lastErr) / dt;
+            lastErr = err;
+
+            double turnCorr = KP_HEADING * err + KI_HEADING * errI + KD_HEADING * errD;
+            turnCorr = Range.clip(turnCorr, -MAX_YAW_CORR, MAX_YAW_CORR);
+
+            // --- Command mix ---
+            // axial: forward/back; lateral: strafe; yaw: heading correction
+            double axial = 0, lateral = 0;
+            switch (direction) {
+                case FORWARD:  axial =  drivePower; break;
+                case BACKWARD: axial = -drivePower; break;
+                case LEFT:     lateral =  drivePower; break;
+                case RIGHT:    lateral = -drivePower; break;
+            }
+            double yawCmd = turnCorr;
+
+            // mecanum mix
+            double flPower = axial + lateral + yawCmd;
+            double frPower = axial - lateral - yawCmd;
+            double blPower = axial - lateral + yawCmd;
+            double brPower = axial + lateral - yawCmd;
+
+            // Normalize if any exceeds 1.0
+            double maxAbs = Math.max(1.0,
+                    Math.max(Math.abs(flPower),
+                            Math.max(Math.abs(frPower),
+                                    Math.max(Math.abs(blPower), Math.abs(brPower)))));
+            flPower /= maxAbs; frPower /= maxAbs; blPower /= maxAbs; brPower /= maxAbs;
+
+            // Scale to preserve the intended drive magnitude (keep <= maxPower)
+            flPower *= maxPower; frPower *= maxPower; blPower *= maxPower; brPower *= maxPower;
+
+            // Ensure we don't drop below MIN_POWER along the commanded axis (helps overcome static friction)
+            // but allow the heading correction to modulate around it.
+            // Only enforce MIN_POWER on the dominant drive component:
+            if (direction == Direction.FORWARD || direction == Direction.BACKWARD) {
+                double sign = Math.signum(axial);
+                flPower = sign * Math.max(MIN_POWER, Math.abs(flPower));
+                frPower = sign * Math.max(MIN_POWER, Math.abs(frPower));
+                blPower = sign * Math.max(MIN_POWER, Math.abs(blPower));
+                brPower = sign * Math.max(MIN_POWER, Math.abs(brPower));
+            } else {
+                double sign = Math.signum(lateral);
+                // For strafes, friction is higher—MIN_POWER helps a lot
+                flPower = (Math.signum(flPower) == 0 ? sign : Math.signum(flPower)) * Math.max(MIN_POWER, Math.abs(flPower));
+                frPower = (Math.signum(frPower) == 0 ? sign : Math.signum(frPower)) * Math.max(MIN_POWER, Math.abs(frPower));
+                blPower = (Math.signum(blPower) == 0 ? sign : Math.signum(blPower)) * Math.max(MIN_POWER, Math.abs(blPower));
+                brPower = (Math.signum(brPower) == 0 ? sign : Math.signum(brPower)) * Math.max(MIN_POWER, Math.abs(brPower));
+            }
+
+            // Apply powers
+            setRobotPowerToWheels( flPower, frPower, blPower, brPower);
+
+        }
+
+        // Stop hard
+        setRobotPowerToWheels( 0, 0, 0, 0);
+    }
+
 }
