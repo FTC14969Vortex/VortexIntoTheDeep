@@ -25,6 +25,7 @@ public class TestAutonomousMovements extends LinearOpMode {
         chassis.init(this);
 
 
+
         waitForStart();
 
         if (opModeIsActive()) {
@@ -37,13 +38,21 @@ public class TestAutonomousMovements extends LinearOpMode {
                 //chassis.moveByTime(Chassis.Direction.FORWARD, .5, 2);
                 //chassis.moveByTime(Chassis.Direction.BACKWARD, .5, 2);
 
-                //chassis.moveWithEncoder(Chassis.Direction.FORWARD, .5, 64);
-                //chassis.moveWithEncoder(Chassis.Direction.BACKWARD, .5, 64);
+                //sleep(5000);
+
+               // chassis.moveWithEncoder(Chassis.Direction.FORWARD, .5, 60);
+                //chassis.moveWithEncoder(Chassis.Direction.BACKWARD, .5, 58);
+
+                //sleep(5000);
 
                 //chassis.moveWithProportionalDeceleration(Chassis.Direction.FORWARD, .8, 60);
-               //chassis.moveWithProportionalDeceleration(Chassis.Direction.BACKWARD, .8, 58);
+                //chassis.moveWithProportionalDeceleration(Chassis.Direction.BACKWARD, .8, 58);
 
-                chassis.moveWithProportionalDecelerationAndHeading( Chassis.Direction.FORWARD, .8, 58, 0.1);
+               // sleep(5000);
+
+                chassis.moveWithProportionalDecelerationAndHeading( Chassis.Direction.FORWARD, .8, 60, 0.1);
+                chassis.moveWithProportionalDecelerationAndHeading( Chassis.Direction.BACKWARD, .8, 58, 0.1);
+
             }
 
             telemetry.addData("Run Time: ", getRuntime());

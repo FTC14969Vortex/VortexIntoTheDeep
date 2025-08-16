@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Helper;
 
+import com.qualcomm.hardware.bosch.BNO055IMUImpl;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -57,7 +58,7 @@ public class Chassis {
     public void init(LinearOpMode opMode) {
         this.opMode = opMode;
         HardwareMap hardwareMap = opMode.hardwareMap;
-        setDriveMode(DriveMode.FIELD_CENTRIC);
+        setDriveMode(DriveMode.ROBOT_CENTRIC);
 
         // Link each motor to its config name
         frontLeftDrive = hardwareMap.get(DcMotor.class, "frontLeftDrive");
