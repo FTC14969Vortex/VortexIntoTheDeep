@@ -11,8 +11,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class Slider {
     public DcMotor motor;
-    double speed = 1;
-
+    double speed = 0.8;
+    //int targetPosition;
+    int currentPosition;
+    int timeout_ms = 3000;
 
     LinearOpMode myOpMode;
 
@@ -36,4 +38,23 @@ public class Slider {
 
         }
     }
+    public void runToPosition(int targetPosition) {
+        ElapsedTime runtime = new ElapsedTime();
+
+        currentPosition = motor.getCurrentPosition();
+        motor.setTargetPosition(targetPosition);
+        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        speed = speed * Math.signum(targetPosition - currentPosition);
+        motor.setPower(speed);
+        runtime.reset();
+
+        while ((runtime.milliseconds() < timeout_ms) && (motor.isBusy())) {
+        }
+
+        motor.setPower(0);
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
 }

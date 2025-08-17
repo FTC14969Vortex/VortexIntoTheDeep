@@ -24,6 +24,9 @@ public class Chassis {
     private LinearOpMode opMode;
     private DriveMode driveMode;
 
+    public double speedFactor = 0.9;
+    public double speedStep = 0.005;
+
     public Chassis(LinearOpMode opMode) {
         this.opMode = opMode;
     }
@@ -53,11 +56,16 @@ public class Chassis {
         odo.recalibrateIMU();
         odo.resetPosAndIMU();
     }
+
+    public DriveMode getDriveMode() {
+        return this.driveMode;
+    }
     public void setDriveMode(DriveMode driveMode) {
         // save driveMode to use in drive()
         this.driveMode = driveMode;
 
     }
+
     public void resetIMU(){
         odo.resetPosAndIMU();
     }
@@ -108,6 +116,12 @@ public class Chassis {
             leftBackPower = leftBackPower / max;
             rightBackPower = rightBackPower / max;
         }
+
+        leftFrontPower = leftFrontPower * speedFactor;
+        rightFrontPower = rightFrontPower * speedFactor;
+        leftBackPower = leftBackPower * speedFactor;
+        rightBackPower = rightBackPower * speedFactor;
+
         // Send calculated power to wheels.
         frontLeftDrive.setPower(leftFrontPower);
         frontRightDrive.setPower(rightFrontPower);
