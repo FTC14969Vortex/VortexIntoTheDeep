@@ -50,31 +50,25 @@ public class TestAutonomousMovements extends LinearOpMode {
 
                // sleep(5000);
 
-                chassis.moveWithProportionalDecelerationAndHeading( Chassis.Direction.FORWARD, .8, 60, 0.1);
-                chassis.moveWithProportionalDecelerationAndHeading( Chassis.Direction.BACKWARD, .8, 58, 0.1);
+                //chassis.moveWithProportionalDecelerationAndHeading( Chassis.Direction.FORWARD, .8, 60, 0.1);
+                //chassis.moveWithProportionalDecelerationAndHeading( Chassis.Direction.BACKWARD, .8, 58, 0.1);
 
             }
 
-            telemetry.addData("Run Time: ", getRuntime());
-            telemetry.update();
-            sleep(10000);
-
-            //Move by time
-            //chassis.moveByTime(Chassis.Direction.FORWARD, .5, 2);
-
-            //Move using encoder
-            //chassis.moveWithEncoder(Chassis.Direction.FORWARD, .5, 64);
+            //telemetry.addData("Run Time: ", getRuntime());
+            //telemetry.update();
+            //sleep(10000);
 
 
 
-            //double inch2mm = 25.4;
-            //double driveSpeed = 0.2;
-            //int timeoutMs = 3000;
+            double inch2mm = 25.4;
+            double driveSpeed = 0.5;
+            int timeoutMs = 3000;
 
-            //Pose2D startPose = chassis.getPoseEstimate();
-            //double x0 = startPose.getX(DistanceUnit.MM);
-            //double y0 = startPose.getY(DistanceUnit.MM);
-            //double heading = startPose.getHeading(AngleUnit.RADIANS);
+            Pose2D startPose = chassis.getPoseEstimate();
+            double x0 = startPose.getX(DistanceUnit.MM);
+            double y0 = startPose.getY(DistanceUnit.MM);
+            double heading = startPose.getHeading(AngleUnit.RADIANS);
 
             // Define a path of 4 positions
 //            List<Pose2D> path = Arrays.asList(
@@ -86,9 +80,9 @@ public class TestAutonomousMovements extends LinearOpMode {
 //
 //            // Follow the path
 //            chassis.followPath(path, power, timeoutMs);
-            //chassis.goToPosition(new Pose2D(DistanceUnit.MM, x0, y0 + 12 * inch2mm, AngleUnit.RADIANS, heading), driveSpeed, timeoutMs);
-           // chassis.goToPosition(new Pose2D(DistanceUnit.MM, x0 + 36 * inch2mm, y0, AngleUnit.RADIANS, heading), driveSpeed, timeoutMs);
-            //chassis.goToPosition(new Pose2D(DistanceUnit.MM, x0, y0 - 36 * inch2mm, AngleUnit.RADIANS, heading), driveSpeed, timeoutMs);
+            chassis.goToPosition(new Pose2D(DistanceUnit.MM, x0, y0 + 36 * inch2mm, AngleUnit.RADIANS, heading), driveSpeed, timeoutMs);
+            // chassis.goToPosition(new Pose2D(DistanceUnit.MM, x0 + 36 * inch2mm, y0, AngleUnit.RADIANS, heading), driveSpeed, timeoutMs);
+            chassis.goToPosition(new Pose2D(DistanceUnit.MM, x0, y0 - 36 * inch2mm, AngleUnit.RADIANS, heading), driveSpeed, timeoutMs);
             //chassis.goToPosition(new Pose2D(DistanceUnit.MM, x0 - 36 * inch2mm, y0, AngleUnit.RADIANS, heading), driveSpeed, timeoutMs);
             //chassis.goToPosition(new Pose2D(DistanceUnit.MM, x0 -24 * inch2mm, y0 + 24, AngleUnit.RADIANS, heading), driveSpeed, timeoutMs);
             //chassis.stop();

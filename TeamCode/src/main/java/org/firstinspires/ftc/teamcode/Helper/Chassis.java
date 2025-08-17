@@ -77,11 +77,18 @@ public class Chassis {
         odo.recalibrateIMU();
         odo.resetPosAndIMU();
 
+
+        //BNO055IMU bno055IMU= hardwareMap.get(BNO055IMU.class, "imu");
+
+
         // Setup IMU
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        imu.initialize(parameters);
+        //imu = hardwareMap.get(BNO055IMU.class, "imu");
+
+        //BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        //parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        //imu = hardwareMap.get(BNO055IMU.class, "imu");
+        //imu.initialize(parameters);
+
     }
 
     // Change the drive mode (field-centric or robot-centric)
