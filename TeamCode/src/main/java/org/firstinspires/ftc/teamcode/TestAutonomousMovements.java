@@ -104,16 +104,30 @@ public class TestAutonomousMovements extends LinearOpMode {
 //
 //                sleep(5000);
 //
-                //intake.servo.setPower(1);
-                //chassis.moveWithProportionalDeceleration(Chassis.Direction.FORWARD, .8, 30);
-                //sleep(1000);
-               //intake.servo.setPower(0);
-                //chassis.moveWithProportionalDeceleration(Chassis.Direction.BACKWARD, .8, 30);
-                //sleep(500);
-                //chassis.setRobotPowerToWheels(0.8,0.8,-0.8,-0.8);
-                //sleep(500);
-               // chassis.moveWithProportionalDeceleration(Chassis.Direction.FORWARD, 0.8, 30);
-               // intake.servo.setPower(-1);
+                intake.servo.setPower(1);
+                chassis.moveWithProportionalDeceleration(Chassis.Direction.FORWARD, .8, 30);
+                sleep(1000);
+               intake.servo.setPower(0);
+                chassis.moveWithProportionalDeceleration(Chassis.Direction.BACKWARD, .8, 30);
+                sleep(500);
+
+
+                backLeftDrive.setPower(0.8);
+                frontLeftDrive.setPower(0.8);
+                backRightDrive.setPower(-0.8);
+                frontRightDrive.setPower(-0.8);
+
+                sleep(1500);
+
+                backLeftDrive.setPower(0);
+                frontLeftDrive.setPower(0);
+                backRightDrive.setPower(0);
+                frontRightDrive.setPower(0);
+                
+                sleep(500);
+                chassis.moveWithProportionalDeceleration(Chassis.Direction.FORWARD, 0.8, 30);
+                intake.servo.setPower(-1);
+
 
 
 //                sleep(5000);
