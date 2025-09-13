@@ -30,10 +30,10 @@ public class Chassis {
     public void init(OpMode opMode) {
 
         this.opMode = opMode;
-        frontLeftDrive = opMode.hardwareMap.get(DcMotor.class, "frontLeftDrive");
-        backLeftDrive = opMode.hardwareMap.get(DcMotor.class, "backLeftDrive");
-        frontRightDrive = opMode.hardwareMap.get(DcMotor.class, "frontRightDrive");
-        backRightDrive = opMode.hardwareMap.get(DcMotor.class, "backRightDrive");
+        frontLeftDrive = opMode.hardwareMap.get(DcMotor.class, "leftFront");
+        backLeftDrive = opMode.hardwareMap.get(DcMotor.class, "leftBack");
+        frontRightDrive = opMode.hardwareMap.get(DcMotor.class, "rightFront");
+        backRightDrive = opMode.hardwareMap.get(DcMotor.class, "rightBack");
         odo = opMode.hardwareMap.get(GoBildaPinpointDriver.class,"odo");
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -76,7 +76,8 @@ public class Chassis {
         double botHeading;
         if (driveMode == DriveMode.FIELD_CENTRIC) {
             odo.update();
-            botHeading = -odo.getHeading(AngleUnit.RADIANS); // Get the robot's heading in radians
+            botHeading = -odo.getHeading(AngleUnit.RADIANS);// Get the robot's heading in radians
+            
         }
         else {
             botHeading = 0;
