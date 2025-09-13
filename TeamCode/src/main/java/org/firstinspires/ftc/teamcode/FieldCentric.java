@@ -54,10 +54,10 @@ public class FieldCentric extends LinearOpMode {
         double lateral;
         double yaw;
 
-        FLMotor = hardwareMap.get(DcMotor.class, "frontLeftDrive");
-        BLMotor = hardwareMap.get(DcMotor.class, "backLeftDrive");
-        FRMotor = hardwareMap.get(DcMotor.class, "frontRightDrive");
-        BRMotor = hardwareMap.get(DcMotor.class, "backRightDrive");
+        FLMotor = hardwareMap.get(DcMotor.class, "leftFront");
+        BLMotor = hardwareMap.get(DcMotor.class, "leftBack");
+        FRMotor = hardwareMap.get(DcMotor.class, "rightFront");
+        BRMotor = hardwareMap.get(DcMotor.class, "rightBack");
 
         odo = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
 
