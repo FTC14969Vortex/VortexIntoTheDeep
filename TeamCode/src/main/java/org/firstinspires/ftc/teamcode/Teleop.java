@@ -20,7 +20,7 @@ public class Teleop extends LinearOpMode {
         double yaw;
 
         final double chassis_high_speed = 0.9;
-        final double chassis_low_speed = 0.5;
+        final double chassis_low_speed = 0.6;
 
         final int arm_high_position = 3885;
         final int arm_low_position = 100;
